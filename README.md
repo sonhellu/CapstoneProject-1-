@@ -1,6 +1,7 @@
 ### Capstone Project
-- 팀 작업 절차
 
-- 각자 feature 브랜치를 생성 → 코드를 commit → push → develop 브랜치로 Pull Request를 생성합니다.
+-Step1: 프로젝트를 로컬 컴퓨터의 폴더에 클론한다.
 
-- 안정화되면 develop 브랜치를 main 브랜치에 merge 합니다.
+-Step2: feature 브랜치로 스위치한다 → 여기서 각 개인별로 브랜치를 만들어서 그 위에서 코드를 작성한다.
+
+-Step3: 어떤 기능(feature)을 완성하면 Git에 push하고 머지를 요청한다.
