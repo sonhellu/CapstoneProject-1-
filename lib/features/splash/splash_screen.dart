@@ -23,9 +23,9 @@ class _SplashScreenState extends State<SplashScreen>
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _controller.forward();
 
-    // 2초 후 자동 이동
+    // 2초 후 로그인 화면으로 이동
     Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) context.go('/onboarding');
+      if (mounted) context.go('/sign-in');
     });
   }
 

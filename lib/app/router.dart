@@ -9,10 +9,12 @@ import '../features/onboarding/step3_account_info.dart';
 import '../features/onboarding/step4_profile.dart';
 import '../features/onboarding/step5_terms_consent.dart';
 import '../features/auth/sign_in_screen.dart';
+import '../features/auth/sign_up_screen.dart';
 import '../features/home/home_shell.dart';
+import '../features/home/profile_screen.dart';
 
 GoRouter createRouter() => GoRouter(
-  debugLogDiagnostics: true, // 시작 시 라우트 테이블을 콘솔에 출력
+  debugLogDiagnostics: true,
   initialLocation: '/splash',
   redirect: (context, state) {
     if (state.matchedLocation == '/' || state.uri.path == '/') {
@@ -28,6 +30,7 @@ GoRouter createRouter() => GoRouter(
     GoRoute(path: '/onboarding-step4', builder: (c, s) => const Step4ProfileScreen()),
     GoRoute(path: '/onboarding-step5', builder: (c, s) => const Step5TermsConsentScreen()),
     GoRoute(path: '/sign-in', builder: (c, s) => const SignInScreen()),
+    GoRoute(path: '/sign-up', builder: (c, s) => const SignUpScreen()),
 
     ShellRoute(
       builder: (context, state, child) =>
@@ -36,7 +39,9 @@ GoRouter createRouter() => GoRouter(
         GoRoute(path: '/feed',     builder: (c, s) => const _Simple('Feed')),
         GoRoute(path: '/jobs',     builder: (c, s) => const _Simple('Jobs')),
         GoRoute(path: '/exchange', builder: (c, s) => const _Simple('Language Exchange')),
-        GoRoute(path: '/profile',  builder: (c, s) => const _Simple('Profile')),
+        GoRoute(path: '/profile',  builder: (c, s) => const ProfileScreen()),
+        GoRoute(path: '/profile/info', builder: (c, s) => const PersonalInfoScreen()),
+        GoRoute(path: '/profile/verify', builder: (c, s) => const VerifyIdentityScreen()),
       ],
     ),
   ],

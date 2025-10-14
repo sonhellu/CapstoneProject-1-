@@ -1,0 +1,23 @@
+{
+  "appTitle": "하이캠퍼스",
+  "login": "로그인",
+  "email": "이메일",
+  "password": "비밀번호",
+  "forgotPassword": "비밀번호 찾기",
+  "or": "- 또는 -",
+  "signUp": "회원가입",
+  "dontHaveAccount": "계정이 없으신가요? ",
+  "createAccount": "계정 만들기",
+  "confirmPassword": "비밀번호 확인",
+  "alreadyHaveAccount": "이미 계정이 있으신가요? ",
+  "feed": "피드",
+  "jobs": "채용",
+  "exchange": "언어 교환",
+  "profile": "프로필",
+  "logout": "로그아웃",
+  "language": "언어",
+  "english": "영어",
+  "korean": "한국어",
+  "vietnamese": "베트남어"
+}
+

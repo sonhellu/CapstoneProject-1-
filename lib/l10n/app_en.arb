@@ -1,0 +1,23 @@
+{
+  "appTitle": "HiCampus",
+  "login": "Login",
+  "email": "Email",
+  "password": "Password",
+  "forgotPassword": "Forgot Password",
+  "or": "- or -",
+  "signUp": "Sign up",
+  "dontHaveAccount": "Don't have an account? ",
+  "createAccount": "Create account",
+  "confirmPassword": "Confirm Password",
+  "alreadyHaveAccount": "Already have an account? ",
+  "feed": "Feed",
+  "jobs": "Jobs",
+  "exchange": "Language Exchange",
+  "profile": "Profile",
+  "logout": "Logout",
+  "language": "Language",
+  "english": "English",
+  "korean": "Korean",
+  "vietnamese": "Vietnamese"
+}
+
