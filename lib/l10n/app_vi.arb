@@ -1,0 +1,23 @@
+{
+  "appTitle": "HiCampus",
+  "login": "Đăng nhập",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "forgotPassword": "Quên mật khẩu",
+  "or": "- hoặc -",
+  "signUp": "Đăng ký",
+  "dontHaveAccount": "Chưa có tài khoản? ",
+  "createAccount": "Tạo tài khoản",
+  "confirmPassword": "Xác nhận mật khẩu",
+  "alreadyHaveAccount": "Đã có tài khoản? ",
+  "feed": "Bản tin",
+  "jobs": "Việc làm",
+  "exchange": "Trao đổi ngôn ngữ",
+  "profile": "Hồ sơ",
+  "logout": "Đăng xuất",
+  "language": "Ngôn ngữ",
+  "english": "Tiếng Anh",
+  "korean": "Tiếng Hàn",
+  "vietnamese": "Tiếng Việt"
+}
+
