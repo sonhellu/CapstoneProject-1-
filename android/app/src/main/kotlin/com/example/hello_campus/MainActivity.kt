@@ -1,4 +1,4 @@
-package com.example.hi_cam_app
+package com.example.hello_campus
 
 import io.flutter.embedding.android.FlutterActivity
 
