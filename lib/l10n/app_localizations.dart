@@ -1,252 +1,242 @@
-import 'dart:async';
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/intl.dart' as intl;
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'app_localizations_en.dart';
-import 'app_localizations_ko.dart';
-import 'app_localizations_vi.dart';
-
-// ignore_for_file: type=lint
-
-/// Callers can lookup localized strings with an instance of AppLocalizations
-/// returned by `AppLocalizations.of(context)`.
-///
-/// Applications need to include `AppLocalizations.delegate()` in their app's
-/// `localizationDelegates` list, and the locales they support in the app's
-/// `supportedLocales` list. For example:
-///
-/// ```dart
-/// import 'l10n/app_localizations.dart';
-///
-/// return MaterialApp(
-///   localizationsDelegates: AppLocalizations.localizationsDelegates,
-///   supportedLocales: AppLocalizations.supportedLocales,
-///   home: MyApplicationHome(),
-/// );
-/// ```
-///
-/// ## Update pubspec.yaml
-///
-/// Please make sure to update your pubspec.yaml to include the following
-/// packages:
-///
-/// ```yaml
-/// dependencies:
-///   # Internationalization support.
-///   flutter_localizations:
-///     sdk: flutter
-///   intl: any # Use the pinned version from flutter_localizations
-///
-///   # Rest of dependencies
-/// ```
-///
-/// ## iOS Applications
-///
-/// iOS applications define key application metadata, including supported
-/// locales, in an Info.plist file that is built into the application bundle.
-/// To configure the locales supported by your app, you’ll need to edit this
-/// file.
-///
-/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
-/// Then, in the Project Navigator, open the Info.plist file under the Runner
-/// project’s Runner folder.
-///
-/// Next, select the Information Property List item, select Add Item from the
-/// Editor menu, then select Localizations from the pop-up menu.
-///
-/// Select and expand the newly-created Localizations item then, for each
-/// locale your application supports, add a new item and select the locale
-/// you wish to add from the pop-up menu in the Value field. This list should
-/// be consistent with the languages listed in the AppLocalizations.supportedLocales
-/// property.
-abstract class AppLocalizations {
-  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
-
-  final String localeName;
-
-  static AppLocalizations? of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+class AppLocalizations {
+  final Locale locale;
+  
+  AppLocalizations(this.locale);
+  
+  static AppLocalizations of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
-
+  
   static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
-
-  /// A list of this localizations delegate along with the default localizations
-  /// delegates.
-  ///
-  /// Returns a list of localizations delegates containing this delegate along with
-  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
-  /// and GlobalWidgetsLocalizations.delegate.
-  ///
-  /// Additional delegates can be added by appending to this list in
-  /// MaterialApp. This list does not have to be used at all if a custom list
-  /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+  
+  static const List<LocalizationsDelegate> localizationsDelegates = [
     delegate,
     GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
     GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
   ];
-
-  /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[
-    Locale('en'),
-    Locale('ko'),
-    Locale('vi')
+  
+  static const List<Locale> supportedLocales = [
+    Locale('en', ''),
+    Locale('ko', ''),
+    Locale('vi', ''),
   ];
-
-  /// No description provided for @appTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'HiCampus'**
-  String get appTitle;
-
-  /// No description provided for @login.
-  ///
-  /// In en, this message translates to:
-  /// **'Login'**
-  String get login;
-
-  /// No description provided for @email.
-  ///
-  /// In en, this message translates to:
-  /// **'Email'**
-  String get email;
-
-  /// No description provided for @password.
-  ///
-  /// In en, this message translates to:
-  /// **'Password'**
-  String get password;
-
-  /// No description provided for @forgotPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Forgot Password'**
-  String get forgotPassword;
-
-  /// No description provided for @or.
-  ///
-  /// In en, this message translates to:
-  /// **'- or -'**
-  String get or;
-
-  /// No description provided for @signUp.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign up'**
-  String get signUp;
-
-  /// No description provided for @dontHaveAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Don\'t have an account? '**
-  String get dontHaveAccount;
-
-  /// No description provided for @createAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Create account'**
-  String get createAccount;
-
-  /// No description provided for @confirmPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm Password'**
-  String get confirmPassword;
-
-  /// No description provided for @alreadyHaveAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Already have an account? '**
-  String get alreadyHaveAccount;
-
-  /// No description provided for @feed.
-  ///
-  /// In en, this message translates to:
-  /// **'Feed'**
-  String get feed;
-
-  /// No description provided for @jobs.
-  ///
-  /// In en, this message translates to:
-  /// **'Jobs'**
-  String get jobs;
-
-  /// No description provided for @exchange.
-  ///
-  /// In en, this message translates to:
-  /// **'Language Exchange'**
-  String get exchange;
-
-  /// No description provided for @profile.
-  ///
-  /// In en, this message translates to:
-  /// **'Profile'**
-  String get profile;
-
-  /// No description provided for @logout.
-  ///
-  /// In en, this message translates to:
-  /// **'Logout'**
-  String get logout;
-
-  /// No description provided for @language.
-  ///
-  /// In en, this message translates to:
-  /// **'Language'**
-  String get language;
-
-  /// No description provided for @english.
-  ///
-  /// In en, this message translates to:
-  /// **'English'**
-  String get english;
-
-  /// No description provided for @korean.
-  ///
-  /// In en, this message translates to:
-  /// **'Korean'**
-  String get korean;
-
-  /// No description provided for @vietnamese.
-  ///
-  /// In en, this message translates to:
-  /// **'Vietnamese'**
-  String get vietnamese;
+  
+  // English translations
+  static const Map<String, String> _en = {
+    'appTitle': 'Hello Campus',
+    'login': 'Login',
+    'register': 'Register',
+    'email': 'Email',
+    'password': 'Password',
+    'confirmPassword': 'Confirm Password',
+    'loginButton': 'Login',
+    'registerButton': 'Register',
+    'alreadyHaveAccount': 'Already have an account?',
+    'dontHaveAccount': 'Don\'t have an account?',
+    'home': 'Home',
+    'profile': 'Profile',
+    'chat': 'Chat',
+    'language': 'Language',
+    'selectLanguage': 'Select Language',
+    'english': 'English',
+    'korean': '한국어',
+    'vietnamese': 'Tiếng Việt',
+    'welcome': 'Welcome to Hello Campus',
+    'welcomeMessage': 'Your journey in Korea starts here',
+    'fullName': 'Full Name',
+    'university': 'University',
+    'major': 'Major',
+    'year': 'Year',
+    'nationality': 'Nationality',
+    'selectUniversity': 'Select University',
+    'selectMajor': 'Select Major',
+    'selectYear': 'Select Year',
+    'selectNationality': 'Select Nationality',
+    'save': 'Save',
+    'editProfile': 'Edit Profile',
+    'logout': 'Logout',
+    'emailRequired': 'Email is required',
+    'emailInvalid': 'Please enter a valid email',
+    'passwordRequired': 'Password is required',
+    'passwordTooShort': 'Password must be at least 6 characters',
+    'passwordMismatch': 'Passwords do not match',
+    'nameRequired': 'Name is required',
+    'universityRequired': 'University is required',
+    'majorRequired': 'Major is required',
+    'yearRequired': 'Year is required',
+    'nationalityRequired': 'Nationality is required',
+  };
+  
+  // Korean translations
+  static const Map<String, String> _ko = {
+    'appTitle': '헬로 캠퍼스',
+    'login': '로그인',
+    'register': '회원가입',
+    'email': '이메일',
+    'password': '비밀번호',
+    'confirmPassword': '비밀번호 확인',
+    'loginButton': '로그인',
+    'registerButton': '회원가입',
+    'alreadyHaveAccount': '이미 계정이 있으신가요?',
+    'dontHaveAccount': '계정이 없으신가요?',
+    'home': '홈',
+    'profile': '프로필',
+    'chat': '채팅',
+    'language': '언어',
+    'selectLanguage': '언어 선택',
+    'english': 'English',
+    'korean': '한국어',
+    'vietnamese': 'Tiếng Việt',
+    'welcome': '헬로 캠퍼스에 오신 것을 환영합니다',
+    'welcomeMessage': '한국에서의 여정이 여기서 시작됩니다',
+    'fullName': '성명',
+    'university': '대학교',
+    'major': '전공',
+    'year': '학년',
+    'nationality': '국적',
+    'selectUniversity': '대학교 선택',
+    'selectMajor': '전공 선택',
+    'selectYear': '학년 선택',
+    'selectNationality': '국적 선택',
+    'save': '저장',
+    'editProfile': '프로필 편집',
+    'logout': '로그아웃',
+    'emailRequired': '이메일을 입력해주세요',
+    'emailInvalid': '올바른 이메일을 입력해주세요',
+    'passwordRequired': '비밀번호를 입력해주세요',
+    'passwordTooShort': '비밀번호는 최소 6자 이상이어야 합니다',
+    'passwordMismatch': '비밀번호가 일치하지 않습니다',
+    'nameRequired': '이름을 입력해주세요',
+    'universityRequired': '대학교를 선택해주세요',
+    'majorRequired': '전공을 선택해주세요',
+    'yearRequired': '학년을 선택해주세요',
+    'nationalityRequired': '국적을 선택해주세요',
+  };
+  
+  // Vietnamese translations
+  static const Map<String, String> _vi = {
+    'appTitle': 'Hello Campus',
+    'login': 'Đăng nhập',
+    'register': 'Đăng ký',
+    'email': 'Email',
+    'password': 'Mật khẩu',
+    'confirmPassword': 'Xác nhận mật khẩu',
+    'loginButton': 'Đăng nhập',
+    'registerButton': 'Đăng ký',
+    'alreadyHaveAccount': 'Đã có tài khoản?',
+    'dontHaveAccount': 'Chưa có tài khoản?',
+    'home': 'Trang chủ',
+    'profile': 'Cá nhân',
+    'chat': 'Chat',
+    'language': 'Ngôn ngữ',
+    'selectLanguage': 'Chọn ngôn ngữ',
+    'english': 'English',
+    'korean': '한국어',
+    'vietnamese': 'Tiếng Việt',
+    'welcome': 'Chào mừng đến với Hello Campus',
+    'welcomeMessage': 'Hành trình của bạn tại Hàn Quốc bắt đầu từ đây',
+    'fullName': 'Họ và tên',
+    'university': 'Trường đại học',
+    'major': 'Chuyên ngành',
+    'year': 'Năm học',
+    'nationality': 'Quốc tịch',
+    'selectUniversity': 'Chọn trường đại học',
+    'selectMajor': 'Chọn chuyên ngành',
+    'selectYear': 'Chọn năm học',
+    'selectNationality': 'Chọn quốc tịch',
+    'save': 'Lưu',
+    'editProfile': 'Chỉnh sửa thông tin',
+    'logout': 'Đăng xuất',
+    'emailRequired': 'Vui lòng nhập email',
+    'emailInvalid': 'Vui lòng nhập email hợp lệ',
+    'passwordRequired': 'Vui lòng nhập mật khẩu',
+    'passwordTooShort': 'Mật khẩu phải có ít nhất 6 ký tự',
+    'passwordMismatch': 'Mật khẩu không khớp',
+    'nameRequired': 'Vui lòng nhập tên',
+    'universityRequired': 'Vui lòng chọn trường đại học',
+    'majorRequired': 'Vui lòng chọn chuyên ngành',
+    'yearRequired': 'Vui lòng chọn năm học',
+    'nationalityRequired': 'Vui lòng chọn quốc tịch',
+  };
+  
+  String translate(String key) {
+    Map<String, String> translations;
+    switch (locale.languageCode) {
+      case 'ko':
+        translations = _ko;
+        break;
+      case 'vi':
+        translations = _vi;
+        break;
+      default:
+        translations = _en;
+    }
+    return translations[key] ?? key;
+  }
+  
+  // Getters for common translations
+  String get appTitle => translate('appTitle');
+  String get login => translate('login');
+  String get register => translate('register');
+  String get email => translate('email');
+  String get password => translate('password');
+  String get confirmPassword => translate('confirmPassword');
+  String get loginButton => translate('loginButton');
+  String get registerButton => translate('registerButton');
+  String get alreadyHaveAccount => translate('alreadyHaveAccount');
+  String get dontHaveAccount => translate('dontHaveAccount');
+  String get home => translate('home');
+  String get profile => translate('profile');
+  String get chat => translate('chat');
+  String get language => translate('language');
+  String get selectLanguage => translate('selectLanguage');
+  String get english => translate('english');
+  String get korean => translate('korean');
+  String get vietnamese => translate('vietnamese');
+  String get welcome => translate('welcome');
+  String get welcomeMessage => translate('welcomeMessage');
+  String get fullName => translate('fullName');
+  String get university => translate('university');
+  String get major => translate('major');
+  String get year => translate('year');
+  String get nationality => translate('nationality');
+  String get selectUniversity => translate('selectUniversity');
+  String get selectMajor => translate('selectMajor');
+  String get selectYear => translate('selectYear');
+  String get selectNationality => translate('selectNationality');
+  String get save => translate('save');
+  String get editProfile => translate('editProfile');
+  String get logout => translate('logout');
+  String get emailRequired => translate('emailRequired');
+  String get emailInvalid => translate('emailInvalid');
+  String get passwordRequired => translate('passwordRequired');
+  String get passwordTooShort => translate('passwordTooShort');
+  String get passwordMismatch => translate('passwordMismatch');
+  String get nameRequired => translate('nameRequired');
+  String get universityRequired => translate('universityRequired');
+  String get majorRequired => translate('majorRequired');
+  String get yearRequired => translate('yearRequired');
+  String get nationalityRequired => translate('nationalityRequired');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
-
+  
   @override
-  Future<AppLocalizations> load(Locale locale) {
-    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
+  bool isSupported(Locale locale) {
+    return ['en', 'ko', 'vi'].contains(locale.languageCode);
   }
-
+  
   @override
-  bool isSupported(Locale locale) => <String>['en', 'ko', 'vi'].contains(locale.languageCode);
-
+  Future<AppLocalizations> load(Locale locale) async {
+    return AppLocalizations(locale);
+  }
+  
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
-}
-
-AppLocalizations lookupAppLocalizations(Locale locale) {
-
-
-  // Lookup logic when only language code is specified.
-  switch (locale.languageCode) {
-    case 'en': return AppLocalizationsEn();
-    case 'ko': return AppLocalizationsKo();
-    case 'vi': return AppLocalizationsVi();
-  }
-
-  throw FlutterError(
-    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.'
-  );
 }
