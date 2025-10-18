@@ -38,11 +38,6 @@ class _MainAppState extends State<MainApp> {
     });
   }
 
-  void _changeLanguage(Locale locale) {
-    setState(() {
-      _locale = locale;
-    });
-  }
 
   // Method to be called from language picker
   void changeLanguage(String languageCode) {

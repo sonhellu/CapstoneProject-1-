@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../l10n/app_localizations.dart';
 
 class ProfileWizardScreen extends StatefulWidget {
   const ProfileWizardScreen({super.key});
@@ -378,7 +377,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           
           // University dropdown
           DropdownButtonFormField<String>(
-            value: _selectedUniversity.isEmpty ? null : _selectedUniversity,
+            initialValue: _selectedUniversity.isEmpty ? null : _selectedUniversity,
             decoration: InputDecoration(
               labelText: 'University',
               prefixIcon: const Icon(Icons.school),
@@ -406,7 +405,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           
           // Major dropdown
           DropdownButtonFormField<String>(
-            value: _selectedMajor.isEmpty ? null : _selectedMajor,
+            initialValue: _selectedMajor.isEmpty ? null : _selectedMajor,
             decoration: InputDecoration(
               labelText: 'Major',
               prefixIcon: const Icon(Icons.book),
@@ -434,7 +433,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           
           // Year dropdown
           DropdownButtonFormField<String>(
-            value: _selectedYear.isEmpty ? null : _selectedYear,
+            initialValue: _selectedYear.isEmpty ? null : _selectedYear,
             decoration: InputDecoration(
               labelText: 'Year',
               prefixIcon: const Icon(Icons.calendar_today),
@@ -462,7 +461,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           
           // Nationality dropdown
           DropdownButtonFormField<String>(
-            value: _selectedNationality.isEmpty ? null : _selectedNationality,
+            initialValue: _selectedNationality.isEmpty ? null : _selectedNationality,
             decoration: InputDecoration(
               labelText: 'Nationality',
               prefixIcon: const Icon(Icons.flag),
@@ -740,7 +739,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

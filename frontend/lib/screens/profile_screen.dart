@@ -18,51 +18,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _selectedYear = '';
   String _selectedNationality = '';
 
-  final List<String> _universities = [
-    'Seoul National University',
-    'Korea University',
-    'Yonsei University',
-    'Sungkyunkwan University',
-    'Hanyang University',
-    'Kyung Hee University',
-    'Chung-Ang University',
-    'Ewha Womans University',
-  ];
-
-  final List<String> _majors = [
-    'Computer Science',
-    'Business Administration',
-    'International Studies',
-    'Korean Language',
-    'Engineering',
-    'Medicine',
-    'Law',
-    'Economics',
-    'Psychology',
-    'Art & Design',
-  ];
-
-  final List<String> _years = [
-    '1st Year',
-    '2nd Year',
-    '3rd Year',
-    '4th Year',
-    'Graduate Student',
-    'PhD Student',
-  ];
-
-  final List<String> _nationalities = [
-    'Vietnam',
-    'China',
-    'Japan',
-    'Thailand',
-    'Indonesia',
-    'Malaysia',
-    'Philippines',
-    'India',
-    'Mongolia',
-    'Other',
-  ];
 
   @override
   void initState() {
@@ -162,7 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.red.withOpacity(0.3),
+                        color: Colors.red.withValues(alpha: 0.3),
                         blurRadius: 10,
                         offset: const Offset(0, 5),
                       ),
@@ -194,7 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _selectedUniversity.isEmpty ? 'Student' : _selectedUniversity,
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                       ),
                     ],
@@ -247,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
+                        color: Colors.grey.withValues(alpha: 0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),

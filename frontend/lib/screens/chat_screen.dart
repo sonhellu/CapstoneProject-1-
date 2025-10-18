@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../l10n/app_localizations.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -75,7 +74,7 @@ class _ChatScreenState extends State<ChatScreen> {
               color: Colors.red[600],
               boxShadow: [
                 BoxShadow(
-                  color: Colors.red.withOpacity(0.3),
+                  color: Colors.red.withValues(alpha: 0.3),
                   blurRadius: 5,
                   offset: const Offset(0, 2),
                 ),
@@ -105,7 +104,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Text(
                       'Online',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 14,
                       ),
                     ),
@@ -134,7 +133,7 @@ class _ChatScreenState extends State<ChatScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   blurRadius: 5,
                   offset: const Offset(0, -2),
                 ),
@@ -230,7 +229,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     _formatTime(message.timestamp),
                     style: TextStyle(
                       color: message.isUser 
-                          ? Colors.white.withOpacity(0.7) 
+                          ? Colors.white.withValues(alpha: 0.7) 
                           : Colors.grey[600],
                       fontSize: 12,
                     ),
