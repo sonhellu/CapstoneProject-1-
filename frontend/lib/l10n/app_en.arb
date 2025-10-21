@@ -1,5 +1,5 @@
 {
-  "appTitle": "Hello Campus",
+  "appTitle": "Hi Campus",
   "login": "Login",
   "register": "Register",
   "email": "Email",
@@ -17,7 +17,7 @@
   "english": "English",
   "korean": "한국어",
   "vietnamese": "Tiếng Việt",
-  "welcome": "Welcome to Hello Campus",
+  "welcome": "Welcome to Hi Campus",
   "welcomeMessage": "Your journey in Korea starts here",
   "fullName": "Full Name",
   "university": "University",
@@ -40,5 +40,11 @@
   "universityRequired": "University is required",
   "majorRequired": "Major is required",
   "yearRequired": "Year is required",
-  "nationalityRequired": "Nationality is required"
+  "nationalityRequired": "Nationality is required",
+  "notifications": "Notifications",
+  "unreadNotifications": "unread",
+  "noNotifications": "No notifications",
+  "noNotificationsMessage": "You're all caught up! Check back later for updates.",
+  "markAllAsRead": "Mark all as read",
+  "visitOfficialWebsite": "Visit Official Website"
 }

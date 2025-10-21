@@ -202,7 +202,7 @@
   {
     "isFramework" : true,
     "moduleName" : "shared_preferences_foundation",
-    "modulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/Build\/Products\/Debug\/shared_preferences_foundation\/shared_preferences_foundation.framework\/Modules\/shared_preferences_foundation.swiftmodule\/arm64-apple-macos.swiftmodule"
+    "modulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/Build\/Products\/Debug\/shared_preferences_foundation\/shared_preferences_foundation.framework\/Modules\/shared_preferences_foundation.swiftmodule\/arm64-apple-macos.swiftmodule"
   },
   {
     "isFramework" : false,
@@ -211,476 +211,476 @@
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/Accessibility.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/Accessibility-B7LAAFTA7UUD9WZ6SAIQF99ZI.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/Accessibility-6QLESIDAM9KOMAFNTTHPGNB3H.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "Accessibility"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/AppKit.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/AppKit-51R6XFSJUITV4O519EX0X6S8X.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/AppKit-C7Z48I6DWSI1C9UWJ3QAT0FC0.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "AppKit"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/ApplicationServices.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/ApplicationServices-1ZO5OUY5NB9U1ZEESDBJEVLH0.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/ApplicationServices-2L3X46Y3WOAPSJ0NCV06DGHKN.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "ApplicationServices"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/CFNetwork.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CFNetwork-BDBF4RX7C0ETTSBMOYBZDWR2U.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CFNetwork-10YY1RZZPK8MSC397QDVO9HRZ.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CFNetwork"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/cups.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CUPS-AVOZDPJ018U7E8FIOO5QMJOI.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CUPS-ULQX5MWB0ZRSD84NYV0ACJV5.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CUPS"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/Cocoa.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/Cocoa-EJTBN6QYIPM6KXSOD7JLYYRP7.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/Cocoa-BAC8IO4PBEMDR36795ZU9HOY3.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "Cocoa"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/ColorSync.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/ColorSync-8PJX92SIZBUFQRVYS5POVI0WU.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/ColorSync-EABCM2T3IR6IQB2MQVAXW1L7T.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "ColorSync"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/CoreAudio.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CoreAudio-CK6VYA6GZ27KMNE4E76SNBH1U.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CoreAudio-CZR2M2VGT0UKI6Z6G7ZMIASRU.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CoreAudio"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/CoreAudioTypes.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CoreAudioTypes-7D2D8JKLQ18B0H6V2PZMIGJJ1.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CoreAudioTypes-CN70VLZOAFZB62PMU59H0SXOZ.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CoreAudioTypes"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/CoreData.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CoreData-DA2B9I5TQ18P757LBSB4K1FSJ.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CoreData-DNKBBW93BCMDVXW4GGSRZHVSR.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CoreData"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/CoreFoundation.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CoreFoundation-83BX6ALH89AMBAZREN36TN4KS.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CoreFoundation-N5PBAETCN3IELL6689S7F7WA.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CoreFoundation"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/CoreGraphics.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CoreGraphics-9MFCM7BHLM1EF77EYDQHY3O69.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CoreGraphics-A3SB1UGOLNIUJR4QP8ZGJI9PU.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CoreGraphics"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/CoreImage.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CoreImage-4PAGSZ59TQM73LJZRVQ1O9U3M.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CoreImage-9QR3Q99JWPHRAEOVB80994A87.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CoreImage"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/CoreMedia.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CoreMedia-4OIAJTIEZ0I7DFLCQMDTC1XTB.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CoreMedia-EEN646HEJR66HM9K8IZPFPXA7.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CoreMedia"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/CoreServices.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CoreServices-BBY2X7HM6LOFQNM5KVRCMJB1Q.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CoreServices-1FLOIBDVALFBMOX45HCSUKXIJ.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CoreServices"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/CoreText.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CoreText-BL3D1K16LQQK48DB9WMKINRA9.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CoreText-8FS4RKOBL49EW4GUX8271UKP8.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CoreText"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/CoreTransferable.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CoreTransferable-DDRHWN68Q9ENHHD2OG27N9BSW.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CoreTransferable-7IQKUFIF5I9ULTU8CXGVA4GOQ.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CoreTransferable"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/CoreVideo.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/CoreVideo-18KV6NA1DK60E8UR1ENPOWOUU.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/CoreVideo-1YWOJMMZ4G4KOJB3G6P8NAZB2.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "CoreVideo"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/Darwin.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/Darwin-AJB0XRB2DBFB3NZ7FLIX4GD85.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/Darwin-DB2X6J07TK8GAC3TFPPBGTJEM.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "Darwin"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/DataDetection.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/DataDetection-1DW04W3Q5DUW967LSGH83F960.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/DataDetection-C6L3HVVL47QE5ZT4UC7YL71UX.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "DataDetection"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/DeveloperToolsSupport.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/DeveloperToolsSupport-69MPZO9Z16OOKZBUCMTDEJDAF.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/DeveloperToolsSupport-E5ZILCV4V622UFY9R2HZHL2TA.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "DeveloperToolsSupport"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/DiskArbitration.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/DiskArbitration-72MQOWLO5DG837L73QG280K8H.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/DiskArbitration-44RX2RUEJBQ8C220V7XOJHY2.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "DiskArbitration"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/dispatch.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/Dispatch-DAS56ZGY86H4QSCSY9TNYAKIL.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/Dispatch-EYEBVAOKF5Q8XWXOF4Z7DWZK.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "Dispatch"
   },
   {
-    "clangModuleMapPath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/Build\/Products\/Debug\/FlutterMacOS.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/Build\/Intermediates.noindex\/SwiftExplicitPrecompiledModules\/FlutterMacOS-BSY7Y8R16RKHHE5OTJHUZRS6M.pcm",
+    "clangModuleMapPath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/Build\/Products\/Debug\/FlutterMacOS.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/Build\/Intermediates.noindex\/SwiftExplicitPrecompiledModules\/FlutterMacOS-4AHKMNN8UOWX2R130K4OXBQ8.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "FlutterMacOS"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/Foundation.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/Foundation-TBO28N08IU38CE7L9DO4W15U.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/Foundation-ENXNYOJ8PODPL4L3QXPQXFVB5.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "Foundation"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/IOKit.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/IOKit-2MGX8IMQXI2U37EWE9M383SYR.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/IOKit-6R3IREFNNBCNKJO4UVMH4RIEH.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "IOKit"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/IOSurface.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/IOSurface-4Z2GVN79VEV93NE6TT1S7VNHZ.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/IOSurface-C2YF5H566JC9X15BH2MZ46ZQ5.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "IOSurface"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/ImageIO.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/ImageIO-ADJBFO7VX5QKPCKP0K9F601OK.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/ImageIO-RSMZ9TJ64MT2Z7AN9K3UQK97.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "ImageIO"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/DarwinBasic.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/MachO-4LGBXR0V0CK8UXBX3KM5JV3X4.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/MachO-EM36NC0NPYWLSDXBU8EELVRFD.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "MachO"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/Metal.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/Metal-104DB6XI845C0ZRQYLPKARMU6.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/Metal-3YZ5RTQAYZ882E2YZSJA5SLYH.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "Metal"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/OSLog.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/OSLog-3OFU10VWCCP0RCEO37WO36NJI.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/OSLog-3C8IF6LG1NGNGELBZWSHGGZ66.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "OSLog"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/ObjectiveC.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/ObjectiveC-C8LEQMBNZIDW0AR1PQQPKV4V8.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/ObjectiveC-DGJFT4D8GYW9IYOC1RVC1WCBK.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "ObjectiveC"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/OpenGL.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/OpenGL-B098PVXIXVTRIBIYY5KG0UQYF.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/OpenGL-4O06SIJMPLYA46CG03ZCGMVXA.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "OpenGL"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/QuartzCore.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/QuartzCore-1KAWUK23AH82UEWZCVANNHFB8.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/QuartzCore-21Y3EPMN600BIATZUE85WHG49.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "QuartzCore"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/Security.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/Security-BOWFPQDYDG31K7KLTJMV2PQ95.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/Security-DLQG0BGYRNX2C77OKLNI52YRP.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "Security"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/Spatial\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/Spatial-9M8GYISPATNSKJWHDMO6V9P5L.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/Spatial-7PVUBJDJLXE4DXKT3ETC7DFPB.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "Spatial"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/lib\/swift\/shims\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/SwiftShims-6LLII32ICHUVZM192TXJGTVYP.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/SwiftShims-CR40J9F5KEFNB1IDU9B6MVJEA.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "SwiftShims"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/SwiftUI.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/SwiftUI-3R4O249L0OMFDQ5KP68WOJKII.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/SwiftUI-BMLB6GL3MN9ELTFN722116STS.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "SwiftUI"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/SwiftUICore.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/SwiftUICore-9XR9VZ6HD2OJN0SBCBYTA1JTL.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/SwiftUICore-QJHJ19CRFWUI5QXULIDVZ0LU.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "SwiftUICore"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/Symbols.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/Symbols-EQZMBZ4FLD7L58NK5T4I5M5YF.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/Symbols-5MJ44XIAJ9EVYW8714CW1E2SI.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "Symbols"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/UniformTypeIdentifiers.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/UniformTypeIdentifiers-6L4IJ4DSMEOF0PWT3BHXRXTE2.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/UniformTypeIdentifiers-1B0YNKRM6UNU35G0C3382PEFS.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "UniformTypeIdentifiers"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/xpc.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/XPC-C5BTKFLKZHP9JRMXTOKLK3IJF.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/XPC-RRGXQAMZ2W0KC6W4ZCOHOWFX.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "XPC"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/DarwinFoundation1.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_AvailabilityInternal-6FRAK0UH57NC7RNO76IKO2JD6.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_AvailabilityInternal-862I0CZ543CBHQ0D9V0YNHJHJ.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_AvailabilityInternal"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/17\/include\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_Builtin_float-2LUPRQJ97TVSS4DR0MT04L2SM.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_Builtin_float-9XAZGY8GVZHPGPBJQVVFP614I.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_Builtin_float"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/17\/include\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_Builtin_intrinsics-3RMEEWX30318EJKN37MKEM4T0.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_Builtin_intrinsics-3C3TW7PYX7IR6NKCD479PU63K.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_Builtin_intrinsics"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/17\/include\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_Builtin_inttypes-806TXV3F5KI7V6UNYCDEMZ7RO.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_Builtin_inttypes-55JUKUFB8591ZIDLUK4EMPLT1.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_Builtin_inttypes"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/17\/include\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_Builtin_limits-8JCJDB0W5M63LMIUKO74PH7CH.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_Builtin_limits-9MNSN9YGAWL7FRTXBB41GQE4P.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_Builtin_limits"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/17\/include\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_Builtin_stdarg-COJA8Q1F0L5OUIAIFKWK794V9.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_Builtin_stdarg-9W27MDUM4QG4DQQ8QX77CDTOZ.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_Builtin_stdarg"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/17\/include\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_Builtin_stdatomic-48SQJ0X0JTEPEOGZ7DGM0K0V6.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_Builtin_stdatomic-66OAKJED72HGDMKQW8BO8LJJT.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_Builtin_stdatomic"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/17\/include\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_Builtin_stdbool-16O6KGMMDX0XHMH47SP3GUHBG.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_Builtin_stdbool-MKTNLYJ2M6HR61L00XDOPGSB.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_Builtin_stdbool"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/17\/include\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_Builtin_stddef-35XBFV3E8A9CRLZW5OTYI1MA0.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_Builtin_stddef-4ZA5Z2D1JQK7NJMS7TQTBXLBM.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_Builtin_stddef"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/17\/include\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_Builtin_stdint-3XO9DPADXKUBCV0OSDHGX5EUU.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_Builtin_stdint-6C3OLOLVFEQAEWT6RV3NEF15J.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_Builtin_stdint"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/17\/include\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_Builtin_tgmath-6USSN1S2GKQLHJF126DN60H18.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_Builtin_tgmath-8OOIFH55ACJ8AP4QMW8PNPEB3.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_Builtin_tgmath"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/DarwinFoundation1.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_DarwinFoundation1-58LUVHB0US466MPCSTLJP22HT.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_DarwinFoundation1-684EIOBSBHEZ0P6X0M6N1C0JJ.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_DarwinFoundation1"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/DarwinFoundation2.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_DarwinFoundation2-7A7LXS45BW9NSPHV4H4NXRQBF.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_DarwinFoundation2-35MEEVY1ZC2V12KR9AM74D8C7.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_DarwinFoundation2"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/DarwinFoundation3.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_DarwinFoundation3-55K0NAIXZG7Y42QO6QUV79MCK.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_DarwinFoundation3-E04LQN86166WKVJJT7N92F8G8.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_DarwinFoundation3"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/lib\/swift\/shims\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/_SwiftConcurrencyShims-3Y1R1PXZS6YWIE4GFSFA0V8RF.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/_SwiftConcurrencyShims-EM01UU4XFAM1ECCETLDAFT608.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "_SwiftConcurrencyShims"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/launch.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/launch-54OI75J6APA24V4CHGM3D6RER.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/launch-BNHM1Y3JPDSMKCCDB284LLTAW.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "launch"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/libDER\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/libDER-CS4CYZAXCGE5TOER3DDD8NN2U.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/libDER-3X9KXNGW4SG1XHLLMPJ7RDQH7.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "libDER"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/libkern.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/libkern-5X36DFDYJ8SAS6RVUBU9IRO5I.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/libkern-6F56V0V0YT0BWRQ110V2QAFTT.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "libkern"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/os.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/os-CU72ERUII62D1D0UU8IY24KQ1.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/os-36CBSSC6HT88DF39KVPJJGL6N.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "os"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/os.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/os_object-D7X8OP3CFT5BERJ5R2G3MP4Z4.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/os_object-2LALC0JWOIMIQDQ4QCSIXEWEC.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "os_object"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/os.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/os_workgroup-8TBW7KU3ANMARV3H8VRUD4SLQ.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/os_workgroup-482U0VHQOZ2E9PYX1H6FWIXBW.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "os_workgroup"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/17\/include\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/ptrauth-4HVIDP6FMSK0WOILSU4VNGVQX.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/ptrauth-EOGIBUXMYXJV3QTXID2I2DGP4.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "ptrauth"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/17\/include\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/ptrcheck-9CD7GN7EG39KABS5EEG47FIDE.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/ptrcheck-8UYB1K58PBPC361WJ877T4WHF.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "ptrcheck"
   },
   {
-    "clangModuleMapPath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/Build\/Products\/Debug\/shared_preferences_foundation\/shared_preferences_foundation.framework\/Modules\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/Build\/Intermediates.noindex\/SwiftExplicitPrecompiledModules\/shared_preferences_foundation-OUD82F0V3KVK61ONDB9KIN81.pcm",
+    "clangModuleMapPath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/Build\/Products\/Debug\/shared_preferences_foundation\/shared_preferences_foundation.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/Build\/Intermediates.noindex\/SwiftExplicitPrecompiledModules\/shared_preferences_foundation-40NLJVIU8FRHX0ZLHIC1ZQX73.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "shared_preferences_foundation"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/simd\/module.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/simd-CWRLQYJ4KLXJWZEDBU74PIV8K.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/simd-1NV1YWPOUWD6ED6P0HC1NB5N5.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "simd"
   },
   {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/usr\/include\/DarwinFoundation2.modulemap",
-    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/Test2\/hello_campus\/build\/macos\/ModuleCache.noindex\/sys_types-526QJ4KY581OOFPZN22C6VHEZ.pcm",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/sys_types-CQZEF751ZZXOSVMJURF12ELY1.pcm",
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "sys_types"

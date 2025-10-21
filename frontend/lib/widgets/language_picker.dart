@@ -63,12 +63,21 @@ class _LanguagePickerState extends State<LanguagePicker> {
         return '한국어';
       case 'vi':
         return 'Tiếng Việt';
+      case 'zh':
+        return '中文';
+      case 'ja':
+        return '日本語';
+      case 'my':
+        return 'မြန်မာ';
       default:
         return 'English';
     }
   }
 
   void _showLanguageDialog() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     showDialog(
       context: context,
       barrierDismissible: true,
@@ -84,17 +93,28 @@ class _LanguagePickerState extends State<LanguagePicker> {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.red[50]!,
-                    Colors.white,
-                  ],
-                ),
+                gradient: isDark 
+                  ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFF1E1E1E),
+                        const Color(0xFF2C2C2C),
+                      ],
+                    )
+                  : LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.red[50]!,
+                        Colors.white,
+                      ],
+                    ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: isDark 
+                      ? Colors.black.withValues(alpha: 0.3)
+                      : Colors.black.withValues(alpha: 0.1),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -125,7 +145,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.red[800],
+                                  color: isDark ? Colors.white : Colors.red[800],
                                 ),
                               ),
                               const Spacer(),
@@ -133,7 +153,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
                                 onPressed: () => Navigator.pop(context),
                                 icon: Icon(
                                   Icons.close,
-                                  color: Colors.grey[600],
+                                  color: isDark ? Colors.white70 : Colors.grey[600],
                                 ),
                               ),
                             ],
@@ -171,6 +191,33 @@ class _LanguagePickerState extends State<LanguagePicker> {
                     nativeName: 'Tiếng Việt',
                     delay: 200,
                   ),
+                  const SizedBox(height: 12),
+                  _buildAnimatedLanguageOption(
+                    context,
+                    code: 'zh',
+                    flag: '🇨🇳',
+                    name: AppLocalizations.of(context).chinese,
+                    nativeName: '中文',
+                    delay: 300,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildAnimatedLanguageOption(
+                    context,
+                    code: 'ja',
+                    flag: '🇯🇵',
+                    name: AppLocalizations.of(context).japanese,
+                    nativeName: '日本語',
+                    delay: 400,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildAnimatedLanguageOption(
+                    context,
+                    code: 'my',
+                    flag: '🇲🇲',
+                    name: AppLocalizations.of(context).myanmar,
+                    nativeName: 'မြန်မာ',
+                    delay: 500,
+                  ),
                   const SizedBox(height: 24),
                   
                   // Cancel button with animation
@@ -196,7 +243,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
                               child: Text(
                                 'Cancel',
                                 style: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: isDark ? Colors.white70 : Colors.grey[600],
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -223,6 +270,8 @@ class _LanguagePickerState extends State<LanguagePicker> {
     required String nativeName,
     required int delay,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final isSelected = _currentLanguage == code;
     
     return TweenAnimationBuilder<double>(
@@ -242,15 +291,23 @@ class _LanguagePickerState extends State<LanguagePicker> {
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.red[50] : Colors.white,
+                  color: isSelected 
+                    ? (isDark ? Colors.red[900] : Colors.red[50])
+                    : (isDark ? const Color(0xFF2C2C2C) : Colors.white),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSelected ? Colors.red[300]! : Colors.grey[200]!,
+                    color: isSelected 
+                      ? Colors.red[300]! 
+                      : isDark 
+                          ? Colors.grey[600]! 
+                          : Colors.grey[200]!,
                     width: isSelected ? 2 : 1,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: isDark 
+                        ? Colors.black.withValues(alpha: 0.3)
+                        : Colors.grey.withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -263,7 +320,9 @@ class _LanguagePickerState extends State<LanguagePicker> {
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.red[100] : Colors.grey[100],
+                        color: isSelected 
+                          ? (isDark ? Colors.red[800] : Colors.red[100])
+                          : (isDark ? const Color(0xFF1E1E1E) : Colors.grey[100]),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -283,7 +342,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.red[800],
+                              color: isDark ? Colors.white : Colors.red[800],
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -291,7 +350,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
                             nativeName,
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[600],
+                              color: isDark ? Colors.white70 : Colors.grey[600],
                             ),
                           ),
                         ],
@@ -336,7 +395,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
       icon: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(8),
         ),
         child: const Icon(

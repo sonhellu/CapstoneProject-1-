@@ -1,5 +1,5 @@
 {
-  "appTitle": "Hello Campus",
+  "appTitle": "Hi Campus",
   "login": "Đăng nhập",
   "register": "Đăng ký",
   "email": "Email",
@@ -17,7 +17,7 @@
   "english": "English",
   "korean": "한국어",
   "vietnamese": "Tiếng Việt",
-  "welcome": "Chào mừng đến với Hello Campus",
+  "welcome": "Chào mừng đến với Hi Campus",
   "welcomeMessage": "Hành trình của bạn tại Hàn Quốc bắt đầu từ đây",
   "fullName": "Họ và tên",
   "university": "Trường đại học",
@@ -40,5 +40,11 @@
   "universityRequired": "Vui lòng chọn trường đại học",
   "majorRequired": "Vui lòng chọn chuyên ngành",
   "yearRequired": "Vui lòng chọn năm học",
-  "nationalityRequired": "Vui lòng chọn quốc tịch"
+  "nationalityRequired": "Vui lòng chọn quốc tịch",
+  "notifications": "Thông báo",
+  "unreadNotifications": "chưa đọc",
+  "noNotifications": "Không có thông báo",
+  "noNotificationsMessage": "Bạn đã xem hết thông báo! Kiểm tra lại sau nhé.",
+  "markAllAsRead": "Đánh dấu tất cả đã đọc",
+  "visitOfficialWebsite": "Truy cập trang web chính thức"
 }
