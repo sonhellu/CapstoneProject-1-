@@ -156,8 +156,8 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Welcome section with enhanced animation
-                  _buildWelcomeSection(context, isDark),
-                  const SizedBox(height: 24),
+                  //_buildWelcomeSection(context, isDark),
+                  //const SizedBox(height: 24),
                   
                   // Keimyung University Banner
                   const KeimyungBanner(),

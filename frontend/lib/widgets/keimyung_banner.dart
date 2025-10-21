@@ -11,7 +11,8 @@ class KeimyungBanner extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+// Thay đổi dòng 15 trong keimyung_banner.dart
+      margin: const EdgeInsets.only(top: 8, bottom: 8), // Chỉ giữ margin vertical
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -28,7 +29,8 @@ class KeimyungBanner extends StatelessWidget {
           onTap: () => _launchKeimyungWebsite(),
           borderRadius: BorderRadius.circular(16),
           child: Container(
-            height: 120,
+            width: MediaQuery.of(context).size.width,
+            height: 150,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               gradient: LinearGradient(
@@ -83,7 +85,7 @@ class KeimyungBanner extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -170,14 +172,14 @@ class KeimyungBanner extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.open_in_new,
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           size: 12,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           'kmu.ac.kr',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
                           ),
@@ -198,21 +200,29 @@ class KeimyungBanner extends StatelessWidget {
     final Uri url = Uri.parse('https://www.kmu.ac.kr/');
     
     try {
-      if (await canLaunchUrl(url)) {
+      // Simple approach - try platformDefault first
+      await launchUrl(
+        url,
+        mode: LaunchMode.platformDefault,
+      );
+    } catch (e) {
+      // If platformDefault fails, try externalApplication
+      try {
         await launchUrl(
           url,
           mode: LaunchMode.externalApplication,
         );
-      } else {
-        // Fallback: show error message or open in browser
-        await launchUrl(
-          url,
-          mode: LaunchMode.platformDefault,
-        );
+      } catch (e2) {
+        // If both fail, try inAppWebView as last resort
+        try {
+          await launchUrl(
+            url,
+            mode: LaunchMode.inAppWebView,
+          );
+        } catch (e3) {
+          // All methods failed
+        }
       }
-    } catch (e) {
-      // Handle error - could show a snackbar or dialog
-      print('Error launching URL: $e');
     }
   }
 }
