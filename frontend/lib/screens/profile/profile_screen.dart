@@ -34,12 +34,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _nameController.text = prefs.getString('userName') ?? '';
-      _selectedUniversity = prefs.getString('userUniversity') ?? '';
-      _selectedMajor = prefs.getString('userMajor') ?? '';
-      _selectedYear = prefs.getString('userYear') ?? '';
-      _selectedNationality = prefs.getString('userNationality') ?? '';
+      // Load from registration data
+      _nameController.text = prefs.getString('realName') ?? '';
+      _selectedUniversity = _getSchoolName(prefs.getInt('schoolId') ?? 1);
+      _selectedMajor = _getDepartmentName(prefs.getInt('departmentId') ?? 1);
+      _selectedYear = prefs.getInt('enrollmentYear')?.toString() ?? '';
+      _selectedNationality = _getNationalityName(prefs.getString('nationalityIso2') ?? 'KR');
     });
+  }
+
+  String _getSchoolName(int id) {
+    switch (id) {
+      case 1: return 'Keimyung University';
+      case 2: return 'Seoul National University';
+      case 3: return 'Korea University';
+      case 4: return 'Yonsei University';
+      case 5: return 'KAIST';
+      case 6: return 'Sungkyunkwan University';
+      case 7: return 'Hongik University';
+      case 8: return 'Hanyang University';
+      case 9: return 'Chung-Ang University';
+      case 10: return 'Kyung Hee University';
+      case 11: return 'Ewha Womans University';
+      case 12: return 'Sogang University';
+      case 13: return 'Pusan National University';
+      case 14: return 'Inha University';
+      case 15: return 'Other University';
+      default: return 'School $id';
+    }
+  }
+
+  String _getDepartmentName(int id) {
+    switch (id) {
+      case 1: return 'Computer Science';
+      case 2: return 'Business Administration';
+      case 3: return 'Engineering';
+      case 4: return 'Liberal Arts';
+      case 5: return 'Medicine';
+      case 6: return 'Law';
+      case 7: return 'Fine Arts';
+      case 8: return 'Music';
+      case 9: return 'Physical Education';
+      case 10: return 'Natural Sciences';
+      case 11: return 'International Studies';
+      case 12: return 'Media & Communication';
+      case 13: return 'Architecture';
+      case 14: return 'Culinary Arts';
+      case 15: return 'Early Childhood Education';
+      case 16: return 'Environmental Science';
+      case 17: return 'Psychology';
+      case 18: return 'Economics';
+      case 19: return 'Information Technology';
+      case 20: return 'Theater & Film';
+      default: return 'Department $id';
+    }
+  }
+
+  String _getNationalityName(String code) {
+    switch (code) {
+      case 'KR': return '🇰🇷 Hàn Quốc';
+      case 'VN': return '🇻🇳 Việt Nam';
+      case 'US': return '🇺🇸 United States';
+      case 'JP': return '🇯🇵 Japan';
+      case 'CN': return '🇨🇳 China';
+      case 'MM': return '🇲🇲 Myanmar';
+      default: return code;
+    }
   }
 
 

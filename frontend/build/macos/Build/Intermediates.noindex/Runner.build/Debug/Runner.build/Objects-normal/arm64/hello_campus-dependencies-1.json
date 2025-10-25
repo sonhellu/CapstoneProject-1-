@@ -210,6 +210,11 @@
     "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/macosx\/prebuilt-modules\/26.0\/simd.swiftmodule\/arm64e-apple-macos.swiftmodule"
   },
   {
+    "isFramework" : true,
+    "moduleName" : "url_launcher_macos",
+    "modulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/Build\/Products\/Debug\/url_launcher_macos\/url_launcher_macos.framework\/Modules\/url_launcher_macos.swiftmodule\/arm64-apple-macos.swiftmodule"
+  },
+  {
     "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/SDKs\/MacOSX.sdk\/System\/Library\/Frameworks\/Accessibility.framework\/Modules\/module.modulemap",
     "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/ModuleCache.noindex\/Accessibility-6QLESIDAM9KOMAFNTTHPGNB3H.pcm",
     "isBridgingHeaderDependency" : false,
@@ -684,5 +689,12 @@
     "isBridgingHeaderDependency" : false,
     "isFramework" : false,
     "moduleName" : "sys_types"
+  },
+  {
+    "clangModuleMapPath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/Build\/Products\/Debug\/url_launcher_macos\/url_launcher_macos.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/sonhellu\/Downloads\/Capstone\/CapstoneProject-1-\/frontend\/build\/macos\/Build\/Intermediates.noindex\/SwiftExplicitPrecompiledModules\/url_launcher_macos-72CSXO49RIUQ7ZQ3RPRM23I8S.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "url_launcher_macos"
   }
 ]

@@ -76,7 +76,7 @@ class AppLocalizations {
   
   // Korean translations
   static const Map<String, String> _ko = {
-    'appTitle': '헬로 캠퍼스',
+    'appTitle': 'Hi Campus',
     'login': '로그인',
     'register': '회원가입',
     'email': '이메일',
@@ -94,7 +94,7 @@ class AppLocalizations {
     'english': 'English',
     'korean': '한국어',
     'vietnamese': 'Tiếng Việt',
-    'welcome': '헬로 캠퍼스에 오신 것을 환영합니다',
+    'welcome': '하이 캠퍼스에 오신 것을 환영합니다',
     'welcomeMessage': '한국에서의 여정이 여기서 시작됩니다',
     'fullName': '성명',
     'university': '대학교',
