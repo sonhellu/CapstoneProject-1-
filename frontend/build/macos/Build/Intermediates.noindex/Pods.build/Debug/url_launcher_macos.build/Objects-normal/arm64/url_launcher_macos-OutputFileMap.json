@@ -1,0 +1,29 @@
+{
+  "" : {
+    "diagnostics" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/url_launcher_macos-primary.dia",
+    "emit-module-dependencies" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/url_launcher_macos-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/url_launcher_macos-primary-emit-module.dia",
+    "pch" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/url_launcher_macos-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/url_launcher_macos-primary.swiftdeps"
+  },
+  "/Users/sonhellu/.pub-cache/hosted/pub.dev/url_launcher_macos-3.2.4/macos/url_launcher_macos/Sources/url_launcher_macos/UrlLauncherPlugin.swift" : {
+    "const-values" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/UrlLauncherPlugin.swiftconstvalues",
+    "dependencies" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/UrlLauncherPlugin.d",
+    "diagnostics" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/UrlLauncherPlugin.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/UrlLauncherPlugin.o",
+    "llvm-bc" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/UrlLauncherPlugin.bc",
+    "object" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/UrlLauncherPlugin.o",
+    "swift-dependencies" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/UrlLauncherPlugin.swiftdeps",
+    "swiftmodule" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/UrlLauncherPlugin~partial.swiftmodule"
+  },
+  "/Users/sonhellu/.pub-cache/hosted/pub.dev/url_launcher_macos-3.2.4/macos/url_launcher_macos/Sources/url_launcher_macos/messages.g.swift" : {
+    "const-values" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/messages.g.swiftconstvalues",
+    "dependencies" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/messages.g.d",
+    "diagnostics" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/messages.g.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/messages.g.o",
+    "llvm-bc" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/messages.g.bc",
+    "object" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/messages.g.o",
+    "swift-dependencies" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/messages.g.swiftdeps",
+    "swiftmodule" : "/Users/sonhellu/Downloads/Capstone/CapstoneProject-1-/frontend/build/macos/Build/Intermediates.noindex/Pods.build/Debug/url_launcher_macos.build/Objects-normal/arm64/messages.g~partial.swiftmodule"
+  }
+}

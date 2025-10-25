@@ -24,10 +24,11 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   // Step 2: Email Verification
   final _emailController = TextEditingController();
   final _confirmEmailController = TextEditingController();
-  String _verificationCode = '';
+  final _verificationCodeController = TextEditingController();
   bool _isEmailVerified = false;
   bool _isCodeSent = false;
   bool _agreeToTerms = false;
+  String _generatedCode = '';
 
   // Step 3: Final Review
   bool _isLoading = false;
@@ -87,32 +88,167 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     _loadUserData();
   }
 
+  Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      // Load from registration data
+      _nameController.text = prefs.getString('realName') ?? '';
+      _usernameController.text = prefs.getString('nickname') ?? '';
+      _emailController.text = prefs.getString('email') ?? '';
+      _confirmEmailController.text = prefs.getString('email') ?? '';
+      _selectedUniversity = _getSchoolName(prefs.getInt('schoolId') ?? 1);
+      _selectedMajor = _getDepartmentName(prefs.getInt('departmentId') ?? 1);
+      _selectedYear = prefs.getInt('enrollmentYear')?.toString() ?? '';
+      _selectedNationality = _getNationalityName(prefs.getString('nationalityIso2') ?? 'KR');
+    });
+  }
+
+  String _getSchoolName(int id) {
+    switch (id) {
+      case 1: return 'Keimyung University';
+      case 2: return 'Seoul National University';
+      case 3: return 'Korea University';
+      case 4: return 'Yonsei University';
+      case 5: return 'KAIST';
+      case 6: return 'Sungkyunkwan University';
+      case 7: return 'Hongik University';
+      case 8: return 'Hanyang University';
+      case 9: return 'Chung-Ang University';
+      case 10: return 'Kyung Hee University';
+      case 11: return 'Ewha Womans University';
+      case 12: return 'Sogang University';
+      case 13: return 'Pusan National University';
+      case 14: return 'Inha University';
+      case 15: return 'Other University';
+      default: return 'School $id';
+    }
+  }
+
+  String _getDepartmentName(int id) {
+    switch (id) {
+      case 1: return 'Computer Science';
+      case 2: return 'Business Administration';
+      case 3: return 'Engineering';
+      case 4: return 'Liberal Arts';
+      case 5: return 'Medicine';
+      case 6: return 'Law';
+      case 7: return 'Fine Arts';
+      case 8: return 'Music';
+      case 9: return 'Physical Education';
+      case 10: return 'Natural Sciences';
+      case 11: return 'International Studies';
+      case 12: return 'Media & Communication';
+      case 13: return 'Architecture';
+      case 14: return 'Culinary Arts';
+      case 15: return 'Early Childhood Education';
+      case 16: return 'Environmental Science';
+      case 17: return 'Psychology';
+      case 18: return 'Economics';
+      case 19: return 'Information Technology';
+      case 20: return 'Theater & Film';
+      default: return 'Department $id';
+    }
+  }
+
+  String _getNationalityName(String code) {
+    switch (code) {
+      case 'KR': return '🇰🇷 Hàn Quốc';
+      case 'VN': return '🇻🇳 Việt Nam';
+      case 'US': return '🇺🇸 United States';
+      case 'JP': return '🇯🇵 Japan';
+      case 'CN': return '🇨🇳 China';
+      case 'MM': return '🇲🇲 Myanmar';
+      default: return code;
+    }
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
     _usernameController.dispose();
     _emailController.dispose();
     _confirmEmailController.dispose();
+    _verificationCodeController.dispose();
     _pageController.dispose();
     super.dispose();
   }
 
-  Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _nameController.text = prefs.getString('userName') ?? '';
-      _usernameController.text = prefs.getString('userUsername') ?? '';
-      _selectedUniversity = prefs.getString('userUniversity') ?? '';
-      _selectedMajor = prefs.getString('userMajor') ?? '';
-      _selectedYear = prefs.getString('userYear') ?? '';
-      _selectedNationality = prefs.getString('userNationality') ?? '';
-      _emailController.text = prefs.getString('userEmail') ?? '';
-    });
+  String _generateVerificationCode() {
+    final random = DateTime.now().millisecondsSinceEpoch;
+    return (random % 900000 + 100000).toString(); // 6-digit code
   }
+
+  void _sendVerificationCode() {
+    if (_emailController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your email address'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (!_emailController.text.contains('@stu')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid student email (@stu)'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _generatedCode = _generateVerificationCode();
+      _isCodeSent = true;
+    });
+
+    // Show the code for testing (in real app, this would be sent via email)
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Verification code sent! Code: $_generatedCode'),
+        backgroundColor: Colors.green[600],
+        duration: const Duration(seconds: 5),
+      ),
+    );
+  }
+
+  void _verifyCode() {
+    if (_verificationCodeController.text == _generatedCode) {
+      setState(() {
+        _isEmailVerified = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email verified successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Invalid verification code'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
 
   void _nextStep() {
     if (_currentStep == 1) {
-      // Check if terms are agreed for step 2
+      // Check if email is verified and terms are agreed for step 2
+      if (!_isEmailVerified) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please verify your email address first'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      
       if (!_agreeToTerms) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -145,49 +281,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     }
   }
 
-  Future<void> _sendVerificationCode() async {
-    if (_emailController.text.contains('@stu.')) {
-      setState(() {
-        _isCodeSent = true;
-        _verificationCode = '123456'; // Simulate code generation
-      });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Verification code sent to ${_emailController.text}'),
-          backgroundColor: Colors.green[600],
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter a valid student email (@stu.)'),
-          backgroundColor: Colors.red[600],
-        ),
-      );
-    }
-  }
-
-  void _verifyCode() {
-    if (_verificationCode == '123456') {
-      setState(() {
-        _isEmailVerified = true;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Email verified successfully!'),
-          backgroundColor: Colors.green[600],
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Invalid verification code'),
-          backgroundColor: Colors.red[600],
-        ),
-      );
-    }
-  }
 
   Future<void> _saveProfile() async {
     setState(() {
@@ -195,13 +289,27 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     });
 
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userName', _nameController.text);
-    await prefs.setString('userUsername', _usernameController.text);
-    await prefs.setString('userUniversity', _selectedUniversity);
-    await prefs.setString('userMajor', _selectedMajor);
-    await prefs.setString('userYear', _selectedYear);
-    await prefs.setString('userNationality', _selectedNationality);
-    await prefs.setString('userEmail', _emailController.text);
+    
+    // Save to registration keys for consistency
+    await prefs.setString('realName', _nameController.text);
+    await prefs.setString('nickname', _usernameController.text);
+    await prefs.setString('email', _emailController.text);
+    
+    // Convert university name back to ID
+    int schoolId = _getSchoolIdFromName(_selectedUniversity);
+    await prefs.setInt('schoolId', schoolId);
+    
+    // Convert major name back to ID
+    int departmentId = _getDepartmentIdFromName(_selectedMajor);
+    await prefs.setInt('departmentId', departmentId);
+    
+    // Convert year string to int
+    int enrollmentYear = int.tryParse(_selectedYear) ?? DateTime.now().year;
+    await prefs.setInt('enrollmentYear', enrollmentYear);
+    
+    // Convert nationality name back to ISO2 code
+    String nationalityIso2 = _getNationalityIso2FromName(_selectedNationality);
+    await prefs.setString('nationalityIso2', nationalityIso2);
 
     await Future.delayed(const Duration(seconds: 2));
 
@@ -219,6 +327,63 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
       Navigator.pop(context);
     }
+  }
+
+  int _getSchoolIdFromName(String name) {
+    switch (name) {
+      case 'Keimyung University': return 1;
+      case 'Seoul National University': return 2;
+      case 'Korea University': return 3;
+      case 'Yonsei University': return 4;
+      case 'KAIST': return 5;
+      case 'Sungkyunkwan University': return 6;
+      case 'Hongik University': return 7;
+      case 'Hanyang University': return 8;
+      case 'Chung-Ang University': return 9;
+      case 'Kyung Hee University': return 10;
+      case 'Ewha Womans University': return 11;
+      case 'Sogang University': return 12;
+      case 'Pusan National University': return 13;
+      case 'Inha University': return 14;
+      case 'Other University': return 15;
+      default: return 1;
+    }
+  }
+
+  int _getDepartmentIdFromName(String name) {
+    switch (name) {
+      case 'Computer Science': return 1;
+      case 'Business Administration': return 2;
+      case 'Engineering': return 3;
+      case 'Liberal Arts': return 4;
+      case 'Medicine': return 5;
+      case 'Law': return 6;
+      case 'Fine Arts': return 7;
+      case 'Music': return 8;
+      case 'Physical Education': return 9;
+      case 'Natural Sciences': return 10;
+      case 'International Studies': return 11;
+      case 'Media & Communication': return 12;
+      case 'Architecture': return 13;
+      case 'Culinary Arts': return 14;
+      case 'Early Childhood Education': return 15;
+      case 'Environmental Science': return 16;
+      case 'Psychology': return 17;
+      case 'Economics': return 18;
+      case 'Information Technology': return 19;
+      case 'Theater & Film': return 20;
+      default: return 1;
+    }
+  }
+
+  String _getNationalityIso2FromName(String name) {
+    if (name.contains('🇰🇷')) return 'KR';
+    if (name.contains('🇻🇳')) return 'VN';
+    if (name.contains('🇺🇸')) return 'US';
+    if (name.contains('🇯🇵')) return 'JP';
+    if (name.contains('🇨🇳')) return 'CN';
+    if (name.contains('🇲🇲')) return 'MM';
+    return 'KR';
   }
 
   @override
@@ -574,6 +739,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
             // Verification code field
             TextFormField(
+              controller: _verificationCodeController,
               keyboardType: TextInputType.number,
               maxLength: 6,
               decoration: InputDecoration(
@@ -588,9 +754,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
                 ),
               ),
               onChanged: (value) {
-                setState(() {
-                  _verificationCode = value;
-                });
+                // Verification code changed
               },
             ),
             const SizedBox(height: 16),

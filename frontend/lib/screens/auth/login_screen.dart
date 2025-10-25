@@ -308,7 +308,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.pushNamed(context, '/register');
+                                    Navigator.pushNamed(context, '/multi-step-register');
                                   },
                                   child: Text(
                                     AppLocalizations.of(context).register,

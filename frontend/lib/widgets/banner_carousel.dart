@@ -31,11 +31,11 @@ class _BannerCarouselState extends State<BannerCarousel>
     super.initState();
     _pageController = PageController(viewportFraction: 1);
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 800), // Reduced duration
       vsync: this,
     );
     _autoPlayController = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 300), // Reduced duration
       vsync: this,
     );
     _fadeAnimation = Tween<double>(
@@ -43,7 +43,7 @@ class _BannerCarouselState extends State<BannerCarousel>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeInOut,
+      curve: Curves.easeOut, // Changed to more performant curve
     ));
     _animationController.forward();
     _startAutoPlay();
@@ -72,8 +72,8 @@ class _BannerCarouselState extends State<BannerCarousel>
     final nextIndex = (_currentIndex + 1) % widget.banners.length;
     _pageController.animateToPage(
       nextIndex,
-      duration: const Duration(milliseconds: 800),
-      curve: Curves.easeInOut,
+      duration: const Duration(milliseconds: 500), // Reduced duration
+      curve: Curves.easeOut, // More performant curve
     );
   }
 
@@ -90,16 +90,17 @@ class _BannerCarouselState extends State<BannerCarousel>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header with animation
-        TweenAnimationBuilder<double>(
-          duration: const Duration(milliseconds: 600),
-          tween: Tween(begin: 0.0, end: 1.0),
-          builder: (context, value, child) {
-            return Transform.translate(
-              offset: Offset(0, 20 * (1 - value)),
-              child: Opacity(
-                opacity: value,
-                child: Row(
+        // Header with animation - Optimized with RepaintBoundary
+        RepaintBoundary(
+          child: TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 400), // Reduced duration
+            tween: Tween(begin: 0.0, end: 1.0),
+            builder: (context, value, child) {
+              return Transform.translate(
+                offset: Offset(0, 15 * (1 - value)), // Reduced offset
+                child: Opacity(
+                  opacity: value,
+                  child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
@@ -158,37 +159,44 @@ class _BannerCarouselState extends State<BannerCarousel>
               ),
             );
           },
+          ),
         ),
         const SizedBox(height: 16),
         
-        // Carousel
-        FadeTransition(
-          opacity: _fadeAnimation,
-          child: SizedBox(
-            height: 200,
-            child: GestureDetector(
-              onPanStart: (_) => _pauseAutoPlay(),
-              onPanEnd: (_) => _resumeAutoPlay(),
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
-                itemCount: widget.banners.length,
-                itemBuilder: (context, index) {
-                  final banner = widget.banners[index];
-                  return _buildBannerCard(banner, index);
-                },
+        // Carousel - Optimized with RepaintBoundary
+        RepaintBoundary(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SizedBox(
+              height: 200,
+              child: GestureDetector(
+                onPanStart: (_) => _pauseAutoPlay(),
+                onPanEnd: (_) => _resumeAutoPlay(),
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentIndex = index;
+                    });
+                  },
+                  itemCount: widget.banners.length,
+                  itemBuilder: (context, index) {
+                    final banner = widget.banners[index];
+                    return RepaintBoundary(
+                      child: _buildBannerCard(banner, index),
+                    );
+                  },
+                ),
               ),
             ),
           ),
         ),
         const SizedBox(height: 16),
         
-        // Page indicators
-        _buildPageIndicators(),
+        // Page indicators - Optimized with RepaintBoundary
+        RepaintBoundary(
+          child: _buildPageIndicators(),
+        ),
       ],
     );
   }
@@ -196,11 +204,11 @@ class _BannerCarouselState extends State<BannerCarousel>
   Widget _buildBannerCard(BannerModel banner, int index) {
     
     return TweenAnimationBuilder<double>(
-      duration: Duration(milliseconds: 600 + (index * 100)),
+      duration: Duration(milliseconds: 400 + (index * 50)), // Reduced duration
       tween: Tween(begin: 0.0, end: 1.0),
       builder: (context, value, child) {
         return Transform.scale(
-          scale: 0.8 + (0.2 * value),
+          scale: 0.9 + (0.1 * value), // Reduced scale animation
           child: Opacity(
             opacity: value,
             child: GestureDetector(
@@ -400,15 +408,15 @@ class _BannerCarouselState extends State<BannerCarousel>
             _pauseAutoPlay();
             _pageController.animateToPage(
               index,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeInOut,
+              duration: const Duration(milliseconds: 300), // Reduced duration
+              curve: Curves.easeOut, // More performant curve
             );
             Future.delayed(const Duration(seconds: 2), () {
               _resumeAutoPlay();
             });
           },
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 200), // Reduced duration
             margin: const EdgeInsets.symmetric(horizontal: 4),
             width: _currentIndex == index ? 24 : 8,
             height: 8,

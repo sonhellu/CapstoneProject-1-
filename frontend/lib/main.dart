@@ -3,14 +3,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/theme_provider.dart';
+import 'providers/news_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
+import 'screens/auth/multi_step_register_screen.dart';
 import 'screens/home/home_screen.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => NewsProvider()),
+      ],
       child: const MainApp(),
     ),
   );
@@ -45,6 +50,11 @@ class _MainAppState extends State<MainApp> {
     });
   }
 
+  // Method to reload app state (useful after registration)
+  Future<void> reloadAppState() async {
+    await _loadAppState();
+  }
+
 
   // Method to be called from language picker
   void changeLanguage(String languageCode) async {
@@ -77,6 +87,7 @@ class _MainAppState extends State<MainApp> {
           routes: {
             '/login': (context) => LoginScreen(onLanguageChanged: changeLanguage),
             '/register': (context) => RegisterScreen(onLanguageChanged: changeLanguage),
+            '/multi-step-register': (context) => MultiStepRegisterScreen(onLanguageChanged: changeLanguage),
             '/home': (context) => HomeScreen(onLanguageChanged: changeLanguage),
           },
         );
