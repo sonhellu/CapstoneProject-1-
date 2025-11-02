@@ -38,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _nameController.text = prefs.getString('realName') ?? '';
       _selectedUniversity = _getSchoolName(prefs.getInt('schoolId') ?? 1);
       _selectedMajor = _getDepartmentName(prefs.getInt('departmentId') ?? 1);
-      _selectedYear = prefs.getInt('enrollmentYear')?.toString() ?? '';
+      _selectedYear = _getYearStringFromEnrollmentYear(prefs.getInt('enrollmentYear'));
       _selectedNationality = _getNationalityName(prefs.getString('nationalityIso2') ?? 'KR');
     });
   }
@@ -99,6 +99,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
       case 'CN': return '🇨🇳 China';
       case 'MM': return '🇲🇲 Myanmar';
       default: return code;
+    }
+  }
+
+  String _getYearStringFromEnrollmentYear(int? enrollmentYear) {
+    if (enrollmentYear == null) return '';
+    
+    int currentYear = DateTime.now().year;
+    int yearDiff = currentYear - enrollmentYear;
+    
+    if (yearDiff < 0) {
+      return '1st Year'; // Future enrollment
+    } else if (yearDiff == 0) {
+      return '1st Year';
+    } else if (yearDiff == 1) {
+      return '2nd Year';
+    } else if (yearDiff == 2) {
+      return '3rd Year';
+    } else if (yearDiff == 3) {
+      return '4th Year';
+    } else if (yearDiff >= 4 && yearDiff <= 6) {
+      return 'Graduate Student';
+    } else {
+      return 'PhD Student';
     }
   }
 

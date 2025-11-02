@@ -34,29 +34,44 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   bool _isLoading = false;
 
   final List<String> _universities = [
+    'Keimyung University',
     'Seoul National University',
     'Korea University',
     'Yonsei University',
-    'Keimyung university',
+    'KAIST',
     'Sungkyunkwan University',
+    'Hongik University',
     'Hanyang University',
-    'Kyung Hee University',
     'Chung-Ang University',
+    'Kyung Hee University',
     'Ewha Womans University',
+    'Sogang University',
+    'Pusan National University',
+    'Inha University',
+    'Other University',
   ];
 
   final List<String> _majors = [
     'Computer Science',
-    'Computer Engineering',
     'Business Administration',
-    'International Studies',
-    'Korean Language',
     'Engineering',
+    'Liberal Arts',
     'Medicine',
     'Law',
-    'Economics',
+    'Fine Arts',
+    'Music',
+    'Physical Education',
+    'Natural Sciences',
+    'International Studies',
+    'Media & Communication',
+    'Architecture',
+    'Culinary Arts',
+    'Early Childhood Education',
+    'Environmental Science',
     'Psychology',
-    'Art & Design',
+    'Economics',
+    'Information Technology',
+    'Theater & Film',
   ];
 
   final List<String> _years = [
@@ -69,17 +84,12 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   ];
 
   final List<String> _nationalities = [
-    'Vietnam',
-    'Korea',
-    'China',
-    'Japan',
-    'Thailand',
-    'Indonesia',
-    'Malaysia',
-    'Philippines',
-    'India',
-    'Mongolia',
-    'Other',
+    '🇰🇷 Hàn Quốc',
+    '🇻🇳 Việt Nam',
+    '🇺🇸 United States',
+    '🇯🇵 Japan',
+    '🇨🇳 China',
+    '🇲🇲 Myanmar',
   ];
 
   @override
@@ -98,7 +108,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
       _confirmEmailController.text = prefs.getString('email') ?? '';
       _selectedUniversity = _getSchoolName(prefs.getInt('schoolId') ?? 1);
       _selectedMajor = _getDepartmentName(prefs.getInt('departmentId') ?? 1);
-      _selectedYear = prefs.getInt('enrollmentYear')?.toString() ?? '';
+      _selectedYear = _getYearStringFromEnrollmentYear(prefs.getInt('enrollmentYear'));
       _selectedNationality = _getNationalityName(prefs.getString('nationalityIso2') ?? 'KR');
     });
   }
@@ -159,6 +169,29 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
       case 'CN': return '🇨🇳 China';
       case 'MM': return '🇲🇲 Myanmar';
       default: return code;
+    }
+  }
+
+  String _getYearStringFromEnrollmentYear(int? enrollmentYear) {
+    if (enrollmentYear == null) return '';
+    
+    int currentYear = DateTime.now().year;
+    int yearDiff = currentYear - enrollmentYear;
+    
+    if (yearDiff < 0) {
+      return '1st Year'; // Future enrollment
+    } else if (yearDiff == 0) {
+      return '1st Year';
+    } else if (yearDiff == 1) {
+      return '2nd Year';
+    } else if (yearDiff == 2) {
+      return '3rd Year';
+    } else if (yearDiff == 3) {
+      return '4th Year';
+    } else if (yearDiff >= 4 && yearDiff <= 6) {
+      return 'Graduate Student';
+    } else {
+      return 'PhD Student';
     }
   }
 
@@ -304,7 +337,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     await prefs.setInt('departmentId', departmentId);
     
     // Convert year string to int
-    int enrollmentYear = int.tryParse(_selectedYear) ?? DateTime.now().year;
+    int enrollmentYear = _getEnrollmentYearFromString(_selectedYear);
     await prefs.setInt('enrollmentYear', enrollmentYear);
     
     // Convert nationality name back to ISO2 code
@@ -384,6 +417,26 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     if (name.contains('🇨🇳')) return 'CN';
     if (name.contains('🇲🇲')) return 'MM';
     return 'KR';
+  }
+
+  int _getEnrollmentYearFromString(String yearString) {
+    int currentYear = DateTime.now().year;
+    
+    if (yearString.contains('1st Year')) {
+      return currentYear;
+    } else if (yearString.contains('2nd Year')) {
+      return currentYear - 1;
+    } else if (yearString.contains('3rd Year')) {
+      return currentYear - 2;
+    } else if (yearString.contains('4th Year')) {
+      return currentYear - 3;
+    } else if (yearString.contains('Graduate Student')) {
+      return currentYear - 4;
+    } else if (yearString.contains('PhD Student')) {
+      return currentYear - 6;
+    } else {
+      return currentYear; // Default to current year
+    }
   }
 
   @override

@@ -4,6 +4,7 @@ import '../models/news_model.dart';
 import '../providers/news_provider.dart';
 import '../constants/app_constants.dart';
 import '../screens/news/news_detail_screen.dart';
+import '../screens/news/news_list_screen.dart';
 
 class NewsSection extends StatefulWidget {
   final bool isDark;
@@ -71,83 +72,43 @@ class _NewsSectionState extends State<NewsSection> with TickerProviderStateMixin
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Bảng tin',
+          'Tin tức',
           style: TextStyle(
-            fontSize: AppConstants.fontSizeXXL,
+            fontSize: AppConstants.fontSizeXL,
             fontWeight: AppConstants.fontWeightBold,
-            color: widget.isDark ? Colors.white : AppConstants.primaryColor,
+            color: widget.isDark ? Colors.white : Colors.black87,
           ),
         ),
-        GestureDetector(
-          onTap: () {
-            // Navigate to full news screen
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Tính năng xem tất cả tin tức sẽ sớm có mặt!')),
-            );
-          },
-          child: Row(
-            children: [
-              Text(
-                'Xem tất cả',
-                style: TextStyle(
-                  fontSize: AppConstants.fontSizeM,
-                  color: widget.isDark ? Colors.white70 : Colors.grey[600],
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 12,
-                color: widget.isDark ? Colors.white70 : Colors.grey[600],
-              ),
-            ],
-          ),
-        ),
+        _buildViewAllButton('all'),
       ],
     );
   }
 
   Widget _buildTabBar() {
     return Container(
-      height: 50,
       decoration: BoxDecoration(
         color: widget.isDark ? AppConstants.darkCardColor : Colors.grey[100],
         borderRadius: BorderRadius.circular(AppConstants.radiusL),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: TabBar(
         controller: _tabController,
         indicator: BoxDecoration(
-          gradient: AppGradients.primaryGradient,
+          color: AppConstants.primaryColor,
           borderRadius: BorderRadius.circular(AppConstants.radiusL),
-          boxShadow: [
-            BoxShadow(
-              color: AppConstants.primaryColor.withValues(alpha: 0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
-        indicatorSize: TabBarIndicatorSize.tab,
         labelColor: Colors.white,
-        unselectedLabelColor: widget.isDark ? Colors.white70 : Colors.grey[600],
+        unselectedLabelColor: widget.isDark ? Colors.white60 : Colors.grey[600],
         labelStyle: const TextStyle(
           fontWeight: AppConstants.fontWeightSemiBold,
           fontSize: AppConstants.fontSizeM,
         ),
         unselectedLabelStyle: const TextStyle(
-          fontWeight: AppConstants.fontWeightNormal,
+          fontWeight: AppConstants.fontWeightMedium,
           fontSize: AppConstants.fontSizeM,
         ),
         tabs: const [
           Tab(text: 'Quốc tế'),
-          Tab(text: 'Quốc tịch'),
+          Tab(text: 'Trong nước'),
         ],
       ),
     );
@@ -155,7 +116,7 @@ class _NewsSectionState extends State<NewsSection> with TickerProviderStateMixin
 
   Widget _buildTabBarView() {
     return SizedBox(
-      height: 400, // Fixed height for the news list
+      height: 300, // Chiều cao vừa khít với 6 mẩu tin (6 items x ~50px/item)
       child: TabBarView(
         controller: _tabController,
         children: [
@@ -230,80 +191,191 @@ class _NewsSectionState extends State<NewsSection> with TickerProviderStateMixin
           );
         }
 
-        return ListView.builder(
-          itemCount: newsList.length,
-          itemBuilder: (context, index) {
-            final news = newsList[index];
-            return _buildNewsCard(news, index);
-          },
+        // Chỉ hiển thị 6 mẩu tin để vừa khít với ô chứa
+        final limitedNewsList = newsList.take(6).toList();
+
+        return Column(
+          children: [
+            // Danh sách tin tức đơn giản
+            ...limitedNewsList.asMap().entries.map((entry) {
+              final index = entry.key;
+              final news = entry.value;
+              return _buildSimpleNewsItem(news, index);
+            }),
+          ],
         );
       },
     );
   }
 
-  Widget _buildNewsCard(NewsModel news, int index) {
+  Widget _buildSimpleNewsItem(NewsModel news, int index) {
     return TweenAnimationBuilder<double>(
-      duration: Duration(milliseconds: 400 + (index * 150)),
+      duration: Duration(milliseconds: 200 + (index * 80)),
       tween: Tween(begin: 0.0, end: 1.0),
       curve: Curves.easeOutCubic,
       builder: (context, value, child) {
         return Transform.translate(
-          offset: Offset(0, 30 * (1 - value)),
-          child: Transform.scale(
-            scale: 0.95 + (0.05 * value),
-            child: Opacity(
-              opacity: value,
-              child: RepaintBoundary(
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: AppConstants.spacingM),
-                  decoration: BoxDecoration(
-                    color: widget.isDark ? AppConstants.darkCardColor : Colors.white,
-                    borderRadius: BorderRadius.circular(AppConstants.radiusL),
-                    boxShadow: [
-                      BoxShadow(
-                        color: widget.isDark 
-                          ? Colors.black.withValues(alpha: 0.2)
-                          : Colors.grey.withValues(alpha: 0.08),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                      BoxShadow(
-                        color: widget.isDark 
-                          ? Colors.black.withValues(alpha: 0.1)
-                          : Colors.grey.withValues(alpha: 0.05),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+          offset: Offset(0, 15 * (1 - value)),
+          child: Opacity(
+            opacity: value,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: widget.isDark 
+                    ? [
+                        AppConstants.darkCardColor,
+                        AppConstants.darkCardColor.withValues(alpha: 0.95),
+                      ]
+                    : [
+                        Colors.white,
+                        Colors.grey.shade50,
+                      ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: widget.isDark 
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : Colors.grey.withValues(alpha: 0.15),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: widget.isDark 
+                      ? Colors.black.withValues(alpha: 0.2)
+                      : AppConstants.primaryColor.withValues(alpha: 0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(AppConstants.radiusL),
-                      splashColor: AppConstants.primaryColor.withValues(alpha: 0.1),
-                      highlightColor: AppConstants.primaryColor.withValues(alpha: 0.05),
-                      onTap: () {
-                        context.read<NewsProvider>().viewNews(news.id);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NewsDetailScreen(news: news),
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppConstants.spacingM),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildNewsHeader(news),
-                            const SizedBox(height: AppConstants.spacingS),
-                            _buildNewsContent(news),
-                            const SizedBox(height: AppConstants.spacingS),
-                            _buildNewsFooter(news),
-                          ],
-                        ),
+                  BoxShadow(
+                    color: widget.isDark 
+                      ? Colors.white.withValues(alpha: 0.02)
+                      : Colors.white.withValues(alpha: 0.8),
+                    blurRadius: 4,
+                    offset: const Offset(-2, -2),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  splashColor: AppConstants.primaryColor.withValues(alpha: 0.15),
+                  highlightColor: AppConstants.primaryColor.withValues(alpha: 0.08),
+                  onTap: () {
+                    context.read<NewsProvider>().viewNews(news.id);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NewsDetailScreen(news: news),
                       ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    child: Row(
+                      children: [
+                        // Icon tin tức với gradient
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppConstants.primaryColor.withValues(alpha: 0.2),
+                                AppConstants.primaryColor.withValues(alpha: 0.1),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: AppConstants.primaryColor.withValues(alpha: 0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Icon(
+                            news.isPinned ? Icons.push_pin : Icons.article_outlined,
+                            color: AppConstants.primaryColor,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        
+                        // Nội dung tin tức
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                news.title,
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: widget.isDark ? Colors.white : Colors.black87,
+                                  height: 1.3,
+                                  letterSpacing: -0.2,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.access_time_rounded,
+                                    size: 11,
+                                    color: AppConstants.primaryColor.withValues(alpha: 0.6),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    news.timeAgo,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                      color: widget.isDark 
+                                        ? Colors.white.withValues(alpha: 0.7)
+                                        : Colors.grey[600],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: AppConstants.primaryColor.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      news.category,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppConstants.primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        // Icon mũi tên với hiệu ứng
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: AppConstants.primaryColor.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: AppConstants.primaryColor,
+                            size: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -315,200 +387,56 @@ class _NewsSectionState extends State<NewsSection> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildNewsHeader(NewsModel news) {
-    return Row(
-      children: [
-        if (news.isPinned) ...[
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: AppConstants.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppConstants.radiusS),
-            ),
-            child: Icon(
-              Icons.push_pin,
-              color: AppConstants.primaryColor,
-              size: 14,
-            ),
-          ),
-          const SizedBox(width: 8),
-        ],
-        Expanded(
-          child: Text(
-            news.title,
-            style: TextStyle(
-              fontSize: AppConstants.fontSizeL,
-              fontWeight: AppConstants.fontWeightSemiBold,
-              color: widget.isDark ? Colors.white : Colors.black87,
-              height: 1.3,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 6,
-          ),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AppConstants.primaryColor.withValues(alpha: 0.1),
-                AppConstants.primaryColor.withValues(alpha: 0.05),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(AppConstants.radiusM),
-            border: Border.all(
-              color: AppConstants.primaryColor.withValues(alpha: 0.2),
-              width: 1,
-            ),
-          ),
-          child: Text(
-            news.category,
-            style: TextStyle(
-              fontSize: AppConstants.fontSizeXS,
-              color: AppConstants.primaryColor,
-              fontWeight: AppConstants.fontWeightSemiBold,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNewsContent(NewsModel news) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (news.imageUrl.isNotEmpty) ...[
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppConstants.radiusM),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppConstants.radiusM),
-              child: Image.network(
-                news.imageUrl,
-                width: 90,
-                height: 70,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 90,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.grey[300]!,
-                          Colors.grey[200]!,
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(AppConstants.radiusM),
-                    ),
-                    child: Icon(
-                      Icons.image,
-                      color: Colors.grey[600],
-                      size: 24,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-          const SizedBox(width: AppConstants.spacingM),
-        ],
-        Expanded(
-          child: Text(
-            news.content,
-            style: TextStyle(
-              fontSize: AppConstants.fontSizeM,
-              color: widget.isDark ? Colors.white70 : Colors.grey[600],
-              height: 1.5,
-            ),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNewsFooter(NewsModel news) {
+  Widget _buildViewAllButton(String type) {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 12,
-        vertical: 8,
+        vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: widget.isDark 
-          ? Colors.white.withValues(alpha: 0.05)
-          : Colors.grey.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(AppConstants.radiusM),
-      ),
-      child: Row(
-        children: [
-          _buildFooterItem(
-            Icons.person,
-            news.author,
-            widget.isDark ? Colors.white60 : Colors.grey[600]!,
-          ),
-          const SizedBox(width: AppConstants.spacingM),
-          _buildFooterItem(
-            Icons.access_time,
-            news.timeAgo,
-            widget.isDark ? Colors.white60 : Colors.grey[600]!,
-          ),
-          const Spacer(),
-          _buildFooterItem(
-            Icons.visibility,
-            news.formattedViews,
-            widget.isDark ? Colors.white60 : Colors.grey[600]!,
-          ),
-          const SizedBox(width: AppConstants.spacingM),
-          _buildFooterItem(
-            Icons.favorite,
-            '${news.likes}',
-            Colors.red[400]!,
-          ),
-          const SizedBox(width: AppConstants.spacingM),
-          _buildFooterItem(
-            Icons.comment,
-            '${news.comments}',
-            widget.isDark ? Colors.white60 : Colors.grey[600]!,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFooterItem(IconData icon, String text, Color color) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 14,
-          color: color,
+        color: AppConstants.primaryColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppConstants.radiusL),
+        border: Border.all(
+          color: AppConstants.primaryColor.withValues(alpha: 0.3),
+          width: 1,
         ),
-        const SizedBox(width: 4),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: AppConstants.fontSizeS,
-            color: color,
-            fontWeight: AppConstants.fontWeightMedium,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppConstants.radiusL),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NewsListScreen(
+                  type: type,
+                  isDark: widget.isDark,
+                ),
+              ),
+            );
+          },
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Xem tất cả',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: AppConstants.fontWeightMedium,
+                  color: AppConstants.primaryColor,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: AppConstants.primaryColor,
+                size: 12,
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
