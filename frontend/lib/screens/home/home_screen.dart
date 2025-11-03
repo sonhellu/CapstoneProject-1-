@@ -3,6 +3,7 @@ import '../../l10n/app_localizations.dart';
 import '../../widgets/app_bar_actions.dart';
 import '../../widgets/banner_carousel.dart';
 import '../../widgets/news_section.dart';
+import '../../widgets/language_order_section.dart';
 import '../../models/banner_model.dart';
 import '../../constants/app_constants.dart';
 import '../profile/profile_screen.dart';
@@ -176,6 +177,12 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
                   // News section with RepaintBoundary
                   RepaintBoundary(
                     child: NewsSection(isDark: isDark),
+                  ),
+                  const SizedBox(height: 28),
+                  
+                  // Language Order section with RepaintBoundary
+                  RepaintBoundary(
+                    child: LanguageOrderSection(isDark: isDark),
                   ),
                   const SizedBox(height: AppConstants.spacingXXL),
                 ],

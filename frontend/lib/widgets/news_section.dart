@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import '../models/news_model.dart';
 import '../providers/news_provider.dart';
 import '../constants/app_constants.dart';
-import '../screens/news/news_detail_screen.dart';
-import '../screens/news/news_list_screen.dart';
+import '../screens/home/news/news_detail_screen.dart';
+import '../screens/home/news/news_list_screen.dart';
 
 class NewsSection extends StatefulWidget {
   final bool isDark;
@@ -61,6 +61,7 @@ class _NewsSectionState extends State<NewsSection> with TickerProviderStateMixin
             _buildTabBar(),
             const SizedBox(height: AppConstants.spacingM),
             _buildTabBarView(),
+            const SizedBox(height: AppConstants.spacingM),
           ],
         ),
       ),
@@ -86,29 +87,108 @@ class _NewsSectionState extends State<NewsSection> with TickerProviderStateMixin
 
   Widget _buildTabBar() {
     return Container(
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: widget.isDark ? AppConstants.darkCardColor : Colors.grey[100],
+        gradient: LinearGradient(
+          colors: widget.isDark 
+            ? [
+                AppConstants.darkCardColor,
+                AppConstants.darkCardColor.withValues(alpha: 0.8),
+              ]
+            : [
+                Colors.grey[100]!,
+                Colors.grey[50]!,
+              ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(AppConstants.radiusL),
+        boxShadow: [
+          BoxShadow(
+            color: widget.isDark 
+              ? Colors.black.withValues(alpha: 0.3)
+              : Colors.grey.withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+        border: Border.all(
+          color: widget.isDark 
+            ? Colors.white.withValues(alpha: 0.08)
+            : Colors.grey.withValues(alpha: 0.2),
+          width: 1,
+        ),
       ),
       child: TabBar(
         controller: _tabController,
         indicator: BoxDecoration(
-          color: AppConstants.primaryColor,
-          borderRadius: BorderRadius.circular(AppConstants.radiusL),
+          gradient: const LinearGradient(
+            colors: [
+              AppConstants.primaryColor,
+              Color(0xFF0052A5),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(AppConstants.radiusL - 2),
+          boxShadow: [
+            BoxShadow(
+              color: AppConstants.primaryColor.withValues(alpha: 0.4),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+            BoxShadow(
+              color: AppConstants.primaryColor.withValues(alpha: 0.2),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         labelColor: Colors.white,
-        unselectedLabelColor: widget.isDark ? Colors.white60 : Colors.grey[600],
+        unselectedLabelColor: widget.isDark ? Colors.white54 : Colors.grey[700],
         labelStyle: const TextStyle(
-          fontWeight: AppConstants.fontWeightSemiBold,
+          fontWeight: FontWeight.bold,
           fontSize: AppConstants.fontSizeM,
+          letterSpacing: 0.3,
         ),
         unselectedLabelStyle: const TextStyle(
           fontWeight: AppConstants.fontWeightMedium,
           fontSize: AppConstants.fontSizeM,
+          letterSpacing: 0.2,
         ),
-        tabs: const [
-          Tab(text: 'Quốc tế'),
-          Tab(text: 'Trong nước'),
+        indicatorSize: TabBarIndicatorSize.tab,
+        dividerColor: Colors.transparent,
+        splashFactory: InkRipple.splashFactory,
+        overlayColor: WidgetStateProperty.all(
+          AppConstants.primaryColor.withValues(alpha: 0.1),
+        ),
+        tabs: [
+          Tab(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.public,
+                  size: 16,
+                ),
+                const SizedBox(width: 6),
+                const Text('Quốc tế'),
+              ],
+            ),
+          ),
+          Tab(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.home_outlined,
+                  size: 16,
+                ),
+                const SizedBox(width: 6),
+                const Text('Trong nước'),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -116,7 +196,7 @@ class _NewsSectionState extends State<NewsSection> with TickerProviderStateMixin
 
   Widget _buildTabBarView() {
     return SizedBox(
-      height: 300, // Chiều cao vừa khít với 6 mẩu tin (6 items x ~50px/item)
+      height: 340, // Chiều cao vừa khít với 5 mẩu tin (5 items x ~56px/item)
       child: TabBarView(
         controller: _tabController,
         children: [
@@ -191,18 +271,17 @@ class _NewsSectionState extends State<NewsSection> with TickerProviderStateMixin
           );
         }
 
-        // Chỉ hiển thị 6 mẩu tin để vừa khít với ô chứa
-        final limitedNewsList = newsList.take(6).toList();
+        // Chỉ hiển thị 5 mẩu tin để vừa khít với ô chứa
+        final limitedNewsList = newsList.take(5).toList();
 
-        return Column(
-          children: [
-            // Danh sách tin tức đơn giản
-            ...limitedNewsList.asMap().entries.map((entry) {
-              final index = entry.key;
-              final news = entry.value;
-              return _buildSimpleNewsItem(news, index);
-            }),
-          ],
+        return ListView.builder(
+          itemCount: limitedNewsList.length,
+          padding: EdgeInsets.zero,
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return _buildSimpleNewsItem(limitedNewsList[index], index);
+          },
         );
       },
     );
@@ -219,42 +298,25 @@ class _NewsSectionState extends State<NewsSection> with TickerProviderStateMixin
           child: Opacity(
             opacity: value,
             child: Container(
-              margin: const EdgeInsets.only(bottom: 8),
+              margin: EdgeInsets.only(bottom: index < 4 ? 8 : 0),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: widget.isDark 
-                    ? [
-                        AppConstants.darkCardColor,
-                        AppConstants.darkCardColor.withValues(alpha: 0.95),
-                      ]
-                    : [
-                        Colors.white,
-                        Colors.grey.shade50,
-                      ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: widget.isDark 
+                  ? AppConstants.darkCardColor
+                  : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: widget.isDark 
-                    ? Colors.white.withValues(alpha: 0.05)
-                    : Colors.grey.withValues(alpha: 0.15),
-                  width: 1,
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.grey.withValues(alpha: 0.2),
+                  width: 0.5,
                 ),
                 boxShadow: [
                   BoxShadow(
                     color: widget.isDark 
-                      ? Colors.black.withValues(alpha: 0.2)
-                      : AppConstants.primaryColor.withValues(alpha: 0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                  BoxShadow(
-                    color: widget.isDark 
-                      ? Colors.white.withValues(alpha: 0.02)
-                      : Colors.white.withValues(alpha: 0.8),
+                      ? Colors.black.withValues(alpha: 0.3)
+                      : Colors.grey.withValues(alpha: 0.1),
                     blurRadius: 4,
-                    offset: const Offset(-2, -2),
+                    offset: const Offset(0, 1),
                   ),
                 ],
               ),
@@ -277,24 +339,13 @@ class _NewsSectionState extends State<NewsSection> with TickerProviderStateMixin
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     child: Row(
                       children: [
-                        // Icon tin tức với gradient
+                        // Icon tin tức
                         Container(
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                AppConstants.primaryColor.withValues(alpha: 0.2),
-                                AppConstants.primaryColor.withValues(alpha: 0.1),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                            color: AppConstants.primaryColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: AppConstants.primaryColor.withValues(alpha: 0.2),
-                              width: 1,
-                            ),
                           ),
                           child: Icon(
                             news.isPinned ? Icons.push_pin : Icons.article_outlined,
