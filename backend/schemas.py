@@ -10,3 +10,7 @@ class UserCreate(BaseModel):
     school_id: int
     department_id: int
     enrollment_year: int
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str

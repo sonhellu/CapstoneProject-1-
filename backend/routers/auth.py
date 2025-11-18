@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from schemas import UserCreate # 우리가 만든 데이터 형식
+from schemas import UserCreate, UserLogin # 우리가 만든 데이터 형식
 from database import get_db_connection
 import bcrypt
 import mysql.connector
@@ -57,3 +57,44 @@ def register_user(user_data: UserCreate):
         conn.close()
 
     return {"message": "회원가입이 성공적으로 완료되었습니다."}
+
+@router.post("/login", status_code=200)
+def login_user(user_data: UserLogin):
+    """
+    사용자 로그인 API
+    - 이메일과 비밀번호를 검증합니다.
+    - 성공 시 사용자 정보를 반환합니다.
+    """
+    conn = get_db_connection()
+    if conn is None:
+        raise HTTPException(status_code=500, detail="데이터베이스에 연결할 수 없습니다.")
+    
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        # 이메일로 사용자 찾기
+        query = "SELECT * FROM users WHERE email = %s"
+        cursor.execute(query, (user_data.email,))
+        user = cursor.fetchone()
+
+        if user is None:
+            raise HTTPException(status_code=401, detail="이메일 또는 비밀번호가 올바르지 않습니다.")
+
+        # 비밀번호 검증
+        if not bcrypt.checkpw(user_data.password.encode('utf-8'), user['password_hash'].encode('utf-8')):
+            raise HTTPException(status_code=401, detail="이메일 또는 비밀번호가 올바르지 않습니다.")
+
+        # 비밀번호 해시 제거 (클라이언트에 보내지 않음)
+        user.pop('password_hash', None)
+
+        return {
+            "message": "로그인 성공",
+            "user": user
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"서버 오류: {e}")
+    finally:
+        cursor.close()
+        conn.close()

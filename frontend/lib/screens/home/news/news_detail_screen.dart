@@ -64,7 +64,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
         backgroundColor: AppConstants.primaryColor,
         elevation: 0,
         title: Text(
-          'Chi tiết tin tức',
+          'News Detail',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: AppConstants.fontWeightSemiBold,
@@ -210,7 +210,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                     ),
                     SizedBox(width: 6),
                     Text(
-                      'Ghim',
+                      'Pin',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: AppConstants.fontSizeS,
@@ -423,7 +423,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                 );
               },
               icon: const Icon(Icons.favorite_border),
-              label: const Text('Thích'),
+              label: const Text('Like'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 foregroundColor: Colors.white,
