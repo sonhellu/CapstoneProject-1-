@@ -31,6 +31,7 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   Locale _locale = const Locale('en', '');
   bool _isLoggedIn = false;
+  bool _isLoading = true;
   Key _materialAppKey = UniqueKey();
 
   @override
@@ -40,14 +41,25 @@ class _MainAppState extends State<MainApp> {
   }
 
   Future<void> _loadAppState() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedLanguage = prefs.getString('language') ?? 'en';
-    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    
-    setState(() {
-      _locale = Locale(savedLanguage, '');
-      _isLoggedIn = isLoggedIn;
-    });
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedLanguage = prefs.getString('language') ?? 'en';
+      final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+      
+      if (mounted) {
+        setState(() {
+          _locale = Locale(savedLanguage, '');
+          _isLoggedIn = isLoggedIn;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   // Method to reload app state (useful after registration)
@@ -55,9 +67,11 @@ class _MainAppState extends State<MainApp> {
     await _loadAppState();
   }
 
-
-  // Method to be called from language picker
+  // Method to be called from language picker - Optimized
   void changeLanguage(String languageCode) async {
+    // Early return if same language
+    if (_locale.languageCode == languageCode) return;
+    
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('language', languageCode);
     
@@ -71,6 +85,18 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
+    // Show loading screen while initializing
+    if (_isLoading) {
+      return const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+    
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
@@ -83,12 +109,31 @@ class _MainAppState extends State<MainApp> {
           locale: _locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: _isLoggedIn ? HomeScreen(onLanguageChanged: changeLanguage) : LoginScreen(onLanguageChanged: changeLanguage),
-          routes: {
-            '/login': (context) => LoginScreen(onLanguageChanged: changeLanguage),
-            '/register': (context) => RegisterScreen(onLanguageChanged: changeLanguage),
-            '/multi-step-register': (context) => MultiStepRegisterScreen(onLanguageChanged: changeLanguage),
-            '/home': (context) => HomeScreen(onLanguageChanged: changeLanguage),
+          home: _isLoggedIn 
+            ? HomeScreen(onLanguageChanged: changeLanguage) 
+            : LoginScreen(onLanguageChanged: changeLanguage),
+          onGenerateRoute: (settings) {
+            // Lazy route generation for better performance
+            switch (settings.name) {
+              case '/login':
+                return MaterialPageRoute(
+                  builder: (_) => LoginScreen(onLanguageChanged: changeLanguage),
+                );
+              case '/register':
+                return MaterialPageRoute(
+                  builder: (_) => RegisterScreen(onLanguageChanged: changeLanguage),
+                );
+              case '/multi-step-register':
+                return MaterialPageRoute(
+                  builder: (_) => MultiStepRegisterScreen(onLanguageChanged: changeLanguage),
+                );
+              case '/home':
+                return MaterialPageRoute(
+                  builder: (_) => HomeScreen(onLanguageChanged: changeLanguage),
+                );
+              default:
+                return null;
+            }
           },
         );
       },

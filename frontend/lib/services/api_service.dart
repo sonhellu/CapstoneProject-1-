@@ -1,34 +1,151 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'api_config.dart';
 
-/// Base API Service - Xử lý HTTP requests
+/// Base API Service - Optimized với retry logic và caching
 class ApiService {
-  /// POST request
+  // Simple in-memory cache
+  static final Map<String, _CacheEntry> _cache = {};
+  
+  /// GET request với caching
+  static Future<dynamic> get(
+    String endpoint, {
+    Map<String, String>? headers,
+    bool useCache = true,
+  }) async {
+    // Check cache first
+    if (useCache && _cache.containsKey(endpoint)) {
+      final cacheEntry = _cache[endpoint]!;
+      if (!cacheEntry.isExpired) {
+        return cacheEntry.data;
+      }
+    }
+    
+    final response = await _requestWithRetry(
+      () => http.get(
+        Uri.parse(ApiConfig.getFullUrl(endpoint)),
+        headers: headers ?? ApiConfig.headers,
+      ),
+    );
+    
+    final data = _handleResponse(response);
+    
+    // Cache the result
+    if (useCache) {
+      _cache[endpoint] = _CacheEntry(data);
+    }
+    
+    return data;
+  }
+
+  /// POST request với retry logic
   static Future<Map<String, dynamic>> post(
     String endpoint, {
     Map<String, dynamic>? body,
     Map<String, String>? headers,
   }) async {
-    try {
-      final url = Uri.parse(ApiConfig.getFullUrl(endpoint));
-      final response = await http.post(
-        url,
+    final response = await _requestWithRetry(
+      () => http.post(
+        Uri.parse(ApiConfig.getFullUrl(endpoint)),
         headers: headers ?? ApiConfig.headers,
         body: body != null ? jsonEncode(body) : null,
-      ).timeout(ApiConfig.connectTimeout);
+      ),
+    );
 
-      return _handleResponse(response);
-    } on SocketException {
-      throw ApiException('Không thể kết nối đến server. Vui lòng kiểm tra:\n'
-          '1. Backend đang chạy chưa?\n'
-          '2. URL trong api_config.dart đúng chưa?');
-    } on TimeoutException {
-      throw ApiException('Kết nối timeout. Vui lòng thử lại.');
-    } catch (e) {
-      throw ApiException('Lỗi: ${e.toString()}');
+    return _handleResponse(response);
+  }
+  
+  /// PUT request
+  static Future<Map<String, dynamic>> put(
+    String endpoint, {
+    Map<String, dynamic>? body,
+    Map<String, String>? headers,
+  }) async {
+    final response = await _requestWithRetry(
+      () => http.put(
+        Uri.parse(ApiConfig.getFullUrl(endpoint)),
+        headers: headers ?? ApiConfig.headers,
+        body: body != null ? jsonEncode(body) : null,
+      ),
+    );
+
+    return _handleResponse(response);
+  }
+  
+  /// DELETE request
+  static Future<Map<String, dynamic>> delete(
+    String endpoint, {
+    Map<String, String>? headers,
+  }) async {
+    final response = await _requestWithRetry(
+      () => http.delete(
+        Uri.parse(ApiConfig.getFullUrl(endpoint)),
+        headers: headers ?? ApiConfig.headers,
+      ),
+    );
+
+    return _handleResponse(response);
+  }
+
+  /// Request với retry logic
+  static Future<http.Response> _requestWithRetry(
+    Future<http.Response> Function() request,
+  ) async {
+    int retries = 0;
+    
+    while (retries < ApiConfig.maxRetries) {
+      try {
+        final response = await request().timeout(ApiConfig.connectTimeout);
+        
+        // If success or client error (4xx), return immediately
+        if (response.statusCode < 500) {
+          return response;
+        }
+        
+        // If server error (5xx), retry
+        if (retries < ApiConfig.maxRetries - 1) {
+          await Future.delayed(ApiConfig.retryDelay * (retries + 1));
+          retries++;
+          continue;
+        }
+        
+        return response;
+      } on SocketException catch (e) {
+        if (retries < ApiConfig.maxRetries - 1) {
+          await Future.delayed(ApiConfig.retryDelay * (retries + 1));
+          retries++;
+          continue;
+        }
+        throw ApiException(
+          'Không thể kết nối đến server.\n'
+          'Vui lòng kiểm tra kết nối mạng.\n'
+          'Environment: ${ApiConfig.environment}\n'
+          'Error: ${e.message}'
+        );
+      } on TimeoutException {
+        if (retries < ApiConfig.maxRetries - 1) {
+          await Future.delayed(ApiConfig.retryDelay * (retries + 1));
+          retries++;
+          continue;
+        }
+        throw ApiException(
+          'Kết nối timeout sau ${ApiConfig.maxRetries} lần thử.\n'
+          'Server có thể đang khởi động (Render cold start).\n'
+          'Vui lòng thử lại sau ít phút.'
+        );
+      } catch (e) {
+        if (retries < ApiConfig.maxRetries - 1) {
+          await Future.delayed(ApiConfig.retryDelay * (retries + 1));
+          retries++;
+          continue;
+        }
+        throw ApiException('Lỗi: ${e.toString()}');
+      }
     }
+    
+    throw ApiException('Đã thử ${ApiConfig.maxRetries} lần nhưng vẫn thất bại');
   }
 
   /// Handle HTTP response
@@ -48,16 +165,52 @@ class ApiService {
       // Success (200, 201, etc.)
       return responseBody;
     } else if (statusCode == 401) {
-      throw ApiException(responseBody['detail'] ?? 'Email hoặc mật khẩu không đúng');
+      throw ApiException(
+        responseBody['error'] ?? 
+        responseBody['detail'] ?? 
+        'Email hoặc mật khẩu không đúng'
+      );
     } else if (statusCode == 409) {
-      throw ApiException(responseBody['detail'] ?? 'Email đã tồn tại');
+      throw ApiException(
+        responseBody['error'] ?? 
+        responseBody['detail'] ?? 
+        'Email đã tồn tại'
+      );
     } else if (statusCode == 500) {
-      throw ApiException(responseBody['detail'] ?? 'Lỗi server');
+      throw ApiException(
+        responseBody['error'] ?? 
+        responseBody['detail'] ?? 
+        'Lỗi server. Vui lòng thử lại sau.'
+      );
     } else {
       throw ApiException(
-        responseBody['detail'] ?? 'Lỗi không xác định (Status: $statusCode)'
+        responseBody['error'] ?? 
+        responseBody['detail'] ?? 
+        'Lỗi không xác định (Status: $statusCode)'
       );
     }
+  }
+  
+  /// Clear cache
+  static void clearCache() {
+    _cache.clear();
+  }
+  
+  /// Clear specific cache entry
+  static void clearCacheEntry(String endpoint) {
+    _cache.remove(endpoint);
+  }
+}
+
+/// Cache entry
+class _CacheEntry {
+  final dynamic data;
+  final DateTime timestamp;
+  
+  _CacheEntry(this.data) : timestamp = DateTime.now();
+  
+  bool get isExpired {
+    return DateTime.now().difference(timestamp) > ApiConfig.cacheTimeout;
   }
 }
 

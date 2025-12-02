@@ -156,6 +156,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
         password: apiData['password'] as String,
         nickname: apiData['nickname'] as String,
         realname: apiData['realname'] as String,
+        gender: apiData['gender'] as String,
         mainLanguage: apiData['main_language'] as String,
         nationalityIso2: apiData['nationality_iso2'] as String,
         schoolId: apiData['school_id'] as int,

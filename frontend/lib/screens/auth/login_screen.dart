@@ -85,32 +85,17 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       });
 
       try {
-        // TẠM THỜI TẮT API - Đăng nhập tự do
-        // final response = await AuthService.login(
-        //   email: _emailController.text.trim(),
-        //   password: _passwordController.text,
-        // );
-
-        // Lưu thông tin đăng nhập trực tiếp (không cần API)
-        final prefs = await SharedPreferences.getInstance();
-        final email = _emailController.text.trim();
-        await prefs.setBool('isLoggedIn', true);
-        await prefs.setString('userEmail', email);
-        await prefs.setString('userNickname', email.split('@')[0]); // Tạm thời dùng phần trước @ làm nickname
-        await prefs.setString('userRealname', email.split('@')[0]);
-
-        // Giả lập delay để có cảm giác thực tế
-        await Future.delayed(const Duration(milliseconds: 500));
+        // Gọi API đăng nhập thật từ Render
+        final response = await AuthService.login(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
 
         if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-
           // Hiển thị thông báo thành công
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Đăng nhập thành công!'),
+              content: Text(response['message'] ?? 'Đăng nhập thành công!'),
               backgroundColor: Colors.green[600],
               duration: const Duration(seconds: 2),
             ),
@@ -120,6 +105,21 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        }
+      } on ApiException catch (e) {
+        // Xử lý lỗi từ API
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.message),
+              backgroundColor: Colors.red[600],
+              duration: const Duration(seconds: 3),
+            ),
           );
         }
       } catch (e) {
