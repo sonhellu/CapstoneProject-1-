@@ -4,6 +4,7 @@ class RegistrationData {
   String password = '';
   String confirmPassword = '';
   String realName = '';
+  String gender = 'male'; // Thêm trường gender
 
   // Step 2: Profile Information
   String nickname = '';
@@ -22,6 +23,7 @@ class RegistrationData {
            password.isNotEmpty && 
            confirmPassword.isNotEmpty && 
            realName.isNotEmpty &&
+           gender.isNotEmpty &&
            password == confirmPassword &&
            _isValidEmail(email) &&
            password.length >= 6;
@@ -54,6 +56,7 @@ class RegistrationData {
       'password': password,
       'nickname': nickname,
       'realname': realName,
+      'gender': gender, // Thêm gender vào API format
       'main_language': mainLanguage,
       'nationality_iso2': nationalityIso2,
       'school_id': schoolIdString.isNotEmpty ? int.tryParse(schoolIdString) ?? schoolId : schoolId,
@@ -68,6 +71,7 @@ class RegistrationData {
     password = '';
     confirmPassword = '';
     realName = '';
+    gender = 'male';
     nickname = '';
     mainLanguage = 'ko';
     nationalityIso2 = 'KR';

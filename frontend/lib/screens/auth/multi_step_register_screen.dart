@@ -123,6 +123,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
         _registrationData.password = _passwordController.text;
         _registrationData.confirmPassword = _confirmPasswordController.text;
         _registrationData.realName = _realNameController.text;
+        // Gender đã được lưu trực tiếp khi chọn
         break;
       case 1: // Step 2: Profile Info
         _registrationData.nickname = _nicknameController.text;
@@ -505,6 +506,10 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                   isDark: isDark,
                   validator: _validateRequired,
                 ),
+                const SizedBox(height: 20),
+                
+                // Gender Selection
+                _buildGenderSelector(isDark),
               ],
             ),
           ),
@@ -869,6 +874,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           const SizedBox(height: 8),
           _buildReviewItem('Email', _registrationData.email, isDark),
           _buildReviewItem('Real Name', _registrationData.realName, isDark),
+          _buildReviewItem('Gender', _registrationData.gender == 'male' ? 'Male' : 'Female', isDark),
           _buildReviewItem('Nickname', _registrationData.nickname, isDark),
           _buildReviewItem('Language', _getLanguageName(_registrationData.mainLanguage), isDark),
           _buildReviewItem('Nationality', _getNationalityName(_registrationData.nationalityIso2), isDark),
@@ -1172,6 +1178,137 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+  
+  /// Build Gender Selector
+  Widget _buildGenderSelector(bool isDark) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Label
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.wc,
+                    color: Colors.red[600],
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Gender',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Gender options
+          Row(
+            children: [
+              Expanded(
+                child: _buildGenderOption(
+                  value: 'male',
+                  label: 'Male',
+                  icon: Icons.male,
+                  isSelected: _registrationData.gender == 'male',
+                  isDark: isDark,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildGenderOption(
+                  value: 'female',
+                  label: 'Female',
+                  icon: Icons.female,
+                  isSelected: _registrationData.gender == 'female',
+                  isDark: isDark,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  
+  /// Build Gender Option Button
+  Widget _buildGenderOption({
+    required String value,
+    required String label,
+    required IconData icon,
+    required bool isSelected,
+    required bool isDark,
+  }) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _registrationData.gender = value;
+        });
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Colors.red[600]
+              : (isDark ? const Color(0xFF2C2C2C) : Colors.white),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected
+                ? Colors.red[600]!
+                : (isDark ? Colors.grey[600]! : Colors.grey[300]!),
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isSelected
+                  ? Colors.white
+                  : (isDark ? Colors.white70 : Colors.grey[700]),
+              size: 24,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? Colors.white70 : Colors.grey[700]),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
