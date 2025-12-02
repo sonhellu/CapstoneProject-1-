@@ -154,7 +154,7 @@ class _MatchFoundView extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (_) => ChatRoomScreen(
-                      roomId: result.roomId,
+                      conversationId: int.tryParse(result.roomId) ?? 1, // Convert roomId to conversationId
                       partnerName: result.user.name,
                       targetLanguageLabel: targetLang,
                     ),

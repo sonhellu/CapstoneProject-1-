@@ -155,14 +155,15 @@ class _BoardScreenState extends State<BoardScreen> {
             child: Padding(
               padding: const EdgeInsets.all(AppConstants.spacingL),
               child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildCategoryTabs(isDark),
-                const SizedBox(height: AppConstants.spacingL),
-                Expanded(
-                  child: _buildPostsList(isDark, posts),
-                ),
-              ],
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildCategoryTabs(isDark),
+                  const SizedBox(height: AppConstants.spacingL),
+                  Expanded(
+                    child: _buildPostsList(isDark, posts),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
