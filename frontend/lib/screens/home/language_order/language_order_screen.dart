@@ -1,4 +1,3 @@
-// lib/screens/home/language_order/language_order_screen.dart
 import 'package:flutter/material.dart';
 import 'match_chat_screen.dart';
 
@@ -12,7 +11,6 @@ class LanguageOrderScreen extends StatefulWidget {
 class _LanguageOrderScreenState extends State<LanguageOrderScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // 선택 데이터
   final List<Map<String, String>> _languages = const [
     {'code': 'ko', 'label': '대한민국 · 한국어 🇰🇷'},
     {'code': 'en', 'label': 'United States · English 🇺🇸'},

@@ -198,7 +198,7 @@ class _NoMatchView extends StatelessWidget {
 }
 
 class _User {
-  final String name;   // 여/남
+  final String name;
   final String gender;
   final String college;
   final List<String> languages;

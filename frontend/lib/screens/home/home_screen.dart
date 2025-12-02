@@ -10,6 +10,7 @@ import '../profile/profile_screen.dart';
 import '../social/chat_screen.dart';
 import '../notifications/notification_screen.dart';
 import '../../widgets/keimyung_banner.dart';
+import '../../widgets/board_section.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(String)? onLanguageChanged;
@@ -183,6 +184,11 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
                   // Language Order section with RepaintBoundary
                   RepaintBoundary(
                     child: LanguageOrderSection(isDark: isDark),
+                  ),
+                  const SizedBox(height: AppConstants.spacingXXL),
+
+                  RepaintBoundary(
+                    child: BoardSection(isDark: isDark),
                   ),
                   const SizedBox(height: AppConstants.spacingXXL),
                 ],
