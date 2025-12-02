@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../models/board_post.dart';
+import '../../services/community_service.dart';
+import '../../services/api_service.dart';
 import 'board_detail_screen.dart';
 import 'board_write_screen.dart';
 
@@ -13,6 +15,14 @@ const Map<BoardCategory, String> _categoryLabels = {
   BoardCategory.free: '자유게시판',
   BoardCategory.info: '정보게시판',
   BoardCategory.promo: '홍보게시판',
+};
+
+// Map BoardCategory to board_id (backend)
+const Map<BoardCategory, int> _categoryToBoardId = {
+  BoardCategory.notice: 1,
+  BoardCategory.free: 2,
+  BoardCategory.info: 3,
+  BoardCategory.promo: 4,
 };
 
 class BoardScreen extends StatefulWidget {
@@ -29,54 +39,58 @@ class BoardScreen extends StatefulWidget {
 
 class _BoardScreenState extends State<BoardScreen> {
   late BoardCategory _selected;
+  List<BoardPost> _posts = [];
+  bool _isLoading = false;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
-    _selected = widget.initialCategory; // ← 처음 어떤 탭 열지
+    _selected = widget.initialCategory;
+    _loadPosts();
   }
 
-  // 더미 데이터
-  final Map<BoardCategory, List<BoardPost>> _postsByCategory = {
-    BoardCategory.notice: [
-      BoardPost(
-        id: 'n1',
-        title: '중요 공지: 2학기 일정 안내',
-        content: '2학기 주요 일정은 다음과 같습니다...',
-        author: '학생지원팀',
-        createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-      ),
-    ],
-    BoardCategory.free: [
-      BoardPost(
-        id: 'f1',
-        title: '내일 운동 같이 하실 분?',
-        content: '풋살 하실 분 찾아요~',
-        author: '체육학과 20 홍길동',
-        createdAt: DateTime.now().subtract(const Duration(hours: 5)),
-      ),
-    ],
-    BoardCategory.info: [
-      BoardPost(
-        id: 'i1',
-        title: '교환학생 정보 공유합니다',
-        content: 'OO대 교환학생 다녀온 후기...',
-        author: '국제학부 21 김민지',
-        createdAt: DateTime.now().subtract(const Duration(days: 1)),
-      ),
-    ],
-    BoardCategory.promo: [
-      BoardPost(
-        id: 'p1',
-        title: '동아리 홍보합니다 :)',
-        content: 'OO 동아리 신입 모집 중!',
-        author: '동아리연합회',
-        createdAt: DateTime.now().subtract(const Duration(days: 2)),
-      ),
-    ],
-  };
+  /// Load posts from API
+  Future<void> _loadPosts() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
 
-  List<BoardPost> get _currentPosts => _postsByCategory[_selected] ?? [];
+    try {
+      final boardId = _categoryToBoardId[_selected] ?? 1;
+      final postsData = await CommunityService.getPosts(
+        boardId: boardId,
+        limit: 20,
+      );
+
+      final posts = postsData.map((postData) {
+        return BoardPost.fromJson(postData as Map<String, dynamic>);
+      }).toList();
+
+      setState(() {
+        _posts = posts;
+        _isLoading = false;
+      });
+    } on ApiException catch (e) {
+      setState(() {
+        _error = e.message;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Lỗi tải dữ liệu: ${e.toString()}';
+        _isLoading = false;
+      });
+    }
+  }
+
+  /// Refresh posts
+  Future<void> _refreshPosts() async {
+    await _loadPosts();
+  }
+
+  List<BoardPost> get _currentPosts => _posts;
 
   @override
   Widget build(BuildContext context) {
@@ -113,13 +127,18 @@ class _BoardScreenState extends State<BoardScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.edit, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => BoardWriteScreen(category: _selected),
                 ),
               );
+              
+              // Reload posts nếu đã tạo bài viết thành công
+              if (result == true && mounted) {
+                _loadPosts();
+              }
             },
           ),
         ],
@@ -131,18 +150,17 @@ class _BoardScreenState extends State<BoardScreen> {
               : AppGradients.lightBackgroundGradient,
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(AppConstants.spacingL),
-            child: Column(
+          child: RefreshIndicator(
+            onRefresh: _refreshPosts,
+            child: Padding(
+              padding: const EdgeInsets.all(AppConstants.spacingL),
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildCategoryTabs(isDark),
                 const SizedBox(height: AppConstants.spacingL),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: posts.length,
-                    itemBuilder: (_, i) => _BoardCard(post: posts[i]),
-                  ),
+                  child: _buildPostsList(isDark, posts),
                 ),
               ],
             ),
@@ -174,7 +192,10 @@ class _BoardScreenState extends State<BoardScreen> {
           final selected = _selected == cat;
           return Expanded(
             child: GestureDetector(
-              onTap: () => setState(() => _selected = cat),
+              onTap: () {
+                setState(() => _selected = cat);
+                _loadPosts(); // Reload posts khi chuyển category
+              },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 curve: Curves.easeOut,
@@ -202,6 +223,81 @@ class _BoardScreenState extends State<BoardScreen> {
           );
         }).toList(),
       ),
+    );
+  }
+  
+  /// Build posts list với loading và error states
+  Widget _buildPostsList(bool isDark, List<BoardPost> posts) {
+    // Loading state
+    if (_isLoading && posts.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    
+    // Error state
+    if (_error != null && posts.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Colors.red[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              _error!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isDark ? Colors.white70 : Colors.grey[600],
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _loadPosts,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Thử lại'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red[600],
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    
+    // Empty state
+    if (posts.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.inbox_outlined,
+              size: 64,
+              color: isDark ? Colors.white38 : Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Chưa có bài viết nào',
+              style: TextStyle(
+                color: isDark ? Colors.white70 : Colors.grey[600],
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    
+    // Posts list
+    return ListView.builder(
+      itemCount: posts.length,
+      itemBuilder: (_, i) => _BoardCard(post: posts[i]),
     );
   }
 }
