@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/registration_data.dart';
+import '../../services/auth_service.dart';
+import '../../services/api_service.dart';
 
 class MultiStepRegisterScreen extends StatefulWidget {
   final Function(String)? onLanguageChanged;
@@ -146,8 +148,20 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
       _isLoading = true;
     });
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      // Gọi API đăng ký thật
+      final apiData = _registrationData.toApiFormat();
+      final response = await AuthService.register(
+        email: apiData['email'] as String,
+        password: apiData['password'] as String,
+        nickname: apiData['nickname'] as String,
+        realname: apiData['realname'] as String,
+        mainLanguage: apiData['main_language'] as String,
+        nationalityIso2: apiData['nationality_iso2'] as String,
+        schoolId: apiData['school_id'] as int,
+        departmentId: apiData['department_id'] as int,
+        enrollmentYear: apiData['enrollment_year'] as int,
+      );
 
     if (mounted) {
       setState(() {
@@ -156,16 +170,13 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
 
       // Save language preference to SharedPreferences
       await _saveLanguagePreference(_registrationData.mainLanguage);
-      
-      // Save all registration data to SharedPreferences
-      await _saveRegistrationData();
 
       // Show success message in selected language
       String successMessage = _getSuccessMessage(_registrationData.mainLanguage);
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(successMessage),
+            content: Text(response['message'] ?? successMessage),
           backgroundColor: Colors.green[600],
           duration: const Duration(seconds: 3),
         ),
@@ -184,6 +195,37 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
         Navigator.pop(context);
       }
     }
+    } on ApiException catch (e) {
+      // Xử lý lỗi từ API
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message),
+            backgroundColor: Colors.red[600],
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      // Xử lý lỗi không mong đợi
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Đã xảy ra lỗi: ${e.toString()}'),
+            backgroundColor: Colors.red[600],
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _saveLanguagePreference(String languageCode) async {
@@ -191,23 +233,8 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
     await prefs.setString('language', languageCode);
   }
 
-  Future<void> _saveRegistrationData() async {
-    final prefs = await SharedPreferences.getInstance();
-    
-    // Save all registration data
-    await prefs.setString('email', _registrationData.email);
-    await prefs.setString('realName', _registrationData.realName);
-    await prefs.setString('nickname', _registrationData.nickname);
-    await prefs.setString('mainLanguage', _registrationData.mainLanguage);
-    await prefs.setString('nationalityIso2', _registrationData.nationalityIso2);
-    await prefs.setInt('schoolId', _registrationData.schoolId);
-    await prefs.setString('schoolIdString', _registrationData.schoolIdString);
-    await prefs.setInt('departmentId', _registrationData.departmentId);
-    await prefs.setInt('enrollmentYear', _registrationData.enrollmentYear);
-    
-    // Mark user as logged in
-    await prefs.setBool('isLoggedIn', true);
-  }
+  // Method này không còn cần thiết vì đăng ký không tự động đăng nhập
+  // User cần đăng nhập sau khi đăng ký thành công
 
   String _getSuccessMessage(String languageCode) {
     switch (languageCode) {

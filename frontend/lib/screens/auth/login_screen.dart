@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/auth_service.dart';
+import '../../services/api_service.dart';
 import '../home/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -82,19 +84,59 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         _isLoading = true;
       });
 
-      // Simulate login process
-      await Future.delayed(const Duration(seconds: 1));
+      try {
+        // TẠM THỜI TẮT API - Đăng nhập tự do
+        // final response = await AuthService.login(
+        //   email: _emailController.text.trim(),
+        //   password: _passwordController.text,
+        // );
 
-      // Save login state
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoggedIn', true);
-      await prefs.setString('userEmail', _emailController.text);
+        // Lưu thông tin đăng nhập trực tiếp (không cần API)
+        final prefs = await SharedPreferences.getInstance();
+        final email = _emailController.text.trim();
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('userEmail', email);
+        await prefs.setString('userNickname', email.split('@')[0]); // Tạm thời dùng phần trước @ làm nickname
+        await prefs.setString('userRealname', email.split('@')[0]);
 
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
+        // Giả lập delay để có cảm giác thực tế
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+
+          // Hiển thị thông báo thành công
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Đăng nhập thành công!'),
+              backgroundColor: Colors.green[600],
+              duration: const Duration(seconds: 2),
+            ),
+          );
+
+          // Chuyển đến màn hình Home
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        }
+      } catch (e) {
+        // Xử lý lỗi không mong đợi
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Đã xảy ra lỗi: ${e.toString()}'),
+              backgroundColor: Colors.red[600],
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
       }
     }
   }
