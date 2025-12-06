@@ -72,10 +72,5 @@
   "pleaseAgreeTerms": "请同意条款和条件以继续",
   "validStudentEmail": "请输入有效的学生邮箱 (@stu.)",
   "codeSentTo": "验证码已发送至",
-  "notifications": "通知",
-  "unreadNotifications": "未读",
-  "noNotifications": "没有通知",
-  "noNotificationsMessage": "您已查看所有通知！稍后再来查看更新。",
-  "markAllAsRead": "全部标记为已读",
   "visitOfficialWebsite": "访问官方网站"
 }

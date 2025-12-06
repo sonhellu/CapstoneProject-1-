@@ -41,10 +41,5 @@
   "majorRequired": "Vui lòng chọn chuyên ngành",
   "yearRequired": "Vui lòng chọn năm học",
   "nationalityRequired": "Vui lòng chọn quốc tịch",
-  "notifications": "Thông báo",
-  "unreadNotifications": "chưa đọc",
-  "noNotifications": "Không có thông báo",
-  "noNotificationsMessage": "Bạn đã xem hết thông báo! Kiểm tra lại sau nhé.",
-  "markAllAsRead": "Đánh dấu tất cả đã đọc",
   "visitOfficialWebsite": "Truy cập trang web chính thức"
 }

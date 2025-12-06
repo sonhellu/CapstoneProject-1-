@@ -21,16 +21,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   String _selectedYear = '';
   String _selectedNationality = '';
 
-  // Step 2: Email Verification
-  final _emailController = TextEditingController();
-  final _confirmEmailController = TextEditingController();
-  final _verificationCodeController = TextEditingController();
-  bool _isEmailVerified = false;
-  bool _isCodeSent = false;
-  bool _agreeToTerms = false;
-  String _generatedCode = '';
-
-  // Step 3: Final Review
+  // Step 2: Final Review
   bool _isLoading = false;
 
   final List<String> _universities = [
@@ -104,8 +95,6 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
       // Load from registration data
       _nameController.text = prefs.getString('realName') ?? '';
       _usernameController.text = prefs.getString('nickname') ?? '';
-      _emailController.text = prefs.getString('email') ?? '';
-      _confirmEmailController.text = prefs.getString('email') ?? '';
       _selectedUniversity = _getSchoolName(prefs.getInt('schoolId') ?? 1);
       _selectedMajor = _getDepartmentName(prefs.getInt('departmentId') ?? 1);
       _selectedYear = _getYearStringFromEnrollmentYear(prefs.getInt('enrollmentYear'));
@@ -199,103 +188,12 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   void dispose() {
     _nameController.dispose();
     _usernameController.dispose();
-    _emailController.dispose();
-    _confirmEmailController.dispose();
-    _verificationCodeController.dispose();
     _pageController.dispose();
     super.dispose();
   }
 
-  String _generateVerificationCode() {
-    final random = DateTime.now().millisecondsSinceEpoch;
-    return (random % 900000 + 100000).toString(); // 6-digit code
-  }
-
-  void _sendVerificationCode() {
-    if (_emailController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your email address'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    if (!_emailController.text.contains('@stu')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid student email (@stu)'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      _generatedCode = _generateVerificationCode();
-      _isCodeSent = true;
-    });
-
-    // Show the code for testing (in real app, this would be sent via email)
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Verification code sent! Code: $_generatedCode'),
-        backgroundColor: Colors.green[600],
-        duration: const Duration(seconds: 5),
-      ),
-    );
-  }
-
-  void _verifyCode() {
-    if (_verificationCodeController.text == _generatedCode) {
-      setState(() {
-        _isEmailVerified = true;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Email verified successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid verification code'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-
   void _nextStep() {
-    if (_currentStep == 1) {
-      // Check if email is verified and terms are agreed for step 2
-      if (!_isEmailVerified) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please verify your email address first'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-      
-      if (!_agreeToTerms) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Please agree to the terms and conditions to continue',
-            ),
-            backgroundColor: Colors.red[600],
-          ),
-        );
-        return;
-      }
-    }
-
-    if (_currentStep < 2) {
+    if (_currentStep < 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -326,7 +224,6 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     // Save to registration keys for consistency
     await prefs.setString('realName', _nameController.text);
     await prefs.setString('nickname', _usernameController.text);
-    await prefs.setString('email', _emailController.text);
     
     // Convert university name back to ID
     int schoolId = _getSchoolIdFromName(_selectedUniversity);
@@ -449,7 +346,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
       appBar: AppBar(
         backgroundColor: Colors.red[600],
         title: Text(
-          'Edit Profile - Step ${_currentStep + 1}/3',
+          'Edit Profile - Step ${_currentStep + 1}/2',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -463,10 +360,10 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             child: Row(
-              children: List.generate(3, (index) {
+              children: List.generate(2, (index) {
                 return Expanded(
                   child: Container(
-                    margin: EdgeInsets.only(right: index < 2 ? 10 : 0),
+                    margin: EdgeInsets.only(right: index < 1 ? 10 : 0),
                     height: 4,
                     decoration: BoxDecoration(
                       color: index <= _currentStep
@@ -489,7 +386,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
                   _currentStep = index;
                 });
               },
-              children: [_buildStep1(), _buildStep2(), _buildStep3()],
+              children: [_buildStep1(), _buildStep2()],
             ),
           ),
 
@@ -536,7 +433,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
                               ),
                             ),
                           )
-                        : Text(_currentStep == 2 ? 'Save Profile' : 'Next'),
+                        : Text(_currentStep == 1 ? 'Save Profile' : 'Next'),
                   ),
                 ),
               ],
@@ -728,198 +625,6 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Email Verification',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.red[800],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Verify your student email address',
-            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-          ),
-          const SizedBox(height: 32),
-
-          // Email field
-          TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: 'Student Email (@stu.)',
-              prefixIcon: const Icon(Icons.email),
-              hintText: 'example@stu.university.ac.kr',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.red[600]!, width: 2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Send code button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _isCodeSent ? null : _sendVerificationCode,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[600],
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(_isCodeSent ? 'Code Sent' : 'Send Verification Code'),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          if (_isCodeSent) ...[
-            Text(
-              'Enter 6-digit verification code',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.red[800],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Verification code field
-            TextFormField(
-              controller: _verificationCodeController,
-              keyboardType: TextInputType.number,
-              maxLength: 6,
-              decoration: InputDecoration(
-                labelText: 'Verification Code',
-                prefixIcon: const Icon(Icons.security),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.red[600]!, width: 2),
-                ),
-              ),
-              onChanged: (value) {
-                // Verification code changed
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Verify button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isEmailVerified ? null : _verifyCode,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _isEmailVerified
-                      ? Colors.green[600]
-                      : Colors.red[600],
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (_isEmailVerified) ...[
-                      const Icon(Icons.check),
-                      const SizedBox(width: 8),
-                    ],
-                    Text(_isEmailVerified ? 'Email Verified' : 'Verify Code'),
-                  ],
-                ),
-              ),
-            ),
-          ],
-
-          const SizedBox(height: 24),
-
-          // Terms and Conditions
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[300]!),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Terms and Conditions',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red[800],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'By continuing, you agree to our Terms of Service and Privacy Policy. You consent to receive important notifications about your account and campus activities via email.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _agreeToTerms,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          _agreeToTerms = value ?? false;
-                        });
-                      },
-                      activeColor: Colors.red[600],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _agreeToTerms = !_agreeToTerms;
-                          });
-                        },
-                        child: Text(
-                          'I agree to the Terms and Conditions',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStep3() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
             'Review & Save',
             style: TextStyle(
               fontSize: 24,
@@ -946,18 +651,6 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           _buildReviewCard(AppLocalizations.of(context).year, _selectedYear),
           const SizedBox(height: 16),
           _buildReviewCard(AppLocalizations.of(context).nationality, _selectedNationality),
-          const SizedBox(height: 16),
-          _buildReviewCard(AppLocalizations.of(context).email, _emailController.text),
-          const SizedBox(height: 16),
-          _buildReviewCard(
-            'Email Status',
-            _isEmailVerified ? 'Verified ✓' : 'Not Verified',
-          ),
-          const SizedBox(height: 16),
-          _buildReviewCard(
-            'Terms & Conditions',
-            _agreeToTerms ? 'Agreed ✓' : 'Not Agreed',
-          ),
         ],
       ),
     );

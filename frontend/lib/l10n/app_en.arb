@@ -41,10 +41,5 @@
   "majorRequired": "Major is required",
   "yearRequired": "Year is required",
   "nationalityRequired": "Nationality is required",
-  "notifications": "Notifications",
-  "unreadNotifications": "unread",
-  "noNotifications": "No notifications",
-  "noNotificationsMessage": "You're all caught up! Check back later for updates.",
-  "markAllAsRead": "Mark all as read",
   "visitOfficialWebsite": "Visit Official Website"
 }

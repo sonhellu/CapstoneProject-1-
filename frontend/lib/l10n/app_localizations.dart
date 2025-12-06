@@ -469,12 +469,6 @@ class AppLocalizations {
   String get yearRequired => translate('yearRequired');
   String get nationalityRequired => translate('nationalityRequired');
   
-  // Notification translations
-  String get notifications => translate('notifications');
-  String get unreadNotifications => translate('unreadNotifications');
-  String get noNotifications => translate('noNotifications');
-  String get noNotificationsMessage => translate('noNotificationsMessage');
-  String get markAllAsRead => translate('markAllAsRead');
   String get visitOfficialWebsite => translate('visitOfficialWebsite');
 }
 

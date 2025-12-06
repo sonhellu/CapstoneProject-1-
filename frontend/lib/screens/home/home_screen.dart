@@ -8,7 +8,6 @@ import '../../models/banner_model.dart';
 import '../../constants/app_constants.dart';
 import '../profile/profile_screen.dart';
 import '../social/chat_screen.dart';
-import '../notifications/notification_screen.dart';
 import '../../widgets/keimyung_banner.dart';
 import '../../widgets/board_section.dart';
 
@@ -34,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _screens = [
       const HomeTab(),
       const ChatScreen(),
-      const NotificationScreen(),
       const ProfileScreen(),
     ];
   }
@@ -80,10 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: const Icon(AppConstants.iconChat),
             label: AppLocalizations.of(context).chat,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(AppConstants.iconNotifications),
-            label: AppLocalizations.of(context).notifications,
           ),
           BottomNavigationBarItem(
             icon: const Icon(AppConstants.iconProfile),

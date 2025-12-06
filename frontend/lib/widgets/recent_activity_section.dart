@@ -90,7 +90,7 @@ class RecentActivitySection extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppConstants.radiusS),
           ),
           child: Icon(
-            AppConstants.iconNotifications,
+            Icons.info_outline,
             color: AppConstants.primaryColor,
             size: AppConstants.fontSizeXXL,
           ),

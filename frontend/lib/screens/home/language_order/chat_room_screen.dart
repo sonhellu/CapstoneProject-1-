@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../services/matching_service.dart';
 import '../../../services/api_service.dart';
+import '../../../services/auth_service.dart';
 
 class ChatRoomScreen extends StatefulWidget {
   final int conversationId; // Thay roomId bằng conversationId từ backend
@@ -24,11 +25,22 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   bool _isLoading = false;
   bool _isSending = false;
   String? _error;
+  int? _currentUserId;
 
   @override
   void initState() {
     super.initState();
+    _loadCurrentUserId();
     _loadMessages();
+  }
+
+  /// Load current user ID from auth service
+  /// Note: Currently using sender_id comparison from messages
+  /// In production, should get user ID from API
+  Future<void> _loadCurrentUserId() async {
+    // TODO: Implement when user profile API is available
+    // For now, we'll compare sender_id from messages
+    _currentUserId = null;
   }
 
   @override
@@ -37,7 +49,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     super.dispose();
   }
 
-  /// Load messages từ API
+  /// Load messages from API
   Future<void> _loadMessages() async {
     setState(() {
       _isLoading = true;
@@ -70,7 +82,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Lỗi tải tin nhắn: ${e.toString()}';
+        _error = 'Error loading messages: ${e.toString()}';
         _isLoading = false;
       });
     }
@@ -120,7 +132,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi gửi tin nhắn: ${e.toString()}'),
+            content: Text('Error sending message: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -174,7 +186,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: _loadMessages,
-                      child: const Text('Thử lại'),
+                      child: const Text('Retry'),
                     ),
                   ],
                 ),
@@ -187,8 +199,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 itemCount: _messages.length,
                 itemBuilder: (_, i) {
                   final msg = _messages[i];
-                  // TODO: So sánh với current user ID để xác định left/right
-                  final isMe = i.isEven; // Tạm thời dùng logic này
+                  // Compare sender_id with current user ID
+                  // For now, use a simple heuristic: if we have user ID, compare it
+                  // Otherwise, assume even index messages are from current user
+                  final isMe = _currentUserId != null 
+                      ? msg.senderId == _currentUserId
+                      : i.isEven; // Fallback: temporary logic
                   
                   return Align(
                     alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -263,11 +279,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     final diff = now.difference(time);
     
     if (diff.inMinutes < 1) {
-      return 'Vừa xong';
+      return 'Just now';
     } else if (diff.inHours < 1) {
-      return '${diff.inMinutes} phút trước';
+      return '${diff.inMinutes} minutes ago';
     } else if (diff.inDays < 1) {
-      return '${diff.inHours} giờ trước';
+      return '${diff.inHours} hours ago';
     } else {
       return '${time.day}/${time.month}/${time.year}';
     }

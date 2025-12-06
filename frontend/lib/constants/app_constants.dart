@@ -121,7 +121,6 @@ class AppConstants {
   static const IconData iconHome = Icons.home;
   static const IconData iconProfile = Icons.person;
   static const IconData iconChat = Icons.chat;
-  static const IconData iconNotifications = Icons.notifications;
   static const IconData iconSchool = Icons.school;
   static const IconData iconEmail = Icons.email;
   static const IconData iconLock = Icons.lock;

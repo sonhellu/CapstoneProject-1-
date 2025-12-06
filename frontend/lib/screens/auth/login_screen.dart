@@ -85,17 +85,17 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       });
 
       try {
-        // Gọi API đăng nhập thật từ Render
+        // Call real login API from Render
         final response = await AuthService.login(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
 
         if (mounted) {
-          // Hiển thị thông báo thành công
+          // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(response['message'] ?? 'Đăng nhập thành công!'),
+              content: Text(response['message'] ?? 'Login successful!'),
               backgroundColor: Colors.green[600],
               duration: const Duration(seconds: 2),
             ),
@@ -108,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           );
         }
       } on ApiException catch (e) {
-        // Xử lý lỗi từ API
+        // Handle API errors
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -123,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           );
         }
       } catch (e) {
-        // Xử lý lỗi không mong đợi
+        // Handle unexpected errors
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -131,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Đã xảy ra lỗi: ${e.toString()}'),
+              content: Text('An error occurred: ${e.toString()}'),
               backgroundColor: Colors.red[600],
               duration: const Duration(seconds: 3),
             ),

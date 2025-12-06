@@ -79,7 +79,7 @@ class _BoardScreenState extends State<BoardScreen> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Lỗi tải dữ liệu: ${e.toString()}';
+        _error = 'Error loading data: ${e.toString()}';
         _isLoading = false;
       });
     }
@@ -135,7 +135,7 @@ class _BoardScreenState extends State<BoardScreen> {
                 ),
               );
               
-              // Reload posts nếu đã tạo bài viết thành công
+              // Reload posts if post was created successfully
               if (result == true && mounted) {
                 _loadPosts();
               }
@@ -260,7 +260,7 @@ class _BoardScreenState extends State<BoardScreen> {
             ElevatedButton.icon(
               onPressed: _loadPosts,
               icon: const Icon(Icons.refresh),
-              label: const Text('Thử lại'),
+              label: const Text('Retry'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[600],
                 foregroundColor: Colors.white,

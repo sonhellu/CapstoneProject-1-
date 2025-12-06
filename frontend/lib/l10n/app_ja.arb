@@ -72,10 +72,5 @@
   "pleaseAgreeTerms": "続行するには利用規約に同意してください",
   "validStudentEmail": "有効な学生メールを入力してください (@stu.)",
   "codeSentTo": "認証コードが送信されました",
-  "notifications": "通知",
-  "unreadNotifications": "未読",
-  "noNotifications": "通知がありません",
-  "noNotificationsMessage": "すべての通知を確認しました！後で更新を確認してください。",
-  "markAllAsRead": "すべて既読にする",
   "visitOfficialWebsite": "公式ウェブサイトを訪問"
 }

@@ -58,7 +58,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Đã đăng bài viết thành công!'),
+            content: Text('Post published successfully!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -85,7 +85,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: ${e.toString()}'),
+            content: Text('Error: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );

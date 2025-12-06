@@ -213,7 +213,7 @@ class _NewsSectionState extends State<NewsSection>
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => newsProvider.refreshNews(),
-                  child: const Text('Thử lại'),
+                  child: const Text('Retry'),
                 ),
               ],
             ),

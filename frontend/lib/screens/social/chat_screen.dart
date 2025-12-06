@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../home/language_order/chat_room_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -8,49 +9,49 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final List<ChatMessage> _messages = [
-    ChatMessage(
-        text: 'Welcome to Hi Campus! How can I help you today?',
-      isUser: false,
-      timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
+  // Sample conversations list
+  final List<Conversation> _conversations = [
+    Conversation(
+      id: 1,
+      partnerName: 'Alice',
+      avatarUrl: 'https://i.pravatar.cc/150?img=1',
+      lastMessage: '안녕하세요! How are you today?',
+      lastMessageTime: DateTime.now().subtract(const Duration(minutes: 5)),
+      unreadCount: 2,
+    ),
+    Conversation(
+      id: 2,
+      partnerName: 'Bob',
+      avatarUrl: 'https://i.pravatar.cc/150?img=2',
+      lastMessage: 'See you tomorrow!',
+      lastMessageTime: DateTime.now().subtract(const Duration(hours: 2)),
+      unreadCount: 0,
+    ),
+    Conversation(
+      id: 3,
+      partnerName: 'Chloe',
+      avatarUrl: 'https://i.pravatar.cc/150?img=3',
+      lastMessage: 'Thanks for your help!',
+      lastMessageTime: DateTime.now().subtract(const Duration(hours: 5)),
+      unreadCount: 1,
+    ),
+    Conversation(
+      id: 4,
+      partnerName: 'Dan',
+      avatarUrl: 'https://i.pravatar.cc/150?img=4',
+      lastMessage: 'Can we meet at the library?',
+      lastMessageTime: DateTime.now().subtract(const Duration(days: 1)),
+      unreadCount: 0,
+    ),
+    Conversation(
+      id: 5,
+      partnerName: 'Emma',
+      avatarUrl: 'https://i.pravatar.cc/150?img=5',
+      lastMessage: 'Great! See you there.',
+      lastMessageTime: DateTime.now().subtract(const Duration(days: 2)),
+      unreadCount: 0,
     ),
   ];
-
-  final TextEditingController _messageController = TextEditingController();
-
-  @override
-  void dispose() {
-    _messageController.dispose();
-    super.dispose();
-  }
-
-  void _sendMessage() {
-    if (_messageController.text.trim().isNotEmpty) {
-      setState(() {
-        _messages.add(
-          ChatMessage(
-            text: _messageController.text.trim(),
-            isUser: true,
-            timestamp: DateTime.now(),
-          ),
-        );
-        _messageController.clear();
-      });
-
-      // Simulate bot response
-      Future.delayed(const Duration(seconds: 1), () {
-        setState(() {
-          _messages.add(
-            ChatMessage(
-              text: 'Thank you for your message! I\'m here to help you with any questions about campus life in Korea.',
-              isUser: false,
-              timestamp: DateTime.now(),
-            ),
-          );
-        });
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,214 +74,198 @@ class _ChatScreenState extends State<ChatScreen> {
               ],
         ),
       ),
-      child: Column(
-        children: [
-          // Chat header
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.red[600],
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.red.withValues(alpha: 0.3),
-                  blurRadius: 5,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.support_agent,
-                    color: Colors.red[600],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Campus Support',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+      child: SafeArea(
+        child: Column(
+          children: [
+            // Conversations list
+            Expanded(
+              child: _conversations.isEmpty
+                  ? _buildEmptyState(isDark)
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      itemCount: _conversations.length,
+                      itemBuilder: (context, index) {
+                        final conversation = _conversations[index];
+                        return _buildConversationItem(context, conversation, isDark);
+                      },
                     ),
-                    Text(
-                      'Online',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ),
-          ),
-          
-          // Messages list
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return _buildMessageBubble(message);
-              },
-            ),
-          ),
-          
-          // Message input
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: isDark 
-                    ? Colors.black.withValues(alpha: 0.3)
-                    : Colors.grey.withValues(alpha: 0.2),
-                  blurRadius: 5,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Type your message...',
-                      hintStyle: TextStyle(
-                        color: isDark ? Colors.white54 : Colors.grey[600],
-                      ),
-                      filled: true,
-                      fillColor: isDark ? const Color(0xFF2C2C2C) : Colors.grey[100],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(color: Colors.red[600]!, width: 2),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                    ),
-                    maxLines: null,
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                FloatingActionButton(
-                  onPressed: _sendMessage,
-                  backgroundColor: Colors.red[600],
-                  mini: true,
-                  child: const Icon(Icons.send, color: Colors.white),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildMessageBubble(ChatMessage message) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: message.isUser 
-            ? MainAxisAlignment.end 
-            : MainAxisAlignment.start,
-        children: [
-          if (!message.isUser) ...[
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.red[600],
-              child: const Icon(
-                Icons.support_agent,
-                size: 16,
-                color: Colors.white,
-              ),
+  Widget _buildConversationItem(BuildContext context, Conversation conversation, bool isDark) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChatRoomScreen(
+              conversationId: conversation.id,
+              partnerName: conversation.partnerName,
+              targetLanguageLabel: '언어교류',
             ),
-            const SizedBox(width: 8),
-          ],
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: message.isUser 
-                    ? Colors.red[600] 
-                    : isDark 
-                        ? const Color(0xFF2C2C2C)
-                        : Colors.grey[200],
-                borderRadius: BorderRadius.circular(20).copyWith(
-                  bottomLeft: message.isUser 
-                      ? const Radius.circular(20) 
-                      : const Radius.circular(4),
-                  bottomRight: message.isUser 
-                      ? const Radius.circular(4) 
-                      : const Radius.circular(20),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.transparent : Colors.white,
+          border: Border(
+            bottom: BorderSide(
+              color: isDark 
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : Colors.grey.withValues(alpha: 0.2),
+              width: 0.5,
+            ),
+          ),
+        ),
+        child: Row(
+          children: [
+            // Avatar
+            Stack(
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundImage: NetworkImage(conversation.avatarUrl),
+                  onBackgroundImageError: (_, __) {},
+                  child: const Icon(Icons.person, size: 28),
                 ),
-              ),
+                if (conversation.unreadCount > 0)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.circle,
+                        size: 8,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(width: 16),
+            
+            // Name and last message
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    message.text,
-                    style: TextStyle(
-                      color: message.isUser 
-                          ? Colors.white 
-                          : isDark 
-                              ? Colors.white 
-                              : Colors.black87,
-                      fontSize: 16,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          conversation.partnerName,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: conversation.unreadCount > 0
+                                ? FontWeight.bold
+                                : FontWeight.w500,
+                            color: isDark ? Colors.white : Colors.black87,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Text(
+                        _formatTime(conversation.lastMessageTime),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? Colors.white54 : Colors.grey[600],
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    _formatTime(message.timestamp),
-                    style: TextStyle(
-                      color: message.isUser 
-                          ? Colors.white.withValues(alpha: 0.7) 
-                          : isDark 
-                              ? Colors.white70 
-                              : Colors.grey[600],
-                      fontSize: 12,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          conversation.lastMessage,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isDark 
+                                ? (conversation.unreadCount > 0
+                                    ? Colors.white
+                                    : Colors.white70)
+                                : (conversation.unreadCount > 0
+                                    ? Colors.black87
+                                    : Colors.grey[600]),
+                            fontWeight: conversation.unreadCount > 0
+                                ? FontWeight.w500
+                                : FontWeight.normal,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (conversation.unreadCount > 0)
+                        Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red[600],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            conversation.unreadCount.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),
             ),
-          ),
-          if (message.isUser) ...[
-            const SizedBox(width: 8),
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: isDark 
-                  ? const Color(0xFF2C2C2C)
-                  : Colors.grey[300],
-              child: Icon(
-                Icons.person,
-                size: 16,
-                color: isDark ? Colors.white70 : Colors.white,
-              ),
-            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(bool isDark) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.chat_bubble_outline,
+            size: 64,
+            color: isDark ? Colors.white38 : Colors.grey[400],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No conversations yet',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: isDark ? Colors.white70 : Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Start a conversation with someone!',
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? Colors.white54 : Colors.grey[500],
+            ),
+          ),
         ],
       ),
     );
@@ -293,23 +278,31 @@ class _ChatScreenState extends State<ChatScreen> {
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inHours < 1) {
-      return '${difference.inMinutes}m ago';
+      return '${difference.inMinutes}m';
     } else if (difference.inDays < 1) {
-      return '${difference.inHours}h ago';
+      return '${difference.inHours}h';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}d';
     } else {
-      return '${difference.inDays}d ago';
+      return '${timestamp.day}/${timestamp.month}';
     }
   }
 }
 
-class ChatMessage {
-  final String text;
-  final bool isUser;
-  final DateTime timestamp;
+class Conversation {
+  final int id;
+  final String partnerName;
+  final String avatarUrl;
+  final String lastMessage;
+  final DateTime lastMessageTime;
+  final int unreadCount;
 
-  ChatMessage({
-    required this.text,
-    required this.isUser,
-    required this.timestamp,
+  Conversation({
+    required this.id,
+    required this.partnerName,
+    required this.avatarUrl,
+    required this.lastMessage,
+    required this.lastMessageTime,
+    this.unreadCount = 0,
   });
 }

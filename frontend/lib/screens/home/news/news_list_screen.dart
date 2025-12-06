@@ -200,7 +200,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => newsProvider.refreshNews(),
-                  child: const Text('Thử lại'),
+                  child: const Text('Retry'),
                 ),
               ],
             ),
@@ -229,7 +229,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _searchQuery.isEmpty ? 'Chưa có tin tức nào' : 'Không tìm thấy kết quả',
+                  _searchQuery.isEmpty ? 'No news available' : 'No results found',
                   style: TextStyle(
                     color: widget.isDark ? Colors.white54 : Colors.grey[600],
                     fontSize: AppConstants.fontSizeL,

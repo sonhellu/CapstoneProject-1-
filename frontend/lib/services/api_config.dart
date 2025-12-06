@@ -1,8 +1,8 @@
 /// API Configuration - Optimized
 class ApiConfig {
   // Environment-based URLs
-  static const String _prodUrl = 'https://hi-campus-backend.onrender.com';
-  static const String _devUrl = 'http://127.0.0.1:8000';
+  static const String _prodUrl = 'https://capstoneproject-k4fm.onrender.com';
+  static const String _devUrl = 'http://127.0.0.1:5000';
   
   // Toggle between production and development
   static const bool _isProduction = true; // Set to false for local development

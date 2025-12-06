@@ -150,7 +150,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
     });
 
     try {
-      // Gọi API đăng ký thật
+      // Call real registration API
       final apiData = _registrationData.toApiFormat();
       final response = await AuthService.register(
         email: apiData['email'] as String,
@@ -198,7 +198,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
       }
     }
     } on ApiException catch (e) {
-      // Xử lý lỗi từ API
+      // Handle API errors
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -213,7 +213,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
         );
       }
     } catch (e) {
-      // Xử lý lỗi không mong đợi
+      // Handle unexpected errors
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -221,7 +221,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Đã xảy ra lỗi: ${e.toString()}'),
+            content: Text('An error occurred: ${e.toString()}'),
             backgroundColor: Colors.red[600],
             duration: const Duration(seconds: 3),
           ),
@@ -235,15 +235,15 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
     await prefs.setString('language', languageCode);
   }
 
-  // Method này không còn cần thiết vì đăng ký không tự động đăng nhập
-  // User cần đăng nhập sau khi đăng ký thành công
+  // This method is no longer needed because registration doesn't auto-login
+  // User needs to login after successful registration
 
   String _getSuccessMessage(String languageCode) {
     switch (languageCode) {
       case 'ko':
         return '회원가입이 성공적으로 완료되었습니다! 로그인해주세요.';
       case 'vi':
-        return 'Đăng ký thành công! Vui lòng đăng nhập.';
+        return 'Registration successful! Please login.';
       case 'ja':
         return '登録が正常に完了しました！ログインしてください。';
       case 'zh':

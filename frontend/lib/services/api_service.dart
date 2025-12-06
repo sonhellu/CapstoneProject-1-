@@ -119,8 +119,8 @@ class ApiService {
           continue;
         }
         throw ApiException(
-          'Không thể kết nối đến server.\n'
-          'Vui lòng kiểm tra kết nối mạng.\n'
+          'Cannot connect to server.\n'
+          'Please check your network connection.\n'
           'Environment: ${ApiConfig.environment}\n'
           'Error: ${e.message}'
         );
@@ -131,9 +131,9 @@ class ApiService {
           continue;
         }
         throw ApiException(
-          'Kết nối timeout sau ${ApiConfig.maxRetries} lần thử.\n'
-          'Server có thể đang khởi động (Render cold start).\n'
-          'Vui lòng thử lại sau ít phút.'
+          'Connection timeout after ${ApiConfig.maxRetries} attempts.\n'
+          'Server may be starting up (Render cold start).\n'
+          'Please try again in a few minutes.'
         );
       } catch (e) {
         if (retries < ApiConfig.maxRetries - 1) {
@@ -141,11 +141,11 @@ class ApiService {
           retries++;
           continue;
         }
-        throw ApiException('Lỗi: ${e.toString()}');
+        throw ApiException('Error: ${e.toString()}');
       }
     }
     
-    throw ApiException('Đã thử ${ApiConfig.maxRetries} lần nhưng vẫn thất bại');
+    throw ApiException('Failed after ${ApiConfig.maxRetries} attempts');
   }
 
   /// Handle HTTP response
@@ -168,25 +168,25 @@ class ApiService {
       throw ApiException(
         responseBody['error'] ?? 
         responseBody['detail'] ?? 
-        'Email hoặc mật khẩu không đúng'
+        'Invalid email or password'
       );
     } else if (statusCode == 409) {
       throw ApiException(
         responseBody['error'] ?? 
         responseBody['detail'] ?? 
-        'Email đã tồn tại'
+        'Email already exists'
       );
     } else if (statusCode == 500) {
       throw ApiException(
         responseBody['error'] ?? 
         responseBody['detail'] ?? 
-        'Lỗi server. Vui lòng thử lại sau.'
+        'Server error. Please try again later.'
       );
     } else {
       throw ApiException(
         responseBody['error'] ?? 
         responseBody['detail'] ?? 
-        'Lỗi không xác định (Status: $statusCode)'
+        'Unknown error (Status: $statusCode)'
       );
     }
   }

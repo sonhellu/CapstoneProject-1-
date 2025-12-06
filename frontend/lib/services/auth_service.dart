@@ -4,7 +4,9 @@ import 'api_config.dart';
 
 /// Authentication Service - Optimized
 class AuthService {
-  /// Login với backend Render
+  // Temporarily disable API authentication - Set true to bypass auth
+  static const bool BYPASS_AUTH = true;
+  /// Login with backend Render
   static Future<Map<String, dynamic>> login({
     required String email,
     required String password,
@@ -17,26 +19,26 @@ class AuthService {
       },
     );
 
-    // Backend trả về: {access_token, token_type}
+    // Backend returns: {access_token, token_type}
     final accessToken = response['access_token'] as String?;
     
     if (accessToken == null) {
-      throw ApiException('Không nhận được access token từ server');
+      throw ApiException('Failed to receive access token from server');
     }
 
-    // Lưu thông tin đăng nhập
+    // Save login information
     await _saveLoginData(
       email: email,
       accessToken: accessToken,
     );
 
     return {
-      'message': 'Đăng nhập thành công!',
+      'message': 'Login successful!',
       'access_token': accessToken,
     };
   }
 
-  /// Register với backend Render
+  /// Register with backend Render
   static Future<Map<String, dynamic>> register({
     required String email,
     required String password,
@@ -79,11 +81,14 @@ class AuthService {
 
   /// Check login status
   static Future<bool> isLoggedIn() async {
+    // Bypass authentication if flag is enabled
+    if (BYPASS_AUTH) return true;
+    
     final prefs = await SharedPreferences.getInstance();
     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     final token = prefs.getString('accessToken');
     
-    // Kiểm tra cả flag và token
+    // Check both flag and token
     return isLoggedIn && token != null && token.isNotEmpty;
   }
 
@@ -115,7 +120,7 @@ class AuthService {
     await prefs.setString('userEmail', email);
     await prefs.setString('accessToken', accessToken);
     
-    // Tạm thời lưu nickname từ email (sẽ được cập nhật khi có API get user info)
+    // Temporarily save nickname from email (will be updated when user info API is available)
     final nickname = email.split('@')[0];
     await prefs.setString('userNickname', nickname);
     await prefs.setString('userRealname', nickname);
@@ -123,9 +128,14 @@ class AuthService {
   
   /// Get headers with auth token
   static Future<Map<String, String>> getAuthHeaders() async {
+    // Bypass authentication if flag is enabled - return headers without token
+    if (BYPASS_AUTH) {
+      return ApiConfig.headers; // Headers without Authorization
+    }
+    
     final token = await getAccessToken();
     if (token == null) {
-      throw ApiException('Không tìm thấy access token. Vui lòng đăng nhập lại.');
+      throw ApiException('Access token not found. Please login again.');
     }
     return ApiConfig.headersWithAuth(token);
   }

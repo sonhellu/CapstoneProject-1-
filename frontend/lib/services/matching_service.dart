@@ -44,7 +44,7 @@ class MatchingService {
     final response = await ApiService.get(
       endpoint,
       headers: headers,
-      useCache: false, // Không cache vì cần data mới nhất
+      useCache: false, // Don't cache to get latest data
     );
     
     if (response is List) {
@@ -105,7 +105,7 @@ class MatchingService {
       },
     );
     
-    // Clear cache để lấy messages mới
+    // Clear cache to get new messages
     ApiService.clearCacheEntry(
       ApiConfig.conversationMessagesEndpoint(conversationId),
     );
@@ -116,7 +116,7 @@ class MatchingService {
   /// Lấy danh sách tin nhắn
   static Future<List<dynamic>> getMessages({
     required int conversationId,
-    bool useCache = false, // Mặc định không cache để có messages mới nhất
+    bool useCache = false, // Default no cache to get latest messages
   }) async {
     final headers = await AuthService.getAuthHeaders();
     

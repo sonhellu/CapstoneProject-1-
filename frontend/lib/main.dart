@@ -29,6 +29,9 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
+  // Temporarily disable API authentication - Set true to bypass login
+  static const bool BYPASS_AUTH = true;
+  
   Locale _locale = const Locale('en', '');
   bool _isLoggedIn = false;
   bool _isLoading = true;
@@ -44,7 +47,9 @@ class _MainAppState extends State<MainApp> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final savedLanguage = prefs.getString('language') ?? 'en';
-      final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+      
+      // Bypass authentication nếu flag được bật
+      final isLoggedIn = BYPASS_AUTH ? true : (prefs.getBool('isLoggedIn') ?? false);
       
       if (mounted) {
         setState(() {
@@ -57,6 +62,10 @@ class _MainAppState extends State<MainApp> {
       if (mounted) {
         setState(() {
           _isLoading = false;
+          // Nếu bypass auth, vẫn set logged in
+          if (BYPASS_AUTH) {
+            _isLoggedIn = true;
+          }
         });
       }
     }
