@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 from .config import Config
 from .database import db, ma
 
@@ -6,6 +7,9 @@ def create_app():
     """애플리케이션 팩토리 함수"""
     
     app = Flask(__name__)
+    
+    # CORS 설정 - cho phép frontend gọi API
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
     
     # 1. 설정 로드
     app.config.from_object(Config)
