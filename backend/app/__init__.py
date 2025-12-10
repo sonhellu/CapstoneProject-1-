@@ -18,11 +18,14 @@ def create_app():
     db.init_app(app)
     ma.init_app(app)
 
-    # 서버가 시작될 때 자동으로 테이블 생성
+    # 3. 모델 임포트 (DB 생성 명령어에 필요 - phải import trước khi gọi db.create_all())
+    from . import models
+    
+    # 4. 서버가 시작될 때 자동으로 테이블 생성
     with app.app_context():
         db.create_all()
     
-    # 3. 블루프린트(기능별 파일) 등록
+    # 5. 블루프린트(기능별 파일) 등록
     from .routes.auth import auth_bp
     from .routes.school import school_bp
     from .routes.community import community_bp
@@ -33,15 +36,12 @@ def create_app():
     app.register_blueprint(community_bp)
     app.register_blueprint(matching_bp)
     
-    # 4. 모델 임포트 (DB 생성 명령어에 필요)
-    from . import models
-    
-    # 5. (선택) 간단한 루트 엔드포인트
+    # 6. (선택) 간단한 루트 엔드포인트
     @app.route("/")
     def read_root():
         return jsonify({"message": "Hi-Campus API 서버 (분리된 구조)"})
 
-    # 6. (선택) DB 테이블 생성용 CLI 명령어
+    # 7. (선택) DB 테이블 생성용 CLI 명령어
     @app.cli.command("init-db")
     def init_db():
         db.create_all()
