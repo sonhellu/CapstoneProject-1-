@@ -12,13 +12,13 @@ services:
         value: False
       - key: SECRET_KEY
         generateValue: true
-      # Database variables - sẽ được set trong Render Dashboard
-      # DB_USER, DB_PASS, DB_HOST, DB_NAME, DB_PORT
-      # hoặc DATABASE_URL nếu dùng Render managed database
+      # Database variables - Render sẽ tự động tạo DATABASE_URL cho PostgreSQL
+      # Code sẽ tự động sử dụng DATABASE_URL nếu có
 
 databases:
   - name: hi-campus-db
     plan: free
     databaseName: hi_campus
     user: hi_campus_user
+    # PostgreSQL là default database type trên Render
 

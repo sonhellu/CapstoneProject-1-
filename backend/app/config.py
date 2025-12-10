@@ -5,6 +5,10 @@ class Config:
     # 1. Render에서 제공하는 DB 주소(DATABASE_URL)가 있으면 그걸 쓰고(PostgreSQL),
     # 2. 없으면 우리가 쓰던 로컬 주소(MySQL)를 씁니다.
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+    
+    # Convert postgres:// to postgresql:// (SQLAlchemy requirement)
+    if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
+        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace("postgres://", "postgresql://", 1)
 
     if not SQLALCHEMY_DATABASE_URI:
         # 로컬 개발용 (MySQL)
