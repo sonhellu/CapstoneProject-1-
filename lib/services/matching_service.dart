@@ -1,0 +1,145 @@
+import 'api_service.dart';
+import 'api_config.dart';
+import 'auth_service.dart';
+
+/// Matching Service - Xử lý kết nối mentor-mentee và chat
+class MatchingService {
+  /// Tạo yêu cầu tìm helper
+  static Future<Map<String, dynamic>> createMatchRequest({
+    int? preferredCollegeId,
+    String preferredGender = 'any',
+    String? notes,
+  }) async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    final body = <String, dynamic>{
+      'preferred_gender': preferredGender,
+    };
+    
+    if (preferredCollegeId != null) {
+      body['preferred_college_id'] = preferredCollegeId;
+    }
+    
+    if (notes != null && notes.isNotEmpty) {
+      body['notes'] = notes;
+    }
+    
+    final response = await ApiService.post(
+      ApiConfig.matchRequestsEndpoint,
+      headers: headers,
+      body: body,
+    );
+    
+    return response;
+  }
+  
+  /// Tìm helper phù hợp
+  static Future<List<dynamic>> findHelpers({
+    required int requestId,
+    int limit = 10,
+  }) async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    final endpoint = '${ApiConfig.findHelpersEndpoint(requestId)}?limit=$limit';
+    final response = await ApiService.get(
+      endpoint,
+      headers: headers,
+      useCache: false, // Don't cache to get latest data
+    );
+    
+    if (response is List) {
+      return response;
+    }
+    
+    return [];
+  }
+  
+  /// Đề xuất helper cho request
+  static Future<Map<String, dynamic>> offerMatch({
+    required int requestId,
+    required int mentorUserId,
+  }) async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    final response = await ApiService.post(
+      ApiConfig.offerMatchEndpoint(requestId),
+      headers: headers,
+      body: {
+        'mentor_user_id': mentorUserId,
+      },
+    );
+    
+    return response;
+  }
+  
+  /// Chấp nhận kết nối
+  static Future<Map<String, dynamic>> acceptMatch({
+    required int requestId,
+    required int mentorUserId,
+  }) async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    final response = await ApiService.post(
+      ApiConfig.acceptMatchEndpoint(requestId),
+      headers: headers,
+      body: {
+        'mentor_user_id': mentorUserId,
+      },
+    );
+    
+    return response;
+  }
+  
+  /// Gửi tin nhắn
+  static Future<Map<String, dynamic>> sendMessage({
+    required int conversationId,
+    required String content,
+  }) async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    final response = await ApiService.post(
+      ApiConfig.conversationMessagesEndpoint(conversationId),
+      headers: headers,
+      body: {
+        'content': content,
+      },
+    );
+    
+    // Clear cache to get new messages
+    ApiService.clearCacheEntry(
+      ApiConfig.conversationMessagesEndpoint(conversationId),
+    );
+    
+    return response;
+  }
+  
+  /// Lấy danh sách tin nhắn
+  static Future<List<dynamic>> getMessages({
+    required int conversationId,
+    bool useCache = false, // Default no cache to get latest messages
+  }) async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    final response = await ApiService.get(
+      ApiConfig.conversationMessagesEndpoint(conversationId),
+      headers: headers,
+      useCache: useCache,
+    );
+    
+    if (response is List) {
+      return response;
+    }
+    
+    return [];
+  }
+  
+  /// Refresh messages (force reload)
+  static Future<List<dynamic>> refreshMessages({
+    required int conversationId,
+  }) async {
+    return await getMessages(
+      conversationId: conversationId,
+      useCache: false,
+    );
+  }
+}
