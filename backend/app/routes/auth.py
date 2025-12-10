@@ -11,43 +11,71 @@ auth_bp = Blueprint('auth_bp', __name__, url_prefix='/api/auth')
 @auth_bp.route("/register", methods=["POST"])
 def register():
     """회원가입 API"""
-    data = request.json
+    try:
+        data = request.json
+        
+        if not data:
+            return jsonify({"error": "Request body is required"}), 400
+        
+        required_fields = [
+            'email', 'password', 'nickname', 'realname', 'gender', 
+            'main_language', 'nationality_iso2', 'school_id', 
+            'department_id', 'enrollment_year'
+        ]
+        if not all(field in data for field in required_fields):
+            return jsonify({"error": "Missing required fields"}), 400
+
+        # Kiểm tra email đã tồn tại
+        if Users.query.filter_by(email=data['email']).first():
+            return jsonify({"error": "Email already registered"}), 409
+
+        # Validate foreign keys trước khi tạo user
+        from ..models import Schools, Departments, Language, Country
+        
+        if not Schools.query.get(data['school_id']):
+            return jsonify({"error": f"School with id {data['school_id']} not found"}), 400
+        
+        if not Departments.query.get(data['department_id']):
+            return jsonify({"error": f"Department with id {data['department_id']} not found"}), 400
+        
+        if not Language.query.get(data['main_language']):
+            return jsonify({"error": f"Language code '{data['main_language']}' not found"}), 400
+        
+        if not Country.query.get(data['nationality_iso2']):
+            return jsonify({"error": f"Country code '{data['nationality_iso2']}' not found"}), 400
+
+        # Validate gender
+        if data['gender'] not in ['male', 'female']:
+            return jsonify({"error": "Gender must be 'male' or 'female'"}), 400
+
+        hashed_password = bcrypt.hashpw(
+            data['password'].encode('utf-8'), 
+            bcrypt.gensalt()
+        ).decode('utf-8')
+
+        new_user = Users(
+            email=data['email'],
+            password_hash=hashed_password,
+            nickname=data['nickname'],
+            realname=data['realname'],
+            gender=data['gender'],
+            main_language=data['main_language'],
+            nationality_iso2=data['nationality_iso2'],
+            school_id=data['school_id'],
+            department_id=data['department_id'],
+            enrollment_year=data['enrollment_year']
+        )
+        
+        db.session.add(new_user)
+        db.session.commit()
+        
+        return jsonify({"message": "User registered successfully"}), 201
     
-    required_fields = [
-        'email', 'password', 'nickname', 'realname', 'gender', 
-        'main_language', 'nationality_iso2', 'school_id', 
-        'department_id', 'enrollment_year'
-    ]
-    if not all(field in data for field in required_fields):
-        return jsonify({"error": "Missing required fields"}), 400
-
-    if Users.query.filter_by(email=data['email']).first():
-        return jsonify({"error": "Email already registered"}), 409
-
-    hashed_password = bcrypt.hashpw(
-        data['password'].encode('utf-8'), 
-        bcrypt.gensalt()
-    ).decode('utf-8')
-
-    new_user = Users(
-        email=data['email'],
-        password_hash=hashed_password,
-        nickname=data['nickname'],
-        realname=data['realname'],
-        gender=data['gender'],
-        main_language=data['main_language'],
-        nationality_iso2=data['nationality_iso2'],
-        school_id=data['school_id'],
-        department_id=data['department_id'],
-        enrollment_year=data['enrollment_year']
-    )
-    
-    db.session.add(new_user)
-    db.session.commit()
-    
-    return jsonify({"message": "User registered successfully"}), 201
-
-
+    except Exception as e:
+        db.session.rollback()
+        # Log error để debug
+        current_app.logger.error(f"Registration error: {str(e)}", exc_info=True)
+        return jsonify({"error": f"Registration failed: {str(e)}"}), 500
 @auth_bp.route("/login", methods=["POST"])
 def login():
     """로그인 API - JWT 토큰 발급"""

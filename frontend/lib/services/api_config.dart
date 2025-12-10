@@ -1,7 +1,7 @@
 /// API Configuration - Optimized
 class ApiConfig {
   // Environment-based URLs
-  static const String _prodUrl = 'https://capstoneproject-k4fm.onrender.com';
+  static const String _prodUrl = 'https://capstoneproject-1-backend.onrender.com';
   static const String _devUrl = 'http://127.0.0.1:5000';
   
   // Toggle between production and development

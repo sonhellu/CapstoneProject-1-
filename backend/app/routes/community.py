@@ -5,6 +5,25 @@ from ..auth_utils import require_auth
 
 community_bp = Blueprint('community_bp', __name__, url_prefix='/api')
 
+@community_bp.route("/boards", methods=["GET"])
+def get_boards():
+    """
+    모든 게시판 목록 조회 API (테스트용)
+    """
+    boards = Boards.query.order_by(Boards.order_index.asc()).all()
+    
+    result = []
+    for board in boards:
+        result.append({
+            "id": board.id,
+            "board_name": board.board_name,
+            "description": board.description,
+            "community_id": board.community_id,
+            "order_index": board.order_index
+        })
+    
+    return jsonify(result), 200
+
 @community_bp.route("/board/<int:board_id>/posts", methods=["GET"])
 def get_posts(board_id):
     """
@@ -26,8 +45,12 @@ def get_posts(board_id):
     limit = request.args.get('limit', default=20, type=int)
     
     # 2. 게시판 존재 여부 확인
-    if not Boards.query.get(board_id):
-        return jsonify({"error": "Board not found"}), 404
+    board = Boards.query.get(board_id)
+    if not board:
+        return jsonify({
+            "error": "Board not found",
+            "message": f"Board with id {board_id} does not exist. Use GET /api/boards to see available boards."
+        }), 404
 
     # 3. DB 조회
     # 해당 게시판(board_id)의 글을 작성일(created_at) 역순(최신순)으로 정렬하고
