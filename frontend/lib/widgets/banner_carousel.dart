@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/banner_model.dart';
 import '../screens/home/banner/banner_detail_screen.dart';
 
@@ -93,18 +94,18 @@ class _BannerCarouselState extends State<BannerCarousel>
         // Header with animation - Optimized with RepaintBoundary
         RepaintBoundary(
           child: TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 400), // Reduced duration
+            duration: const Duration(milliseconds: 300), // Further optimized
             tween: Tween(begin: 0.0, end: 1.0),
             builder: (context, value, child) {
               return Transform.translate(
-                offset: Offset(0, 15 * (1 - value)), // Reduced offset
+                offset: Offset(0, 10 * (1 - value)), // Further reduced offset
                 child: Opacity(
                   opacity: value,
                   child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Featured News',
+                      AppLocalizations.of(context).featuredNews,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

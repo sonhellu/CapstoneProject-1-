@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../../screens/home/language_order/language_order_screen.dart';
 import '../../screens/home/language_order/chat_room_screen.dart';
 
@@ -45,7 +46,7 @@ class LanguageOrderSection extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '온라인 사용자',
+                    AppLocalizations.of(context).onlineUsers,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -88,7 +89,7 @@ class LanguageOrderSection extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '더보기',
+                      AppLocalizations.of(context).viewMore,
                       style: TextStyle(
                         fontSize: 13,
                         color: isDark ? Colors.white70 : Colors.grey[700],
@@ -164,9 +165,14 @@ class LanguageOrderSection extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 28,
-                  backgroundImage: NetworkImage(user.avatarUrl),
+                  backgroundColor: isDark ? Colors.grey[700] : Colors.grey[300],
+                  backgroundImage: user.avatarUrl.isNotEmpty 
+                      ? NetworkImage(user.avatarUrl)
+                      : null,
                   onBackgroundImageError: (_, __) {},
-                  child: const Icon(Icons.person, size: 28),
+                  child: user.avatarUrl.isEmpty
+                      ? Icon(Icons.person, size: 28, color: isDark ? Colors.grey[400] : Colors.grey[600])
+                      : null,
                 ),
                 Positioned(
                   right: 0,

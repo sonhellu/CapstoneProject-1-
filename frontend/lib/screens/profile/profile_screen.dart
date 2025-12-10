@@ -105,23 +105,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _getYearStringFromEnrollmentYear(int? enrollmentYear) {
     if (enrollmentYear == null) return '';
     
+    final l10n = AppLocalizations.of(context);
     int currentYear = DateTime.now().year;
     int yearDiff = currentYear - enrollmentYear;
     
     if (yearDiff < 0) {
-      return '1st Year'; // Future enrollment
+      return l10n.firstYear; // Future enrollment
     } else if (yearDiff == 0) {
-      return '1st Year';
+      return l10n.firstYear;
     } else if (yearDiff == 1) {
-      return '2nd Year';
+      return l10n.secondYear;
     } else if (yearDiff == 2) {
-      return '3rd Year';
+      return l10n.thirdYear;
     } else if (yearDiff == 3) {
-      return '4th Year';
+      return l10n.fourthYear;
     } else if (yearDiff >= 4 && yearDiff <= 6) {
-      return 'Graduate Student';
+      return l10n.graduateStudent;
     } else {
-      return 'PhD Student';
+      return l10n.phdStudent;
     }
   }
 
@@ -161,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 2),
               Text(
-                value.isEmpty ? 'Not provided' : value,
+                value.isEmpty ? AppLocalizations.of(context).notProvided : value,
                 style: TextStyle(
                   fontSize: 16,
                   color: isDark ? Colors.white : Colors.red[800],
@@ -231,7 +232,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        _nameController.text.isEmpty ? 'User' : _nameController.text,
+                        _nameController.text.isEmpty 
+                            ? AppLocalizations.of(context).user 
+                            : _nameController.text,
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -240,7 +243,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        _selectedUniversity.isEmpty ? 'Student' : _selectedUniversity,
+                        _selectedUniversity.isEmpty 
+                            ? AppLocalizations.of(context).student 
+                            : _selectedUniversity,
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.white.withValues(alpha: 0.9),
@@ -275,7 +280,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         });
                       },
                       icon: const Icon(Icons.edit),
-                      label: const Text('Edit'),
+                      label: Text(AppLocalizations.of(context).edit),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[600],
                         foregroundColor: Colors.white,
@@ -307,15 +312,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildInfoRow(Icons.person, 'Name', _nameController.text),
+                      _buildInfoRow(
+                        Icons.person, 
+                        AppLocalizations.of(context).name, 
+                        _nameController.text,
+                      ),
                       const SizedBox(height: 16),
-                      _buildInfoRow(Icons.school, 'University', _selectedUniversity),
+                      _buildInfoRow(
+                        Icons.school, 
+                        AppLocalizations.of(context).university, 
+                        _selectedUniversity,
+                      ),
                       const SizedBox(height: 16),
-                      _buildInfoRow(Icons.book, 'Major', _selectedMajor),
+                      _buildInfoRow(
+                        Icons.book, 
+                        AppLocalizations.of(context).major, 
+                        _selectedMajor,
+                      ),
                       const SizedBox(height: 16),
-                      _buildInfoRow(Icons.calendar_today, 'Year', _selectedYear),
+                      _buildInfoRow(
+                        Icons.calendar_today, 
+                        AppLocalizations.of(context).year, 
+                        _selectedYear,
+                      ),
                       const SizedBox(height: 16),
-                      _buildInfoRow(Icons.flag, 'Nationality', _selectedNationality),
+                      _buildInfoRow(
+                        Icons.flag, 
+                        AppLocalizations.of(context).nationality, 
+                        _selectedNationality,
+                      ),
                     ],
                   ),
                 ),

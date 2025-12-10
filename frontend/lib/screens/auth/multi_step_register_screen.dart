@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/registration_data.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
@@ -137,8 +138,8 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
   Future<void> _completeRegistration() async {
     if (!_registrationData.isAllStepsValid()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill in all required fields'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).pleaseFillAllFields),
           backgroundColor: Colors.red,
         ),
       );
@@ -221,7 +222,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('An error occurred: ${e.toString()}'),
+            content: Text('${AppLocalizations.of(context).errorOccurred}: ${e.toString()}'),
             backgroundColor: Colors.red[600],
             duration: const Duration(seconds: 3),
           ),
@@ -304,7 +305,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
       appBar: AppBar(
         backgroundColor: Colors.red[600],
         title: Text(
-          'Register (${_currentStep + 1}/4)',
+          '${AppLocalizations.of(context).register} (${AppLocalizations.of(context).step} ${_currentStep + 1}/4)',
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         elevation: 0,
@@ -400,11 +401,12 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
   }
 
   String _getStepTitle(int step) {
+    final l10n = AppLocalizations.of(context);
     switch (step) {
-      case 0: return 'Personal Information';
-      case 1: return 'Profile Setup';
-      case 2: return 'School Information';
-      case 3: return 'Review & Complete';
+      case 0: return l10n.personalInformation;
+      case 1: return l10n.profileSetup;
+      case 2: return l10n.schoolInformation;
+      case 3: return l10n.reviewAndComplete;
       default: return '';
     }
   }
@@ -472,7 +474,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 _buildFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  labelText: 'Student Email (@stu)',
+                  labelText: AppLocalizations.of(context).studentEmail,
                   prefixIcon: Icons.email_outlined,
                   isDark: isDark,
                   validator: _validateEmail,
@@ -482,7 +484,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 _buildFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  labelText: 'Password',
+                  labelText: AppLocalizations.of(context).password,
                   prefixIcon: Icons.lock_outline,
                   isDark: isDark,
                   validator: _validatePassword,
@@ -492,8 +494,8 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 _buildFormField(
                   controller: _confirmPasswordController,
                   obscureText: true,
-                  labelText: 'Confirm Password',
-                  prefixIcon: Icons.lock_reset,
+                  labelText: AppLocalizations.of(context).confirmPassword,
+                  prefixIcon: Icons.lock_outline,
                   isDark: isDark,
                   validator: _validateConfirmPassword,
                 ),
@@ -501,8 +503,8 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 
                 _buildFormField(
                   controller: _realNameController,
-                  labelText: 'Real Name',
-                  prefixIcon: Icons.badge_outlined,
+                  labelText: AppLocalizations.of(context).realName,
+                  prefixIcon: Icons.badge,
                   isDark: isDark,
                   validator: _validateRequired,
                 ),
@@ -578,7 +580,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
             key: _formKey,
             child: _buildFormField(
               controller: _nicknameController,
-              labelText: 'Nickname',
+              labelText: AppLocalizations.of(context).nickname,
               prefixIcon: Icons.alternate_email,
               isDark: isDark,
               validator: _validateRequired,
@@ -588,15 +590,15 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           _buildDropdownField(
             value: _registrationData.mainLanguage,
-            labelText: 'Main Language',
+            labelText: AppLocalizations.of(context).mainLanguage,
             icon: Icons.translate,
-            items: const [
-              DropdownMenuItem(value: 'ko', child: Text('한국어')),
-              DropdownMenuItem(value: 'en', child: Text('English')),
-              DropdownMenuItem(value: 'vi', child: Text('Tiếng Việt')),
-              DropdownMenuItem(value: 'ja', child: Text('日本語')),
-              DropdownMenuItem(value: 'zh', child: Text('中文')),
-              DropdownMenuItem(value: 'my', child: Text('မြန်မာ')),
+            items: [
+              DropdownMenuItem(value: 'ko', child: Text(AppLocalizations.of(context).korean)),
+              DropdownMenuItem(value: 'en', child: Text(AppLocalizations.of(context).english)),
+              DropdownMenuItem(value: 'vi', child: Text(AppLocalizations.of(context).vietnamese)),
+              DropdownMenuItem(value: 'ja', child: Text(AppLocalizations.of(context).japanese)),
+              DropdownMenuItem(value: 'zh', child: Text(AppLocalizations.of(context).chinese)),
+              DropdownMenuItem(value: 'my', child: Text(AppLocalizations.of(context).myanmar)),
             ],
             onChanged: (value) {
               setState(() {
@@ -609,15 +611,15 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           _buildDropdownField(
             value: _registrationData.nationalityIso2,
-            labelText: 'Nationality',
+            labelText: AppLocalizations.of(context).nationality,
             icon: Icons.public,
-            items: const [
-              DropdownMenuItem(value: 'KR', child: Text('🇰🇷 South Korea')),
-              DropdownMenuItem(value: 'VN', child: Text('🇻🇳 Vietnam')),
-              DropdownMenuItem(value: 'US', child: Text('🇺🇸 United States')),
-              DropdownMenuItem(value: 'JP', child: Text('🇯🇵 Japan')),
-              DropdownMenuItem(value: 'CN', child: Text('🇨🇳 China')),
-              DropdownMenuItem(value: 'MM', child: Text('🇲🇲 Myanmar')),
+            items: [
+              DropdownMenuItem(value: 'KR', child: Text('🇰🇷 ${AppLocalizations.of(context).southKorea}')),
+              DropdownMenuItem(value: 'VN', child: Text('🇻🇳 ${AppLocalizations.of(context).vietnam}')),
+              DropdownMenuItem(value: 'US', child: Text('🇺🇸 ${AppLocalizations.of(context).unitedStates}')),
+              DropdownMenuItem(value: 'JP', child: Text('🇯🇵 ${AppLocalizations.of(context).japan}')),
+              DropdownMenuItem(value: 'CN', child: Text('🇨🇳 ${AppLocalizations.of(context).china}')),
+              DropdownMenuItem(value: 'MM', child: Text('🇲🇲 ${AppLocalizations.of(context).myanmar}')),
             ],
             onChanged: (value) {
               setState(() {
@@ -667,7 +669,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           // Title
           Text(
-            'School Information',
+            AppLocalizations.of(context).schoolInformation,
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -677,7 +679,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            'Tell us about your academic background',
+            AppLocalizations.of(context).tellUsAboutAcademicBackground,
             style: TextStyle(
               fontSize: 16,
               color: isDark ? Colors.white70 : Colors.grey[600],
@@ -690,7 +692,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           _buildFormField(
             controller: _schoolIdController,
             keyboardType: TextInputType.number,
-            labelText: 'School ID',
+            labelText: AppLocalizations.of(context).schoolId,
             prefixIcon: Icons.credit_card,
             isDark: isDark,
           ),
@@ -698,7 +700,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           _buildDropdownField(
             value: _registrationData.schoolId,
-            labelText: 'School',
+            labelText: AppLocalizations.of(context).school,
             icon: Icons.school_outlined,
             items: const [
               DropdownMenuItem(value: 1, child: Text(' Keimyung University')),
@@ -728,7 +730,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           _buildDropdownField(
             value: _registrationData.departmentId,
-            labelText: 'Department',
+            labelText: AppLocalizations.of(context).department,
             icon: Icons.business_center,
             items: const [
               DropdownMenuItem(value: 1, child: Text(' Computer Science')),
@@ -763,7 +765,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           _buildDropdownField(
             value: _registrationData.enrollmentYear,
-            labelText: 'Enrollment Year',
+            labelText: AppLocalizations.of(context).enrollmentYear,
             icon: Icons.event,
             items: List.generate(10, (index) {
               final year = DateTime.now().year - index;
@@ -1169,7 +1171,9 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                       ),
                     )
                   : Text(
-                      _currentStep == 3 ? 'Complete Registration' : 'Next',
+                      _currentStep == 3 
+                          ? AppLocalizations.of(context).completeRegistration 
+                          : AppLocalizations.of(context).next,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -1210,7 +1214,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
-                    Icons.wc,
+                    Icons.person_outline,
                     color: Colors.red[600],
                     size: 18,
                   ),
@@ -1235,7 +1239,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 child: _buildGenderOption(
                   value: 'male',
                   label: 'Male',
-                  icon: Icons.male,
+                  icon: Icons.person,
                   isSelected: _registrationData.gender == 'male',
                   isDark: isDark,
                 ),
@@ -1245,7 +1249,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 child: _buildGenderOption(
                   value: 'female',
                   label: 'Female',
-                  icon: Icons.female,
+                  icon: Icons.person_outline,
                   isSelected: _registrationData.gender == 'female',
                   isDark: isDark,
                 ),

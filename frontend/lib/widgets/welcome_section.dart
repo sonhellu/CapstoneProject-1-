@@ -13,7 +13,7 @@ class WelcomeSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
-      duration: AppConstants.animationVerySlow,
+      duration: AppConstants.animationSlow, // Optimized: reduced from VerySlow
       tween: Tween(begin: 0.0, end: 1.0),
       builder: (context, value, child) {
         return Transform.scale(

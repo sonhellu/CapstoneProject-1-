@@ -1,5 +1,6 @@
 // lib/widgets/board_section.dart
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../screens/community/board_screen.dart';
 
 class BoardSection extends StatelessWidget {
@@ -28,7 +29,7 @@ class BoardSection extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Text(
-                '게시판',
+                AppLocalizations.of(context).board,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -41,24 +42,24 @@ class BoardSection extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: const [
+            children: [
               _BoardCategoryChip(
-                label: '공지게시판',
+                label: AppLocalizations.of(context).noticeBoard,
                 icon: Icons.campaign,
                 category: BoardCategory.notice,
               ),
               _BoardCategoryChip(
-                label: '자유게시판',
+                label: AppLocalizations.of(context).freeBoard,
                 icon: Icons.chat_bubble_outline,
                 category: BoardCategory.free,
               ),
               _BoardCategoryChip(
-                label: '정보게시판',
+                label: AppLocalizations.of(context).infoBoard,
                 icon: Icons.info_outline,
                 category: BoardCategory.info,
               ),
               _BoardCategoryChip(
-                label: '홍보게시판',
+                label: AppLocalizations.of(context).promoBoard,
                 icon: Icons.campaign_outlined,
                 category: BoardCategory.promo,
               ),

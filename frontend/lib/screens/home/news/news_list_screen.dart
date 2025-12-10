@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/news_model.dart';
 import '../../../providers/news_provider.dart';
 import '../../../constants/app_constants.dart';
@@ -68,7 +69,9 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
         backgroundColor: AppConstants.primaryColor,
         elevation: 0,
         title: Text(
-          widget.type == 'international' ? 'Tin tức quốc tế' : 'Tin tức trong nước',
+          widget.type == 'international' 
+              ? AppLocalizations.of(context).internationalNews 
+              : AppLocalizations.of(context).domesticNews,
           style: const TextStyle(
             color: Colors.white,
             fontWeight: AppConstants.fontWeightSemiBold,
@@ -128,7 +131,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Tìm kiếm tin tức...',
+                hintText: AppLocalizations.of(context).enterSearchKeyword,
                 hintStyle: TextStyle(
                   color: widget.isDark ? Colors.white60 : Colors.grey[600],
                 ),
@@ -200,7 +203,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => newsProvider.refreshNews(),
-                  child: const Text('Retry'),
+                  child: Text(AppLocalizations.of(context).retry),
                 ),
               ],
             ),
@@ -229,7 +232,9 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _searchQuery.isEmpty ? 'No news available' : 'No results found',
+                  _searchQuery.isEmpty 
+                      ? AppLocalizations.of(context).noNewsAvailable 
+                      : AppLocalizations.of(context).noResultsFound,
                   style: TextStyle(
                     color: widget.isDark ? Colors.white54 : Colors.grey[600],
                     fontSize: AppConstants.fontSizeL,
@@ -471,12 +476,12 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Tìm kiếm tin tức'),
+        title: Text(AppLocalizations.of(context).searchNews),
         content: TextField(
           controller: _searchController,
-          decoration: const InputDecoration(
-            hintText: 'Nhập từ khóa tìm kiếm...',
-            prefixIcon: Icon(Icons.search),
+          decoration: InputDecoration(
+            hintText: AppLocalizations.of(context).enterSearchKeyword,
+            prefixIcon: const Icon(Icons.search),
           ),
           autofocus: true,
         ),
@@ -485,7 +490,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text('Hủy'),
+            child: Text(AppLocalizations.of(context).cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -494,7 +499,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
               });
               Navigator.pop(context);
             },
-            child: const Text('Tìm kiếm'),
+            child: Text(AppLocalizations.of(context).search),
           ),
         ],
       ),

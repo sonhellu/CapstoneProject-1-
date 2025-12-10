@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'chat_room_screen.dart';
 
 class MatchChatScreen extends StatefulWidget {
@@ -65,9 +66,11 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('언어교류 매칭'),
+        title: Text(l10n.languageExchangeMatching),
         actions: [
           IconButton(
             icon: Icon(_showMoreOptions ? Icons.close : Icons.more_vert),
@@ -76,7 +79,7 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
                 _showMoreOptions = !_showMoreOptions;
               });
             },
-            tooltip: 'More Options',
+            tooltip: l10n.moreOptions,
           ),
         ],
       ),
@@ -93,13 +96,13 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
           builder: (context, snap) {
             if (snap.connectionState == ConnectionState.waiting ||
                 snap.connectionState == ConnectionState.active) {
-              return const Center(
+              return Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 12),
-                          Text('온라인 사용자 로딩 중...'),
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 12),
+                    Text(l10n.loadingOnlineUsers),
                   ],
                 ),
               );
@@ -113,11 +116,11 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
                     children: [
                       const Icon(Icons.error_outline, size: 48),
                       const SizedBox(height: 12),
-                      Text('문제가 발생했어요:\n${snap.error}', textAlign: TextAlign.center),
+                      Text('${l10n.errorOccurred}:\n${snap.error}', textAlign: TextAlign.center),
                       const SizedBox(height: 12),
                       FilledButton(
-                              onPressed: () => setState(() => _future = _loadOnlineUsers()),
-                        child: const Text('다시 시도'),
+                        onPressed: () => setState(() => _future = _loadOnlineUsers()),
+                        child: Text(l10n.retry),
                       ),
                     ],
                   ),
@@ -125,18 +128,20 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
               );
             }
 
-                  final users = snap.data ?? [];
-                  if (users.isEmpty) {
+            final users = snap.data ?? [];
+            if (users.isEmpty) {
               return _NoMatchView(
                 targetLang: _langLabel(widget.targetLanguageCode),
-                      onRetry: () => setState(() => _future = _loadOnlineUsers()),
+                onRetry: () => setState(() => _future = _loadOnlineUsers()),
+                l10n: l10n,
               );
             }
                   
-                  return _OnlineUsersListView(
-                    users: users,
+            return _OnlineUsersListView(
+              users: users,
               targetLang: _langLabel(widget.targetLanguageCode),
-                    targetLanguageCode: widget.targetLanguageCode,
+              targetLanguageCode: widget.targetLanguageCode,
+              l10n: l10n,
             );
           },
               ),
@@ -148,13 +153,15 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
   }
 
   Widget _buildMoreOptionsPanel() {
+    final l10n = AppLocalizations.of(context);
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceVariant,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -165,7 +172,7 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '필터 옵션',
+            l10n.moreOptions,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -222,11 +229,13 @@ class _OnlineUsersListView extends StatelessWidget {
   final List<_User> users;
   final String targetLang;
   final String targetLanguageCode;
+  final AppLocalizations l10n;
 
   const _OnlineUsersListView({
     required this.users,
     required this.targetLang,
     required this.targetLanguageCode,
+    required this.l10n,
   });
 
   @override
@@ -241,14 +250,14 @@ class _OnlineUsersListView extends StatelessWidget {
               Icon(Icons.people, color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8),
               Text(
-                '온라인 사용자 (${users.length})',
+                '${l10n.onlineUsers} (${users.length})',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
           const Spacer(),
               Text(
-                '대상 언어: $targetLang',
+                '${l10n.targetLanguage}: $targetLang',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.secondary,
                 ),
@@ -287,9 +296,14 @@ class _UserCard extends StatelessWidget {
     required this.targetLang,
     required this.targetLanguageCode,
   });
+  
+  String _getOnlineText(BuildContext context) {
+    return AppLocalizations.of(context).online;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final roomId = 'room_${user.name}_${DateTime.now().millisecondsSinceEpoch}';
     
     return Card(
@@ -321,10 +335,13 @@ class _UserCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage: NetworkImage(user.avatarUrl),
+                    backgroundColor: isDark ? Colors.grey[700] : Colors.grey[300],
+                    backgroundImage: user.avatarUrl.isNotEmpty
+                        ? NetworkImage(user.avatarUrl)
+                        : null,
                     onBackgroundImageError: (_, __) {},
                     child: user.avatarUrl.isEmpty
-                        ? const Icon(Icons.person, size: 30)
+                        ? Icon(Icons.person, size: 30, color: isDark ? Colors.grey[400] : Colors.grey[600])
                         : null,
                   ),
                   Positioned(
@@ -368,12 +385,12 @@ class _UserCard extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.1),
+                            color: Colors.green.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Text(
-                            '온라인',
-                            style: TextStyle(
+                          child: Text(
+                            _getOnlineText(context),
+                            style: const TextStyle(
                               fontSize: 11,
                               color: Colors.green,
                               fontWeight: FontWeight.w600,
@@ -449,7 +466,13 @@ class _UserCard extends StatelessWidget {
 class _NoMatchView extends StatelessWidget {
   final String targetLang;
   final VoidCallback onRetry;
-  const _NoMatchView({required this.targetLang, required this.onRetry});
+  final AppLocalizations l10n;
+  
+  const _NoMatchView({
+    required this.targetLang,
+    required this.onRetry,
+    required this.l10n,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -460,13 +483,19 @@ class _NoMatchView extends StatelessWidget {
         children: [
           const Icon(Icons.search_off, size: 56),
           const SizedBox(height: 12),
-          Text('조건에 맞는 상대를 찾지 못했어요.\n(대상 언어: $targetLang)', textAlign: TextAlign.center),
+          Text(
+            '${l10n.noMatchFound}\n(${l10n.targetLanguage}: $targetLang)',
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 16),
-          FilledButton(onPressed: onRetry, child: const Text('다시 시도')),
+          FilledButton(
+            onPressed: onRetry,
+            child: Text(l10n.retry),
+          ),
           const SizedBox(height: 8),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('조건 변경하기'),
+            child: Text(l10n.changeConditions),
           ),
         ],
       ),

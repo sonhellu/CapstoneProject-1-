@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../models/news_model.dart';
 import '../providers/news_provider.dart';
 import '../constants/app_constants.dart';
@@ -70,7 +71,7 @@ class _NewsSectionState extends State<NewsSection>
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'News',
+          AppLocalizations.of(context).news,
           style: TextStyle(
             fontSize: AppConstants.fontSizeXL,
             fontWeight: AppConstants.fontWeightBold,
@@ -160,7 +161,7 @@ class _NewsSectionState extends State<NewsSection>
               children: [
                 Icon(Icons.public, size: 16),
                 const SizedBox(width: 6),
-                const Text('International'),
+                Text(AppLocalizations.of(context).international),
               ],
             ),
           ),
@@ -170,7 +171,7 @@ class _NewsSectionState extends State<NewsSection>
               children: [
                 Icon(Icons.home_outlined, size: 16),
                 const SizedBox(width: 6),
-                const Text('Domestic'),
+                Text(AppLocalizations.of(context).domestic),
               ],
             ),
           ),
@@ -213,7 +214,7 @@ class _NewsSectionState extends State<NewsSection>
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => newsProvider.refreshNews(),
-                  child: const Text('Retry'),
+                  child: Text(AppLocalizations.of(context).retry),
                 ),
               ],
             ),
@@ -236,7 +237,7 @@ class _NewsSectionState extends State<NewsSection>
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Chưa có tin tức nào',
+                  AppLocalizations.of(context).noNewsAvailable,
                   style: TextStyle(
                     color: widget.isDark ? Colors.white54 : Colors.grey[600],
                     fontSize: AppConstants.fontSizeL,
@@ -463,7 +464,7 @@ class _NewsSectionState extends State<NewsSection>
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'More',
+                AppLocalizations.of(context).viewMore,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: AppConstants.fontWeightMedium,

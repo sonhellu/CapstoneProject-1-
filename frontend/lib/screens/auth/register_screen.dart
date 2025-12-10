@@ -98,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Registration successful! Please login.'),
+            content: Text(AppLocalizations.of(context).registrationSuccessful),
             backgroundColor: Colors.green[600],
           ),
         );

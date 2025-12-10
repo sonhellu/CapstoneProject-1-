@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../home/language_order/chat_room_screen.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -130,9 +131,14 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 CircleAvatar(
                   radius: 28,
-                  backgroundImage: NetworkImage(conversation.avatarUrl),
+                  backgroundColor: isDark ? Colors.grey[700] : Colors.grey[300],
+                  backgroundImage: conversation.avatarUrl.isNotEmpty
+                      ? NetworkImage(conversation.avatarUrl)
+                      : null,
                   onBackgroundImageError: (_, __) {},
-                  child: const Icon(Icons.person, size: 28),
+                  child: conversation.avatarUrl.isEmpty
+                      ? Icon(Icons.person, size: 28, color: isDark ? Colors.grey[400] : Colors.grey[600])
+                      : null,
                 ),
                 if (conversation.unreadCount > 0)
                   Positioned(
@@ -251,7 +257,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No conversations yet',
+            AppLocalizations.of(context).noConversationsYet,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -260,7 +266,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Start a conversation with someone!',
+            AppLocalizations.of(context).startConversation,
             style: TextStyle(
               fontSize: 14,
               color: isDark ? Colors.white54 : Colors.grey[500],

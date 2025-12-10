@@ -1,5 +1,6 @@
 // lib/screens/community/board_write_screen.dart
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/community_service.dart';
 import '../../services/api_service.dart';
 import 'board_screen.dart'; // BoardCategory 쓰려고 import
@@ -57,8 +58,8 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Post published successfully!'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).postPublishedSuccessfully),
             backgroundColor: Colors.green,
           ),
         );
@@ -85,7 +86,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text('${AppLocalizations.of(context).errorOccurred}: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -96,10 +97,11 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('게시글 작성'),
+        title: Text(l10n.writePost),
         backgroundColor: Colors.red[600],
         foregroundColor: Colors.white,
       ),
@@ -113,14 +115,14 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                  labelText: '제목',
+                  labelText: l10n.title,
                   border: const OutlineInputBorder(),
                   filled: true,
                   fillColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return '제목을 입력해주세요';
+                    return l10n.titleRequired;
                   }
                   return null;
                 },
@@ -134,7 +136,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
                   maxLines: null,
                   expands: true,
                   decoration: InputDecoration(
-                    labelText: '내용',
+                    labelText: l10n.content,
                     alignLabelWithHint: true,
                     border: const OutlineInputBorder(),
                     filled: true,
@@ -142,7 +144,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return '내용을 입력해주세요';
+                      return l10n.contentRequired;
                     }
                     return null;
                   },
@@ -152,7 +154,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
               
               // Anonymous checkbox
               CheckboxListTile(
-                title: const Text('익명으로 작성'),
+                title: Text(l10n.postAnonymously),
                 value: _isAnonymous,
                 onChanged: (value) {
                   setState(() {
@@ -171,7 +173,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
                       onPressed: _isLoading ? null : () {
                         Navigator.pop(context);
                       },
-                      child: const Text('취소'),
+                      child: Text(l10n.cancel),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -190,7 +192,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('게시하기'),
+                          : Text(l10n.post),
                     ),
                   ),
                 ],

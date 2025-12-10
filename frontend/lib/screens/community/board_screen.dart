@@ -1,6 +1,7 @@
 // lib/screens/community/board_screen.dart
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/board_post.dart';
 import '../../services/community_service.dart';
 import '../../services/api_service.dart';
@@ -10,12 +11,7 @@ import 'board_write_screen.dart';
 // 4개 게시판 종류
 enum BoardCategory { notice, free, info, promo }
 
-const Map<BoardCategory, String> _categoryLabels = {
-  BoardCategory.notice: '공지게시판',
-  BoardCategory.free: '자유게시판',
-  BoardCategory.info: '정보게시판',
-  BoardCategory.promo: '홍보게시판',
-};
+// Category labels will be retrieved from AppLocalizations
 
 // Map BoardCategory to board_id (backend)
 const Map<BoardCategory, int> _categoryToBoardId = {
@@ -48,6 +44,20 @@ class _BoardScreenState extends State<BoardScreen> {
     super.initState();
     _selected = widget.initialCategory;
     _loadPosts();
+  }
+  
+  String _getCategoryLabel(BuildContext context, BoardCategory category) {
+    final l10n = AppLocalizations.of(context);
+    switch (category) {
+      case BoardCategory.notice:
+        return l10n.noticeBoard;
+      case BoardCategory.free:
+        return l10n.freeBoard;
+      case BoardCategory.info:
+        return l10n.infoBoard;
+      case BoardCategory.promo:
+        return l10n.promoBoard;
+    }
   }
 
   /// Load posts from API
@@ -101,7 +111,7 @@ class _BoardScreenState extends State<BoardScreen> {
       appBar: AppBar(
         backgroundColor: AppConstants.primaryColor,
         title: Text(
-          _categoryLabels[_selected]!,
+          _getCategoryLabel(context, _selected),
           style: const TextStyle(
             color: Colors.white,
             fontWeight: AppConstants.fontWeightBold,
@@ -211,7 +221,7 @@ class _BoardScreenState extends State<BoardScreen> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  _categoryLabels[cat]!,
+                  _getCategoryLabel(context, cat),
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight:
@@ -260,7 +270,7 @@ class _BoardScreenState extends State<BoardScreen> {
             ElevatedButton.icon(
               onPressed: _loadPosts,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context).retry),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[600],
                 foregroundColor: Colors.white,
@@ -438,7 +448,9 @@ class _BoardSearchDelegate extends SearchDelegate<BoardPost?> {
     }).toList();
 
     if (filtered.isEmpty) {
-      return const Center(child: Text('검색 결과가 없습니다.'));
+      return Center(
+        child: Text(AppLocalizations.of(context).noSearchResults),
+      );
     }
 
     return ListView.builder(

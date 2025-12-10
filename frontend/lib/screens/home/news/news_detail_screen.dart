@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/news_model.dart';
 import '../../../providers/news_provider.dart';
 import '../../../constants/app_constants.dart';
@@ -64,7 +65,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
         backgroundColor: AppConstants.primaryColor,
         elevation: 0,
         title: Text(
-          'News Detail',
+          AppLocalizations.of(context).newsDetail,
           style: const TextStyle(
             color: Colors.white,
             fontWeight: AppConstants.fontWeightSemiBold,
@@ -79,7 +80,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
             icon: const Icon(Icons.share, color: Colors.white),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Tính năng chia sẻ sẽ sớm có mặt!')),
+                SnackBar(content: Text(AppLocalizations.of(context).shareComingSoon)),
               );
             },
           ),
@@ -87,7 +88,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
             icon: const Icon(Icons.bookmark_border, color: Colors.white),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Đã lưu vào danh sách yêu thích!')),
+                SnackBar(content: Text(AppLocalizations.of(context).savedToFavorites)),
               );
             },
           ),
@@ -419,11 +420,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
               onPressed: () {
                 context.read<NewsProvider>().likeNews(widget.news.id);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Đã thích bài viết!')),
+                  SnackBar(content: Text(AppLocalizations.of(context).likedPost)),
                 );
               },
               icon: const Icon(Icons.favorite_border),
-              label: const Text('Like'),
+              label: Text(AppLocalizations.of(context).like),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 foregroundColor: Colors.white,

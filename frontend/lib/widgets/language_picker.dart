@@ -45,7 +45,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
             children: [
               const Icon(Icons.check_circle, color: Colors.white),
               const SizedBox(width: 8),
-              Text('Language changed to ${_getLanguageName(languageCode)}'),
+              Text('${AppLocalizations.of(context).languageChangedTo} ${_getLanguageName(languageCode)}'),
             ],
           ),
           backgroundColor: Colors.green[600],
@@ -271,11 +271,11 @@ class _LanguagePickerState extends State<LanguagePicker> {
     final isSelected = _selectedLanguage == code;
     
     return TweenAnimationBuilder<double>(
-      duration: Duration(milliseconds: 500 + delay),
+      duration: Duration(milliseconds: 300 + delay), // Optimized: reduced base duration
       tween: Tween(begin: 0.0, end: 1.0),
       builder: (context, value, child) {
         return Transform.translate(
-          offset: Offset(0, 30 * (1 - value)),
+          offset: Offset(0, 20 * (1 - value)), // Reduced offset
           child: Opacity(
             opacity: value,
             child: GestureDetector(
@@ -410,7 +410,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
                       ),
                     ),
                     child: Text(
-                      'Cancel',
+                      AppLocalizations.of(context).cancel,
                       style: TextStyle(
                         color: isDark ? Colors.white70 : Colors.grey[600],
                         fontWeight: FontWeight.w500,
@@ -438,7 +438,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
                       elevation: hasChanged ? 4 : 0,
                     ),
                     child: Text(
-                      'Confirm',
+                      AppLocalizations.of(context).confirm,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: hasChanged ? Colors.white : Colors.grey[600],

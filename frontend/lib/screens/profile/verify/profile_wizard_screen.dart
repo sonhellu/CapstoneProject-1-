@@ -250,7 +250,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Profile updated successfully!'),
+          content: Text(AppLocalizations.of(context).profileUpdatedSuccessfully),
           backgroundColor: Colors.green[600],
         ),
       );
@@ -346,7 +346,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
       appBar: AppBar(
         backgroundColor: Colors.red[600],
         title: Text(
-          'Edit Profile - Step ${_currentStep + 1}/2',
+          '${AppLocalizations.of(context).editProfile} - ${AppLocalizations.of(context).step} ${_currentStep + 1}/2',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -407,7 +407,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('Previous'),
+                      child: Text(AppLocalizations.of(context).previous),
                     ),
                   ),
                 if (_currentStep > 0) const SizedBox(width: 16),
@@ -433,7 +433,9 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
                               ),
                             ),
                           )
-                        : Text(_currentStep == 1 ? 'Save Profile' : 'Next'),
+                        : Text(_currentStep == 1 
+                            ? AppLocalizations.of(context).saveProfile 
+                            : AppLocalizations.of(context).next),
                   ),
                 ),
               ],
@@ -454,7 +456,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Basic Information',
+            AppLocalizations.of(context).basicInformation,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -463,7 +465,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Please provide your basic information',
+            AppLocalizations.of(context).pleaseProvideBasicInformation,
             style: TextStyle(
               fontSize: 16,
               color: isDark ? Colors.white70 : Colors.grey[600],
@@ -625,7 +627,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Review & Save',
+            AppLocalizations.of(context).reviewAndSave,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -634,7 +636,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Please review your information before saving',
+            AppLocalizations.of(context).pleaseReviewInformation,
             style: TextStyle(fontSize: 16, color: Colors.grey[600]),
           ),
           const SizedBox(height: 32),
@@ -690,7 +692,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           Expanded(
             flex: 3,
             child: Text(
-              value.isEmpty ? 'Not provided' : value,
+              value.isEmpty ? AppLocalizations.of(context).notProvided : value,
               style: TextStyle(
                 color: isDark ? Colors.white70 : Colors.grey[600],
               ),

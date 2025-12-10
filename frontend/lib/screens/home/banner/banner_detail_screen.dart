@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/banner_model.dart';
 
 class BannerDetailScreen extends StatefulWidget {
@@ -19,8 +20,9 @@ class _BannerDetailScreenState extends State<BannerDetailScreen>
   @override
   void initState() {
     super.initState();
+    // Optimized animation: reduced duration and improved curves
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 600), // Reduced from 1000ms
       vsync: this,
     );
     
@@ -29,15 +31,15 @@ class _BannerDetailScreenState extends State<BannerDetailScreen>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeInOut,
+      curve: Curves.easeOut, // More performant curve
     ));
     
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
+      begin: const Offset(0, 0.2), // Reduced offset
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeOutCubic,
+      curve: Curves.easeOut, // More performant curve
     ));
     
     _animationController.forward();
@@ -141,8 +143,8 @@ class _BannerDetailScreenState extends State<BannerDetailScreen>
                 onPressed: () {
                   // Share functionality
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Share functionality coming soon!'),
+                    SnackBar(
+                      content: Text(AppLocalizations.of(context).shareComingSoon),
                     ),
                   );
                 },
@@ -322,13 +324,13 @@ class _BannerDetailScreenState extends State<BannerDetailScreen>
                               child: ElevatedButton.icon(
                                 onPressed: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Like functionality coming soon!'),
+                                    SnackBar(
+                                      content: Text(AppLocalizations.of(context).likeFunctionalityComingSoon),
                                     ),
                                   );
                                 },
                                 icon: const Icon(Icons.thumb_up_outlined),
-                                label: const Text('Like'),
+                                label: Text(AppLocalizations.of(context).like),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: isDark 
                                     ? const Color(0xFF2C2C2C)
@@ -346,13 +348,13 @@ class _BannerDetailScreenState extends State<BannerDetailScreen>
                               child: ElevatedButton.icon(
                                 onPressed: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Bookmark functionality coming soon!'),
+                                    SnackBar(
+                                      content: Text(AppLocalizations.of(context).bookmarkComingSoon),
                                     ),
                                   );
                                 },
                                 icon: const Icon(Icons.bookmark_outline),
-                                label: const Text('Bookmark'),
+                                label: Text(AppLocalizations.of(context).bookmark),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red[600],
                                   foregroundColor: Colors.white,

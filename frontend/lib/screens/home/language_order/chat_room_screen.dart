@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../services/matching_service.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
@@ -132,7 +133,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error sending message: ${e.toString()}'),
+            content: Text('${AppLocalizations.of(context).errorSendingMessage}: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -150,7 +151,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           children: [
             Text('${widget.partnerName} · ${widget.targetLanguageLabel}'),
             Text(
-              'Conversation ID: ${widget.conversationId}',
+              '${AppLocalizations.of(context).conversationId}: ${widget.conversationId}',
               style: Theme.of(context)
                   .textTheme
                   .labelSmall
@@ -186,7 +187,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: _loadMessages,
-                      child: const Text('Retry'),
+                      child: Text(AppLocalizations.of(context).retry),
                     ),
                   ],
                 ),
@@ -247,9 +248,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     padding: const EdgeInsets.all(8),
                     child: TextField(
                       controller: _controller,
-                      decoration: const InputDecoration(
-                        hintText: '메시지를 입력하세요',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context).enterMessage,
+                        border: const OutlineInputBorder(),
                       ),
                       onSubmitted: (_) => _sendMessage(),
                     ),
