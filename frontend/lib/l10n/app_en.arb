@@ -66,5 +66,9 @@
   "searchNews": "Search news",
   "cancel": "Cancel",
   "search": "Search",
-  "edit": "Edit"
+  "edit": "Edit",
+  "translate": "Translate",
+  "showOriginal": "Show Original",
+  "translating": "Translating...",
+  "translationFailed": "Translation failed"
 }

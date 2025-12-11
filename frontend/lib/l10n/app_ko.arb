@@ -66,5 +66,9 @@
   "searchNews": "뉴스 검색",
   "cancel": "취소",
   "search": "검색",
-  "edit": "편집"
+  "edit": "편집",
+  "translate": "번역",
+  "showOriginal": "원문 보기",
+  "translating": "번역 중...",
+  "translationFailed": "번역 실패"
 }

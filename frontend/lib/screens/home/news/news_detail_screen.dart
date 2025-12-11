@@ -4,6 +4,7 @@ import '../../../models/news_model.dart';
 import '../../../providers/news_provider.dart';
 import '../../../constants/app_constants.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../services/translation_service.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final NewsModel news;
@@ -21,6 +22,12 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  
+  // Translation state
+  String _translatedTitle = '';
+  String _translatedContent = '';
+  bool _isTranslating = false;
+  bool _isTranslated = false;
 
   @override
   void initState() {
@@ -55,6 +62,50 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     super.dispose();
   }
 
+  Future<void> _translatePost() async {
+    if (_isTranslating) return;
+
+    setState(() {
+      _isTranslating = true;
+    });
+
+    try {
+      // Dịch title và content song song
+      final results = await Future.wait([
+        TranslationService.translateText(text: widget.news.title),
+        TranslationService.translateText(text: widget.news.content),
+      ]);
+
+      if (mounted) {
+        setState(() {
+          _translatedTitle = results[0];
+          _translatedContent = results[1];
+          _isTranslated = true;
+          _isTranslating = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isTranslating = false;
+        });
+        final l10n = AppLocalizations.of(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${l10n.translationFailed}: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showOriginal() {
+    setState(() {
+      _isTranslated = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -76,6 +127,25 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
+          // Translate button
+          IconButton(
+            icon: _isTranslating
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Icon(_isTranslated ? Icons.language : Icons.translate, color: Colors.white),
+            onPressed: _isTranslating 
+                ? null 
+                : (_isTranslated ? _showOriginal : _translatePost),
+            tooltip: _isTranslated 
+                ? AppLocalizations.of(context).showOriginal 
+                : AppLocalizations.of(context).translateText,
+          ),
           IconButton(
             icon: const Icon(Icons.share, color: Colors.white),
             onPressed: () {
@@ -250,7 +320,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
 
   Widget _buildTitle(bool isDark) {
     return Text(
-      widget.news.title,
+      _isTranslated ? _translatedTitle : widget.news.title,
       style: TextStyle(
         fontSize: AppConstants.fontSizeTitle,
         fontWeight: AppConstants.fontWeightBold,
@@ -315,7 +385,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
 
   Widget _buildContentText(bool isDark) {
     return Text(
-      widget.news.content,
+      _isTranslated ? _translatedContent : widget.news.content,
       style: TextStyle(
         fontSize: AppConstants.fontSizeL,
         color: isDark ? Colors.white : Colors.black87,

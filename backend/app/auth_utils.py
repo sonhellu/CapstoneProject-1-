@@ -26,9 +26,13 @@ def require_auth(func):
             if user_id is None:
                 raise jwt.InvalidTokenError
             
-            user = Users.query.get(user_id)
-            if not user:
-                 return jsonify({"error": "User not found"}), 401
+            try:
+                user = Users.query.get(user_id)
+                if not user:
+                    return jsonify({"error": "User not found"}), 401
+            except Exception as e:
+                current_app.logger.error(f"Database error in require_auth: {str(e)}", exc_info=True)
+                return jsonify({"error": "Database error"}), 500
             
             request.user = user # SQLAlchemy User 모델 객체 자체를 주입
 
@@ -36,6 +40,9 @@ def require_auth(func):
             return jsonify({"error": "Token has expired"}), 401
         except jwt.InvalidTokenError:
             return jsonify({"error": "Invalid token"}), 401
+        except Exception as e:
+            current_app.logger.error(f"Auth error: {str(e)}", exc_info=True)
+            return jsonify({"error": "Authentication failed"}), 401
         
         return func(*args, **kwargs)
     

@@ -97,5 +97,9 @@
   "searchNews": "搜索新闻",
   "cancel": "取消",
   "search": "搜索",
-  "edit": "编辑"
+  "edit": "编辑",
+  "translate": "翻译",
+  "showOriginal": "显示原文",
+  "translating": "翻译中...",
+  "translationFailed": "翻译失败"
 }

@@ -27,6 +27,9 @@ class ApiConfig {
   static String acceptMatchEndpoint(int requestId) => '/api/match_requests/$requestId/accept';
   static String conversationMessagesEndpoint(int convId) => '/api/conversations/$convId/messages';
   
+  // Translation endpoints
+  static const String translateEndpoint = '/api/translate';
+  
   // Timeout settings - Optimized for Render (cold start)
   static const Duration connectTimeout = Duration(seconds: 30); // Increased for Render cold start
   static const Duration receiveTimeout = Duration(seconds: 30);

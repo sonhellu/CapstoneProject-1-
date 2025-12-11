@@ -97,5 +97,9 @@
   "searchNews": "ニュース検索",
   "cancel": "キャンセル",
   "search": "検索",
-  "edit": "編集"
+  "edit": "編集",
+  "translate": "翻訳",
+  "showOriginal": "原文を表示",
+  "translating": "翻訳中...",
+  "translationFailed": "翻訳に失敗しました"
 }

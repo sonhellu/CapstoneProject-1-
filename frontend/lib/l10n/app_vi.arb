@@ -66,5 +66,9 @@
   "searchNews": "Tìm kiếm tin tức",
   "cancel": "Hủy",
   "search": "Tìm kiếm",
-  "edit": "Chỉnh sửa"
+  "edit": "Chỉnh sửa",
+  "translate": "Dịch",
+  "showOriginal": "Hiển thị bản gốc",
+  "translating": "Đang dịch...",
+  "translationFailed": "Dịch thất bại"
 }

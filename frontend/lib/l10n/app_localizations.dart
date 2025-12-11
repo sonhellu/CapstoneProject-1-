@@ -980,6 +980,10 @@ class AppLocalizations {
   String get cancel => translate('cancel');
   String get search => translate('search');
   String get edit => translate('edit');
+  String get translateText => translate('translate');
+  String get showOriginal => translate('showOriginal');
+  String get translating => translate('translating');
+  String get translationFailed => translate('translationFailed');
   String get saveProfile => translate('saveProfile');
   String get profileUpdated => translate('profileUpdated');
   String get noSearchResults => translate('noSearchResults');
