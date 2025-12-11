@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../l10n/app_localizations.dart';
 import '../../../models/banner_model.dart';
+import '../../../l10n/app_localizations.dart';
 
 class BannerDetailScreen extends StatefulWidget {
   final BannerModel banner;
@@ -20,9 +20,8 @@ class _BannerDetailScreenState extends State<BannerDetailScreen>
   @override
   void initState() {
     super.initState();
-    // Optimized animation: reduced duration and improved curves
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 600), // Reduced from 1000ms
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
     
@@ -31,15 +30,15 @@ class _BannerDetailScreenState extends State<BannerDetailScreen>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeOut, // More performant curve
+      curve: Curves.easeInOut,
     ));
     
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.2), // Reduced offset
+      begin: const Offset(0, 0.3),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeOut, // More performant curve
+      curve: Curves.easeOutCubic,
     ));
     
     _animationController.forward();
@@ -142,9 +141,10 @@ class _BannerDetailScreenState extends State<BannerDetailScreen>
                 ),
                 onPressed: () {
                   // Share functionality
+                  final l10n = AppLocalizations.of(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(AppLocalizations.of(context).shareComingSoon),
+                      content: Text(l10n.shareFunctionalityComingSoon),
                     ),
                   );
                 },
@@ -323,9 +323,10 @@ class _BannerDetailScreenState extends State<BannerDetailScreen>
                             Expanded(
                               child: ElevatedButton.icon(
                                 onPressed: () {
+                                  final l10n = AppLocalizations.of(context);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text(AppLocalizations.of(context).likeFunctionalityComingSoon),
+                                      content: Text(l10n.shareFunctionalityComingSoon),
                                     ),
                                   );
                                 },
@@ -347,9 +348,10 @@ class _BannerDetailScreenState extends State<BannerDetailScreen>
                             Expanded(
                               child: ElevatedButton.icon(
                                 onPressed: () {
+                                  final l10n = AppLocalizations.of(context);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text(AppLocalizations.of(context).bookmarkComingSoon),
+                                      content: Text(l10n.bookmarkFunctionalityComingSoon),
                                     ),
                                   );
                                 },

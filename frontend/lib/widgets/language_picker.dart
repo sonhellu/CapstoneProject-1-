@@ -99,7 +99,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
                 ),
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.7,
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     gradient: isDark 
@@ -271,11 +271,11 @@ class _LanguagePickerState extends State<LanguagePicker> {
     final isSelected = _selectedLanguage == code;
     
     return TweenAnimationBuilder<double>(
-      duration: Duration(milliseconds: 300 + delay), // Optimized: reduced base duration
+      duration: Duration(milliseconds: 500 + delay),
       tween: Tween(begin: 0.0, end: 1.0),
       builder: (context, value, child) {
         return Transform.translate(
-          offset: Offset(0, 20 * (1 - value)), // Reduced offset
+          offset: Offset(0, 30 * (1 - value)),
           child: Opacity(
             opacity: value,
             child: GestureDetector(
@@ -286,7 +286,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: isSelected 
                     ? (isDark ? Colors.red[900] : Colors.red[50])
@@ -315,7 +315,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
                     // Flag with animation
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: isSelected 
                           ? (isDark ? Colors.red[800] : Colors.red[100])
@@ -403,14 +403,14 @@ class _LanguagePickerState extends State<LanguagePicker> {
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                         side: BorderSide(color: Colors.grey[300]!),
                       ),
                     ),
                     child: Text(
-                      AppLocalizations.of(context).cancel,
+                      'Cancel',
                       style: TextStyle(
                         color: isDark ? Colors.white70 : Colors.grey[600],
                         fontWeight: FontWeight.w500,
@@ -431,14 +431,14 @@ class _LanguagePickerState extends State<LanguagePicker> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: hasChanged ? Colors.red[600] : Colors.grey[400],
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       elevation: hasChanged ? 4 : 0,
                     ),
                     child: Text(
-                      AppLocalizations.of(context).confirm,
+                      'Confirm',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: hasChanged ? Colors.white : Colors.grey[600],
@@ -459,7 +459,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
     return IconButton(
       onPressed: _showLanguageDialog,
       icon: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(8),

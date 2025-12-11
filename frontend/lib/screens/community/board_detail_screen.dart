@@ -11,7 +11,7 @@ class BoardDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(post.title)),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

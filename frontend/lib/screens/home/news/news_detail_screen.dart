@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../l10n/app_localizations.dart';
 import '../../../models/news_model.dart';
 import '../../../providers/news_provider.dart';
 import '../../../constants/app_constants.dart';
+import '../../../l10n/app_localizations.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final NewsModel news;
@@ -65,7 +65,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
         backgroundColor: AppConstants.primaryColor,
         elevation: 0,
         title: Text(
-          AppLocalizations.of(context).newsDetail,
+          'News Detail',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: AppConstants.fontWeightSemiBold,
@@ -79,16 +79,18 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
           IconButton(
             icon: const Icon(Icons.share, color: Colors.white),
             onPressed: () {
+              final l10n = AppLocalizations.of(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context).shareComingSoon)),
+                SnackBar(content: Text(l10n.shareFunctionalityComingSoon)),
               );
             },
           ),
           IconButton(
             icon: const Icon(Icons.bookmark_border, color: Colors.white),
             onPressed: () {
+              final l10n = AppLocalizations.of(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context).savedToFavorites)),
+                SnackBar(content: Text(l10n.bookmarkFunctionalityComingSoon)),
               );
             },
           ),
@@ -187,8 +189,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
               right: 20,
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
+                  horizontal: 12,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
                   gradient: AppGradients.primaryGradient,
@@ -371,8 +373,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
+                horizontal: 12,
+                vertical: 10,
               ),
               decoration: BoxDecoration(
                 color: isDark 
@@ -419,8 +421,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
             child: ElevatedButton.icon(
               onPressed: () {
                 context.read<NewsProvider>().likeNews(widget.news.id);
+                final l10n = AppLocalizations.of(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(AppLocalizations.of(context).likedPost)),
+                  SnackBar(content: Text(l10n.shareFunctionalityComingSoon)),
                 );
               },
               icon: const Icon(Icons.favorite_border),
@@ -433,8 +436,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                   borderRadius: BorderRadius.circular(AppConstants.radiusL),
                 ),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
+                  horizontal: 16,
+                  vertical: 10,
                 ),
               ),
             ),

@@ -1,3 +1,5 @@
+// lib/screens/home/home_screen.dart
+
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/app_bar_actions.dart';
@@ -13,7 +15,7 @@ import '../../widgets/board_section.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(String)? onLanguageChanged;
-  
+
   const HomeScreen({super.key, this.onLanguageChanged});
 
   @override
@@ -22,7 +24,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  
+
   // Lazy loading screens for better performance
   late final List<Widget> _screens;
 
@@ -45,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(
           AppLocalizations.of(context).appTitle,
           style: const TextStyle(
-            color: Colors.white, 
+            color: Colors.white,
             fontWeight: AppConstants.fontWeightBold,
             fontSize: AppConstants.fontSizeXL,
           ),
@@ -67,9 +69,12 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        backgroundColor: context.isDarkMode ? AppConstants.darkSurfaceColor : AppConstants.lightSurfaceColor,
+        backgroundColor: context.isDarkMode
+            ? AppConstants.darkSurfaceColor
+            : AppConstants.lightSurfaceColor,
         selectedItemColor: AppConstants.primaryColor,
-        unselectedItemColor: context.isDarkMode ? Colors.grey[400] : Colors.grey[600],
+        unselectedItemColor:
+            context.isDarkMode ? Colors.grey[400] : Colors.grey[600],
         items: [
           BottomNavigationBarItem(
             icon: const Icon(AppConstants.iconHome),
@@ -104,28 +109,31 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    // Optimized animation: reduced duration for better performance
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 600), // Reduced from 1000ms
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut, // More performant curve
-    ));
-    
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.2), // Reduced offset for smoother animation
+      begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut, // More performant curve
-    ));
-    
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOutCubic,
+      ),
+    );
+
     _animationController.forward();
   }
 
@@ -138,12 +146,12 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
-    
+
     return Container(
       decoration: BoxDecoration(
-        gradient: isDark 
-          ? AppGradients.darkBackgroundGradient
-          : AppGradients.lightBackgroundGradient,
+        gradient: isDark
+            ? AppGradients.darkBackgroundGradient
+            : AppGradients.lightBackgroundGradient,
       ),
       child: SafeArea(
         child: FadeTransition(
@@ -156,11 +164,11 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Keimyung University Banner with RepaintBoundary
-                  RepaintBoundary(
-                    child: const KeimyungBanner(),
+                  const RepaintBoundary(
+                    child: KeimyungBanner(),
                   ),
                   const SizedBox(height: AppConstants.spacingL),
-                  
+
                   // Banner carousel with RepaintBoundary
                   RepaintBoundary(
                     child: BannerCarousel(
@@ -169,21 +177,22 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
                     ),
                   ),
                   const SizedBox(height: AppConstants.spacingXL),
-                  
+
                   // News section with RepaintBoundary
                   RepaintBoundary(
                     child: NewsSection(isDark: isDark),
                   ),
                   const SizedBox(height: 28),
-                  
+
+                  // 🔹 게시판 섹션 (공지/자유/정보/홍보 + 최근 글 제목)
+                  RepaintBoundary(
+                    child: BoardSection(isDark: isDark),
+                  ),
+                  const SizedBox(height: 28),
+
                   // Language Order section with RepaintBoundary
                   RepaintBoundary(
                     child: LanguageOrderSection(isDark: isDark),
-                  ),
-                  const SizedBox(height: AppConstants.spacingXXL),
-
-                  RepaintBoundary(
-                    child: BoardSection(isDark: isDark),
                   ),
                   const SizedBox(height: AppConstants.spacingXXL),
                 ],
@@ -194,6 +203,4 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
       ),
     );
   }
-
-
 }

@@ -129,9 +129,10 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             _isLoading = false;
           });
           
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('An error occurred: ${e.toString()}'),
+              content: Text('${l10n.errorOccurred}: ${e.toString()}'),
               backgroundColor: Colors.red[600],
               duration: const Duration(seconds: 3),
             ),
@@ -177,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             child: SlideTransition(
               position: _slideAnimation,
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.all(18.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -196,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                             child: Transform.rotate(
                               angle: (1 - value) * 0.2,
                               child: Container(
-                                padding: const EdgeInsets.all(20),
+                                padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     begin: Alignment.topLeft,

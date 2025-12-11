@@ -33,18 +33,18 @@ class _LanguageOrderScreenState extends State<LanguageOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.languageOrder)),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context).languageOrder),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
               Text(
-                l10n.selectLanguageToLearn,
+                '배우고 싶은 언어(국가), 성별, 단과대학을 선택하세요.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 12),
@@ -52,9 +52,9 @@ class _LanguageOrderScreenState extends State<LanguageOrderScreen> {
               // 언어(국가)
               DropdownButtonFormField<String>(
                 value: _selectedLangCode,
-                decoration: InputDecoration(
-                  labelText: l10n.selectLanguageToLearnLabel,
-                  border: const OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  labelText: '배우고 싶은 언어(국가) *',
+                  border: OutlineInputBorder(),
                 ),
                 items: _languages
                     .map((e) => DropdownMenuItem<String>(
@@ -62,16 +62,16 @@ class _LanguageOrderScreenState extends State<LanguageOrderScreen> {
                           child: Text(e['label']!),
                         ))
                     .toList(),
-                validator: (v) => v == null ? l10n.selectLanguageToLearnRequired : null,
+                validator: (v) => v == null ? '배우고 싶은 언어(국가)를 선택해주세요' : null,
                 onChanged: (v) => setState(() => _selectedLangCode = v),
               ),
               const SizedBox(height: 12),
 
               // 성별
               InputDecorator(
-                decoration: InputDecoration(
-                  labelText: l10n.preferredGender,
-                  border: const OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  labelText: '선호 성별',
+                  border: OutlineInputBorder(),
                 ),
                 child: Wrap(
                   spacing: 8,
@@ -90,9 +90,9 @@ class _LanguageOrderScreenState extends State<LanguageOrderScreen> {
               // 단과대학
               DropdownButtonFormField<String>(
                 value: _selectedCollege,
-                decoration: InputDecoration(
-                  labelText: l10n.college,
-                  border: const OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  labelText: '단과대학',
+                  border: OutlineInputBorder(),
                 ),
                 items: _colleges
                     .map((c) => DropdownMenuItem<String>(
@@ -109,7 +109,7 @@ class _LanguageOrderScreenState extends State<LanguageOrderScreen> {
                 width: double.infinity,
                 child: FilledButton.icon(
                   icon: const Icon(Icons.search),
-                  label: Text(l10n.findMatch),
+                  label: Text(AppLocalizations.of(context).findMatch),
                   onPressed: () {
                     if (!_formKey.currentState!.validate()) return;
                     Navigator.push(

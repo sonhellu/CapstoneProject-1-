@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/app_constants.dart';
+import '../l10n/app_localizations.dart';
 
 /// Optimized RecentActivitySection with performance improvements
 
@@ -38,13 +39,18 @@ class RecentActivitySection extends StatelessWidget {
   }
 
   Widget _buildSectionHeader() {
-    return Text(
-      'Recent Activity',
-      style: TextStyle(
-        fontSize: AppConstants.fontSizeXXL,
-        fontWeight: AppConstants.fontWeightBold,
-        color: isDark ? Colors.white : AppConstants.primaryColor,
-      ),
+    return Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return Text(
+          l10n.recentActivity,
+          style: TextStyle(
+            fontSize: AppConstants.fontSizeXXL,
+            fontWeight: AppConstants.fontWeightBold,
+            color: isDark ? Colors.white : AppConstants.primaryColor,
+          ),
+        );
+      },
     );
   }
 
@@ -81,52 +87,67 @@ class RecentActivitySection extends StatelessWidget {
   }
 
   Widget _buildActivityHeader() {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(AppConstants.spacingS),
-          decoration: BoxDecoration(
-            color: AppConstants.primaryLightColor,
-            borderRadius: BorderRadius.circular(AppConstants.radiusS),
-          ),
-          child: Icon(
-            Icons.info_outline,
-            color: AppConstants.primaryColor,
-            size: AppConstants.fontSizeXXL,
-          ),
-        ),
-        const SizedBox(width: AppConstants.spacingM),
-        Expanded(
-          child: Text(
-            'Welcome to Hello Campus!',
-            style: TextStyle(
-              fontWeight: AppConstants.fontWeightBold,
-              color: isDark ? Colors.white : AppConstants.primaryColor,
-              fontSize: AppConstants.fontSizeL,
+    return Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(AppConstants.spacingS),
+              decoration: BoxDecoration(
+                color: AppConstants.primaryLightColor,
+                borderRadius: BorderRadius.circular(AppConstants.radiusS),
+              ),
+              child: Icon(
+                Icons.info_outline,
+                color: AppConstants.primaryColor,
+                size: AppConstants.fontSizeXXL,
+              ),
             ),
-          ),
-        ),
-      ],
+            const SizedBox(width: AppConstants.spacingM),
+            Expanded(
+              child: Text(
+                l10n.welcomeToHelloCampus,
+                style: TextStyle(
+                  fontWeight: AppConstants.fontWeightBold,
+                  color: isDark ? Colors.white : AppConstants.primaryColor,
+                  fontSize: AppConstants.fontSizeL,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
   Widget _buildActivityContent() {
-    return Text(
-      'Your account has been created successfully. Start exploring your campus!',
-      style: TextStyle(
-        color: isDark ? Colors.white70 : Colors.grey[600],
-        fontSize: AppConstants.fontSizeM,
-      ),
+    return Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return Text(
+          l10n.accountCreatedSuccessfully,
+          style: TextStyle(
+            color: isDark ? Colors.white70 : Colors.grey[600],
+            fontSize: AppConstants.fontSizeM,
+          ),
+        );
+      },
     );
   }
 
   Widget _buildActivityTime() {
-    return Text(
-      '2 hours ago',
-      style: TextStyle(
-        fontSize: AppConstants.fontSizeS,
-        color: isDark ? Colors.white54 : Colors.grey[500],
-      ),
+    return Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return Text(
+          '2 ${l10n.hoursAgo}',
+          style: TextStyle(
+            fontSize: AppConstants.fontSizeS,
+            color: isDark ? Colors.white54 : Colors.grey[500],
+          ),
+        );
+      },
     );
   }
 }

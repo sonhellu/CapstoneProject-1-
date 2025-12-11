@@ -96,9 +96,10 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
       await Future.delayed(const Duration(seconds: 2));
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context).registrationSuccessful),
+            content: Text('${l10n.registrationSuccessful} ${l10n.pleaseLogin}'),
             backgroundColor: Colors.green[600],
           ),
         );
@@ -161,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                             child: Transform.rotate(
                               angle: (1 - value) * 0.2,
                               child: Container(
-                                padding: const EdgeInsets.all(20),
+                                padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     begin: Alignment.topLeft,

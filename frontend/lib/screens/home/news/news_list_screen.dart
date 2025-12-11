@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../l10n/app_localizations.dart';
 import '../../../models/news_model.dart';
 import '../../../providers/news_provider.dart';
 import '../../../constants/app_constants.dart';
+import '../../../l10n/app_localizations.dart';
 import 'news_detail_screen.dart';
 
 class NewsListScreen extends StatefulWidget {
@@ -69,9 +69,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
         backgroundColor: AppConstants.primaryColor,
         elevation: 0,
         title: Text(
-          widget.type == 'international' 
-              ? AppLocalizations.of(context).internationalNews 
-              : AppLocalizations.of(context).domesticNews,
+          widget.type == 'international' ? 'Tin tức quốc tế' : 'Tin tức trong nước',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: AppConstants.fontWeightSemiBold,
@@ -131,7 +129,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context).enterSearchKeyword,
+                hintText: 'Tìm kiếm tin tức...',
                 hintStyle: TextStyle(
                   color: widget.isDark ? Colors.white60 : Colors.grey[600],
                 ),
@@ -232,9 +230,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _searchQuery.isEmpty 
-                      ? AppLocalizations.of(context).noNewsAvailable 
-                      : AppLocalizations.of(context).noResultsFound,
+                  _searchQuery.isEmpty ? 'No news available' : 'No results found',
                   style: TextStyle(
                     color: widget.isDark ? Colors.white54 : Colors.grey[600],
                     fontSize: AppConstants.fontSizeL,
@@ -480,7 +476,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
         content: TextField(
           controller: _searchController,
           decoration: InputDecoration(
-            hintText: AppLocalizations.of(context).enterSearchKeyword,
+            hintText: AppLocalizations.of(context).searchNews,
             prefixIcon: const Icon(Icons.search),
           ),
           autofocus: true,

@@ -248,9 +248,10 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
         _isLoading = false;
       });
 
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context).profileUpdatedSuccessfully),
+          content: Text(l10n.profileUpdated),
           backgroundColor: Colors.green[600],
         ),
       );
@@ -346,7 +347,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
       appBar: AppBar(
         backgroundColor: Colors.red[600],
         title: Text(
-          '${AppLocalizations.of(context).editProfile} - ${AppLocalizations.of(context).step} ${_currentStep + 1}/2',
+          AppLocalizations.of(context).editProfileStep(_currentStep + 1),
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -358,7 +359,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
         children: [
           // Progress indicator
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(12),
             child: Row(
               children: List.generate(2, (index) {
                 return Expanded(
@@ -392,7 +393,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
           // Navigation buttons
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(12),
             child: Row(
               children: [
                 if (_currentStep > 0)
@@ -402,7 +403,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[600],
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -417,7 +418,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red[600],
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -451,7 +452,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -622,7 +623,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
   Widget _buildStep2() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -636,7 +637,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            AppLocalizations.of(context).pleaseReviewInformation,
+            AppLocalizations.of(context).pleaseReviewBeforeSaving,
             style: TextStyle(fontSize: 16, color: Colors.grey[600]),
           ),
           const SizedBox(height: 32),
@@ -663,7 +664,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -692,7 +693,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           Expanded(
             flex: 3,
             child: Text(
-              value.isEmpty ? AppLocalizations.of(context).notProvided : value,
+              value.isEmpty ? 'Not provided' : value,
               style: TextStyle(
                 color: isDark ? Colors.white70 : Colors.grey[600],
               ),

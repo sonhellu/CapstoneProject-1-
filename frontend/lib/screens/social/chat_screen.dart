@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../l10n/app_localizations.dart';
 import '../home/language_order/chat_room_screen.dart';
+import '../../models/language_chat_room.dart';
+import '../../models/language_chat_history.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -104,15 +105,16 @@ class _ChatScreenState extends State<ChatScreen> {
           context,
           MaterialPageRoute(
             builder: (_) => ChatRoomScreen(
-              conversationId: conversation.id,
+              roomId: conversation.id.toString(),
               partnerName: conversation.partnerName,
               targetLanguageLabel: '언어교류',
             ),
           ),
         );
       },
+
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: isDark ? Colors.transparent : Colors.white,
           border: Border(
@@ -131,14 +133,9 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 CircleAvatar(
                   radius: 28,
-                  backgroundColor: isDark ? Colors.grey[700] : Colors.grey[300],
-                  backgroundImage: conversation.avatarUrl.isNotEmpty
-                      ? NetworkImage(conversation.avatarUrl)
-                      : null,
+                  backgroundImage: NetworkImage(conversation.avatarUrl),
                   onBackgroundImageError: (_, __) {},
-                  child: conversation.avatarUrl.isEmpty
-                      ? Icon(Icons.person, size: 28, color: isDark ? Colors.grey[400] : Colors.grey[600])
-                      : null,
+                  child: const Icon(Icons.person, size: 28),
                 ),
                 if (conversation.unreadCount > 0)
                   Positioned(
@@ -257,7 +254,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            AppLocalizations.of(context).noConversationsYet,
+            'No conversations yet',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -266,7 +263,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            AppLocalizations.of(context).startConversation,
+            'Start a conversation with someone!',
             style: TextStyle(
               fontSize: 14,
               color: isDark ? Colors.white54 : Colors.grey[500],

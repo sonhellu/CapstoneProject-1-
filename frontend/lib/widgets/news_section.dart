@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../l10n/app_localizations.dart';
 import '../models/news_model.dart';
 import '../providers/news_provider.dart';
 import '../constants/app_constants.dart';
 import '../screens/home/news/news_detail_screen.dart';
 import '../screens/home/news/news_list_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class NewsSection extends StatefulWidget {
   final bool isDark;
@@ -67,11 +67,12 @@ class _NewsSectionState extends State<NewsSection>
   }
 
   Widget _buildSectionHeader() {
+    final l10n = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          AppLocalizations.of(context).news,
+          l10n.news,
           style: TextStyle(
             fontSize: AppConstants.fontSizeXL,
             fontWeight: AppConstants.fontWeightBold,
@@ -237,7 +238,7 @@ class _NewsSectionState extends State<NewsSection>
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  AppLocalizations.of(context).noNewsAvailable,
+                  'Chưa có tin tức nào',
                   style: TextStyle(
                     color: widget.isDark ? Colors.white54 : Colors.grey[600],
                     fontSize: AppConstants.fontSizeL,
@@ -464,7 +465,7 @@ class _NewsSectionState extends State<NewsSection>
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                AppLocalizations.of(context).viewMore,
+                AppLocalizations.of(context).more,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: AppConstants.fontWeightMedium,

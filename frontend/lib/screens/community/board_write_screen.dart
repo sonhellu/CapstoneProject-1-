@@ -1,8 +1,8 @@
 // lib/screens/community/board_write_screen.dart
 import 'package:flutter/material.dart';
-import '../../l10n/app_localizations.dart';
 import '../../services/community_service.dart';
 import '../../services/api_service.dart';
+import '../../l10n/app_localizations.dart';
 import 'board_screen.dart'; // BoardCategory 쓰려고 import
 
 // Map BoardCategory to board_id
@@ -57,9 +57,10 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
       );
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context).postPublishedSuccessfully),
+            content: Text(l10n.postPublishedSuccessfully),
             backgroundColor: Colors.green,
           ),
         );
@@ -84,9 +85,10 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
           _isLoading = false;
         });
         
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${AppLocalizations.of(context).errorOccurred}: ${e.toString()}'),
+            content: Text('${l10n.errorOccurred}: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -97,32 +99,31 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final l10n = AppLocalizations.of(context);
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.writePost),
+        title: Text(AppLocalizations.of(context).writePost),
         backgroundColor: Colors.red[600],
         foregroundColor: Colors.white,
       ),
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           child: Column(
             children: [
               // Title field
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                  labelText: l10n.title,
+                  labelText: AppLocalizations.of(context).title,
                   border: const OutlineInputBorder(),
                   filled: true,
                   fillColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return l10n.titleRequired;
+                    return AppLocalizations.of(context).titleRequired;
                   }
                   return null;
                 },
@@ -136,7 +137,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
                   maxLines: null,
                   expands: true,
                   decoration: InputDecoration(
-                    labelText: l10n.content,
+                    labelText: AppLocalizations.of(context).content,
                     alignLabelWithHint: true,
                     border: const OutlineInputBorder(),
                     filled: true,
@@ -144,7 +145,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return l10n.contentRequired;
+                      return AppLocalizations.of(context).contentRequired;
                     }
                     return null;
                   },
@@ -154,7 +155,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
               
               // Anonymous checkbox
               CheckboxListTile(
-                title: Text(l10n.postAnonymously),
+                title: Text(AppLocalizations.of(context).writeAnonymously),
                 value: _isAnonymous,
                 onChanged: (value) {
                   setState(() {
@@ -173,7 +174,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
                       onPressed: _isLoading ? null : () {
                         Navigator.pop(context);
                       },
-                      child: Text(l10n.cancel),
+                      child: Text(AppLocalizations.of(context).cancel),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -192,7 +193,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : Text(l10n.post),
+                          : Text(AppLocalizations.of(context).post),
                     ),
                   ),
                 ],

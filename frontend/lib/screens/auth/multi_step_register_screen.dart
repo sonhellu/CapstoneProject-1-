@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../l10n/app_localizations.dart';
 import '../../models/registration_data.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
+import '../../l10n/app_localizations.dart';
 
 class MultiStepRegisterScreen extends StatefulWidget {
   final Function(String)? onLanguageChanged;
@@ -137,9 +137,10 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
 
   Future<void> _completeRegistration() async {
     if (!_registrationData.isAllStepsValid()) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context).pleaseFillAllFields),
+          content: Text(l10n.pleaseFillAllRequiredFields),
           backgroundColor: Colors.red,
         ),
       );
@@ -220,9 +221,10 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           _isLoading = false;
         });
         
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${AppLocalizations.of(context).errorOccurred}: ${e.toString()}'),
+            content: Text('${l10n.errorOccurred}: ${e.toString()}'),
             backgroundColor: Colors.red[600],
             duration: const Duration(seconds: 3),
           ),
@@ -305,7 +307,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
       appBar: AppBar(
         backgroundColor: Colors.red[600],
         title: Text(
-          '${AppLocalizations.of(context).register} (${AppLocalizations.of(context).step} ${_currentStep + 1}/4)',
+          'Register (${_currentStep + 1}/4)',
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         elevation: 0,
@@ -367,7 +369,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
 
   Widget _buildProgressIndicator(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           Row(
@@ -406,14 +408,14 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
       case 0: return l10n.personalInformation;
       case 1: return l10n.profileSetup;
       case 2: return l10n.schoolInformation;
-      case 3: return l10n.reviewAndComplete;
+      case 3: return l10n.reviewAndSave;
       default: return '';
     }
   }
 
   Widget _buildStep1(bool isDark) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -421,7 +423,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           // Icon
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -474,7 +476,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 _buildFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  labelText: AppLocalizations.of(context).studentEmail,
+                  labelText: 'Student Email (@stu)',
                   prefixIcon: Icons.email_outlined,
                   isDark: isDark,
                   validator: _validateEmail,
@@ -484,7 +486,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 _buildFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  labelText: AppLocalizations.of(context).password,
+                  labelText: 'Password',
                   prefixIcon: Icons.lock_outline,
                   isDark: isDark,
                   validator: _validatePassword,
@@ -494,8 +496,8 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 _buildFormField(
                   controller: _confirmPasswordController,
                   obscureText: true,
-                  labelText: AppLocalizations.of(context).confirmPassword,
-                  prefixIcon: Icons.lock_outline,
+                  labelText: 'Confirm Password',
+                  prefixIcon: Icons.lock_reset,
                   isDark: isDark,
                   validator: _validateConfirmPassword,
                 ),
@@ -503,8 +505,8 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 
                 _buildFormField(
                   controller: _realNameController,
-                  labelText: AppLocalizations.of(context).realName,
-                  prefixIcon: Icons.badge,
+                  labelText: 'Real Name',
+                  prefixIcon: Icons.badge_outlined,
                   isDark: isDark,
                   validator: _validateRequired,
                 ),
@@ -522,7 +524,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
 
   Widget _buildStep2(bool isDark) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -530,7 +532,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           // Icon
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -590,7 +592,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           _buildDropdownField(
             value: _registrationData.mainLanguage,
-            labelText: AppLocalizations.of(context).mainLanguage,
+            labelText: 'Main Language',
             icon: Icons.translate,
             items: [
               DropdownMenuItem(value: 'ko', child: Text(AppLocalizations.of(context).korean)),
@@ -635,7 +637,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
 
   Widget _buildStep3(bool isDark) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -643,7 +645,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           // Icon
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -700,7 +702,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           _buildDropdownField(
             value: _registrationData.schoolId,
-            labelText: AppLocalizations.of(context).school,
+            labelText: AppLocalizations.of(context).university,
             icon: Icons.school_outlined,
             items: const [
               DropdownMenuItem(value: 1, child: Text(' Keimyung University')),
@@ -788,7 +790,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
 
   Widget _buildStep4(bool isDark) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -796,7 +798,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           // Icon
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -822,7 +824,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           // Title
           Text(
-            'Review & Complete',
+            AppLocalizations.of(context).reviewAndComplete,
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -832,7 +834,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            'Please review your information before completing',
+            AppLocalizations.of(context).pleaseReviewBeforeCompleting,
             style: TextStyle(
               fontSize: 16,
               color: isDark ? Colors.white70 : Colors.grey[600],
@@ -850,7 +852,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
 
   Widget _buildReviewCard(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -866,7 +868,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Personal Information',
+            AppLocalizations.of(context).personalInformation,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -874,16 +876,16 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
             ),
           ),
           const SizedBox(height: 8),
-          _buildReviewItem('Email', _registrationData.email, isDark),
-          _buildReviewItem('Real Name', _registrationData.realName, isDark),
-          _buildReviewItem('Gender', _registrationData.gender == 'male' ? 'Male' : 'Female', isDark),
-          _buildReviewItem('Nickname', _registrationData.nickname, isDark),
-          _buildReviewItem('Language', _getLanguageName(_registrationData.mainLanguage), isDark),
-          _buildReviewItem('Nationality', _getNationalityName(_registrationData.nationalityIso2), isDark),
-          _buildReviewItem('School ID', _registrationData.schoolIdString.isNotEmpty ? _registrationData.schoolIdString : _registrationData.schoolId.toString(), isDark),
-          _buildReviewItem('School', _getSchoolName(_registrationData.schoolId), isDark),
-          _buildReviewItem('Department', _getDepartmentName(_registrationData.departmentId), isDark),
-          _buildReviewItem('Enrollment Year', _registrationData.enrollmentYear.toString(), isDark),
+          _buildReviewItem(AppLocalizations.of(context).email, _registrationData.email, isDark),
+          _buildReviewItem(AppLocalizations.of(context).realName, _registrationData.realName, isDark),
+          _buildReviewItem(AppLocalizations.of(context).gender, _registrationData.gender == 'male' ? AppLocalizations.of(context).male : AppLocalizations.of(context).female, isDark),
+          _buildReviewItem(AppLocalizations.of(context).nickname, _registrationData.nickname, isDark),
+          _buildReviewItem(AppLocalizations.of(context).language, _getLanguageName(_registrationData.mainLanguage), isDark),
+          _buildReviewItem(AppLocalizations.of(context).nationality, _getNationalityName(_registrationData.nationalityIso2), isDark),
+          _buildReviewItem(AppLocalizations.of(context).schoolId, _registrationData.schoolIdString.isNotEmpty ? _registrationData.schoolIdString : _registrationData.schoolId.toString(), isDark),
+          _buildReviewItem(AppLocalizations.of(context).university, _getSchoolName(_registrationData.schoolId), isDark),
+          _buildReviewItem(AppLocalizations.of(context).department, _getDepartmentName(_registrationData.departmentId), isDark),
+          _buildReviewItem(AppLocalizations.of(context).enrollmentYear, _registrationData.enrollmentYear.toString(), isDark),
         ],
       ),
     );
@@ -1019,8 +1021,8 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           decoration: InputDecoration(
           labelText: labelText,
           prefixIcon: Container(
-            margin: const EdgeInsets.all(8),
-            padding: const EdgeInsets.all(8),
+            margin: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: Colors.red[50],
               borderRadius: BorderRadius.circular(8),
@@ -1078,7 +1080,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
         ],
       ),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -1090,7 +1092,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           children: [
             Container(
               margin: const EdgeInsets.only(right: 12),
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: Colors.blue[50],
                 borderRadius: BorderRadius.circular(8),
@@ -1125,7 +1127,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
 
   Widget _buildNavigationButtons(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(18),
       child: Row(
         children: [
           if (_currentStep > 0)
@@ -1133,14 +1135,14 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
               child: OutlinedButton(
                 onPressed: _previousStep,
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   side: BorderSide(color: Colors.red[600]!),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
                 child: Text(
-                  'Previous',
+                  AppLocalizations.of(context).previous,
                   style: TextStyle(
                     color: Colors.red[600],
                     fontWeight: FontWeight.bold,
@@ -1155,7 +1157,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[600],
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -1214,14 +1216,14 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
-                    Icons.person_outline,
+                    Icons.wc,
                     color: Colors.red[600],
                     size: 18,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Gender',
+                  AppLocalizations.of(context).gender,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -1239,7 +1241,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 child: _buildGenderOption(
                   value: 'male',
                   label: 'Male',
-                  icon: Icons.person,
+                  icon: Icons.male,
                   isSelected: _registrationData.gender == 'male',
                   isDark: isDark,
                 ),
@@ -1249,7 +1251,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 child: _buildGenderOption(
                   value: 'female',
                   label: 'Female',
-                  icon: Icons.person_outline,
+                  icon: Icons.female,
                   isSelected: _registrationData.gender == 'female',
                   isDark: isDark,
                 ),
@@ -1277,7 +1279,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
       },
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         decoration: BoxDecoration(
           color: isSelected
               ? Colors.red[600]

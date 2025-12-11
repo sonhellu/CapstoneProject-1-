@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../l10n/app_localizations.dart';
 import '../models/banner_model.dart';
 import '../screens/home/banner/banner_detail_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class BannerCarousel extends StatefulWidget {
   final List<BannerModel> banners;
@@ -94,11 +94,11 @@ class _BannerCarouselState extends State<BannerCarousel>
         // Header with animation - Optimized with RepaintBoundary
         RepaintBoundary(
           child: TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 300), // Further optimized
+            duration: const Duration(milliseconds: 400), // Reduced duration
             tween: Tween(begin: 0.0, end: 1.0),
             builder: (context, value, child) {
               return Transform.translate(
-                offset: Offset(0, 10 * (1 - value)), // Further reduced offset
+                offset: Offset(0, 15 * (1 - value)), // Reduced offset
                 child: Opacity(
                   opacity: value,
                   child: Row(
@@ -323,7 +323,7 @@ class _BannerCarouselState extends State<BannerCarousel>
                         left: 0,
                         right: 0,
                         child: Container(
-                          padding: const EdgeInsets.all(20),
+                          padding: const EdgeInsets.all(12),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

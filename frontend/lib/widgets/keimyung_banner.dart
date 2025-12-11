@@ -101,7 +101,7 @@ class KeimyungBanner extends StatelessWidget {
                   
                   // Content
                   Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(16),
                     child: Row(
                       children: [
                         // University Logo/Icon

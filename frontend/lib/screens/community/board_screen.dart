@@ -1,17 +1,29 @@
 // lib/screens/community/board_screen.dart
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
-import '../../l10n/app_localizations.dart';
 import '../../models/board_post.dart';
 import '../../services/community_service.dart';
 import '../../services/api_service.dart';
+import '../../l10n/app_localizations.dart';
 import 'board_detail_screen.dart';
 import 'board_write_screen.dart';
 
 // 4개 게시판 종류
 enum BoardCategory { notice, free, info, promo }
 
-// Category labels will be retrieved from AppLocalizations
+String _getCategoryLabel(BuildContext context, BoardCategory category) {
+  final l10n = AppLocalizations.of(context);
+  switch (category) {
+    case BoardCategory.notice:
+      return l10n.noticeBoard;
+    case BoardCategory.free:
+      return l10n.freeBoard;
+    case BoardCategory.info:
+      return l10n.infoBoard;
+    case BoardCategory.promo:
+      return l10n.promoBoard;
+  }
+}
 
 // Map BoardCategory to board_id (backend)
 const Map<BoardCategory, int> _categoryToBoardId = {
@@ -44,20 +56,6 @@ class _BoardScreenState extends State<BoardScreen> {
     super.initState();
     _selected = widget.initialCategory;
     _loadPosts();
-  }
-  
-  String _getCategoryLabel(BuildContext context, BoardCategory category) {
-    final l10n = AppLocalizations.of(context);
-    switch (category) {
-      case BoardCategory.notice:
-        return l10n.noticeBoard;
-      case BoardCategory.free:
-        return l10n.freeBoard;
-      case BoardCategory.info:
-        return l10n.infoBoard;
-      case BoardCategory.promo:
-        return l10n.promoBoard;
-    }
   }
 
   /// Load posts from API
@@ -345,7 +343,7 @@ class _BoardCard extends StatelessWidget {
         },
         child: Padding(
           padding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           child: Row(
             children: [
               Container(
@@ -448,9 +446,7 @@ class _BoardSearchDelegate extends SearchDelegate<BoardPost?> {
     }).toList();
 
     if (filtered.isEmpty) {
-      return Center(
-        child: Text(AppLocalizations.of(context).noSearchResults),
-      );
+      return Center(child: Text(AppLocalizations.of(context).noSearchResults));
     }
 
     return ListView.builder(

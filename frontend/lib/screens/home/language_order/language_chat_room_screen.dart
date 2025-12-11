@@ -1,14 +1,12 @@
-// lib/screens/home/language_order/chat_room_screen.dart
 import 'package:flutter/material.dart';
-import '../../../models/language_chat_room.dart';
-import '../../../models/language_chat_history.dart';
 
-class ChatRoomScreen extends StatefulWidget {
+/// 언어교류용 1:1 채팅방 (서버 연동 없이 로컬 상태만 사용)
+class LanguageChatRoomScreen extends StatefulWidget {
   final String roomId;
   final String partnerName;
   final String targetLanguageLabel;
 
-  const ChatRoomScreen({
+  const LanguageChatRoomScreen({
     super.key,
     required this.roomId,
     required this.partnerName,
@@ -16,28 +14,13 @@ class ChatRoomScreen extends StatefulWidget {
   });
 
   @override
-  State<ChatRoomScreen> createState() => _ChatRoomScreenState();
+  State<LanguageChatRoomScreen> createState() =>
+      _LanguageChatRoomScreenState();
 }
 
-class _ChatRoomScreenState extends State<ChatRoomScreen> {
+class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
   final _controller = TextEditingController();
   final List<_ChatMessage> _messages = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    // 채팅방에 들어오는 순간, 히스토리 목록에 방을 등록 (또는 갱신)
-    LanguageChatHistory.addOrUpdateRoom(
-      LanguageChatRoom(
-        roomId: widget.roomId,
-        partnerName: widget.partnerName,
-        targetLanguageLabel: widget.targetLanguageLabel,
-        updatedAt: DateTime.now(),
-        lastMessage: '',
-      ),
-    );
-  }
 
   @override
   void dispose() {
@@ -61,42 +44,22 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       );
     });
 
-    // 히스토리의 "마지막 메시지" 업데이트
-    LanguageChatHistory.updateLastMessage(
-      widget.roomId,
-      text,
-      now,
-    );
-
     _controller.clear();
   }
 
   String _formatTime(DateTime time) {
-    // 24시간 기준 HH:mm
     final h = time.hour.toString().padLeft(2, '0');
     final m = time.minute.toString().padLeft(2, '0');
-    return '$h:$m';
+    return '$h:$m'; // 24시간 표기
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final title = '${widget.partnerName} · ${widget.targetLanguageLabel}';
 
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(widget.partnerName),
-            Text(
-              widget.targetLanguageLabel,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onPrimary.withOpacity(0.8),
-              ),
-            ),
-          ],
-        ),
+        title: Text(title),
       ),
       body: Column(
         children: [
@@ -104,43 +67,41 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
             child: ListView.builder(
               padding: const EdgeInsets.all(12),
               itemCount: _messages.length,
-              itemBuilder: (_, i) {
-                final msg = _messages[i];
-                final align =
+              itemBuilder: (context, index) {
+                final msg = _messages[index];
+                final alignment =
                     msg.isMine ? Alignment.centerRight : Alignment.centerLeft;
                 final bubbleColor = msg.isMine
-                    ? theme.colorScheme.primary
+                    ? Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withOpacity(0.15)
                     : Colors.grey.shade200;
-                final textColor =
-                    msg.isMine ? Colors.white : Colors.black87;
 
                 return Align(
-                  alignment: align,
+                  alignment: alignment,
                   child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    margin: const EdgeInsets.symmetric(vertical: 4),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 8),
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: bubbleColor,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(
                       crossAxisAlignment: msg.isMine
                           ? CrossAxisAlignment.end
                           : CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          msg.text,
-                          style: TextStyle(color: textColor),
-                        ),
-                        const SizedBox(height: 4),
+                        Text(msg.text),
+                        const SizedBox(height: 2),
                         Text(
                           _formatTime(msg.time),
                           style: TextStyle(
-                            fontSize: 11,
-                            color: textColor.withOpacity(0.8),
+                            fontSize: 10,
+                            color: Colors.grey.shade600,
                           ),
                         ),
                       ],
