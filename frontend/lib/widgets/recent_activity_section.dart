@@ -42,13 +42,13 @@ class RecentActivitySection extends StatelessWidget {
     return Builder(
       builder: (context) {
         final l10n = AppLocalizations.of(context);
-        return Text(
+    return Text(
           l10n.recentActivity,
-          style: TextStyle(
-            fontSize: AppConstants.fontSizeXXL,
-            fontWeight: AppConstants.fontWeightBold,
-            color: isDark ? Colors.white : AppConstants.primaryColor,
-          ),
+      style: TextStyle(
+        fontSize: AppConstants.fontSizeXXL,
+        fontWeight: AppConstants.fontWeightBold,
+        color: isDark ? Colors.white : AppConstants.primaryColor,
+      ),
         );
       },
     );
@@ -90,32 +90,32 @@ class RecentActivitySection extends StatelessWidget {
     return Builder(
       builder: (context) {
         final l10n = AppLocalizations.of(context);
-        return Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(AppConstants.spacingS),
-              decoration: BoxDecoration(
-                color: AppConstants.primaryLightColor,
-                borderRadius: BorderRadius.circular(AppConstants.radiusS),
-              ),
-              child: Icon(
-                Icons.info_outline,
-                color: AppConstants.primaryColor,
-                size: AppConstants.fontSizeXXL,
-              ),
-            ),
-            const SizedBox(width: AppConstants.spacingM),
-            Expanded(
-              child: Text(
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(AppConstants.spacingS),
+          decoration: BoxDecoration(
+            color: AppConstants.primaryLightColor,
+            borderRadius: BorderRadius.circular(AppConstants.radiusS),
+          ),
+          child: Icon(
+            Icons.info_outline,
+            color: AppConstants.primaryColor,
+            size: AppConstants.fontSizeXXL,
+          ),
+        ),
+        const SizedBox(width: AppConstants.spacingM),
+        Expanded(
+          child: Text(
                 l10n.welcomeToHelloCampus,
-                style: TextStyle(
-                  fontWeight: AppConstants.fontWeightBold,
-                  color: isDark ? Colors.white : AppConstants.primaryColor,
-                  fontSize: AppConstants.fontSizeL,
-                ),
-              ),
+            style: TextStyle(
+              fontWeight: AppConstants.fontWeightBold,
+              color: isDark ? Colors.white : AppConstants.primaryColor,
+              fontSize: AppConstants.fontSizeL,
             ),
-          ],
+          ),
+        ),
+      ],
         );
       },
     );
@@ -125,12 +125,12 @@ class RecentActivitySection extends StatelessWidget {
     return Builder(
       builder: (context) {
         final l10n = AppLocalizations.of(context);
-        return Text(
+    return Text(
           l10n.accountCreatedSuccessfully,
-          style: TextStyle(
-            color: isDark ? Colors.white70 : Colors.grey[600],
-            fontSize: AppConstants.fontSizeM,
-          ),
+      style: TextStyle(
+        color: isDark ? Colors.white70 : Colors.grey[600],
+        fontSize: AppConstants.fontSizeM,
+      ),
         );
       },
     );
@@ -140,12 +140,12 @@ class RecentActivitySection extends StatelessWidget {
     return Builder(
       builder: (context) {
         final l10n = AppLocalizations.of(context);
-        return Text(
+    return Text(
           '2 ${l10n.hoursAgo}',
-          style: TextStyle(
-            fontSize: AppConstants.fontSizeS,
-            color: isDark ? Colors.white54 : Colors.grey[500],
-          ),
+      style: TextStyle(
+        fontSize: AppConstants.fontSizeS,
+        color: isDark ? Colors.white54 : Colors.grey[500],
+      ),
         );
       },
     );

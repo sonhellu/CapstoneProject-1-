@@ -103,10 +103,10 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             if (_isTranslated)
-              Text(
+            Text(
                 _translatedTitle,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             const SizedBox(height: 8),
             Text(
               '${widget.post.author} · ${widget.post.createdAt}',

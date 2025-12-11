@@ -1,5 +1,21 @@
 from .database import db
 from datetime import datetime
+import os
+from sqlalchemy.dialects.postgresql import ENUM as PG_ENUM
+
+# Helper function to create ENUM compatible with both MySQL and PostgreSQL
+def create_enum(*values, name=None):
+    """Create ENUM type compatible with both MySQL and PostgreSQL"""
+    # Check if we're using PostgreSQL (Render production)
+    database_url = os.getenv("DATABASE_URL", "")
+    is_postgresql = database_url.startswith("postgresql://") or database_url.startswith("postgres://")
+    
+    if is_postgresql and name:
+        # PostgreSQL requires named ENUM types
+        return PG_ENUM(*values, name=name, create_type=True)
+    else:
+        # MySQL or local development - use standard Enum
+        return db.Enum(*values)
 
 class Language(db.Model):
     __tablename__ = "language"
@@ -39,7 +55,7 @@ class Users(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     nickname = db.Column(db.String(100), nullable=False)
     realname = db.Column(db.String(100), nullable=False)
-    gender = db.Column(db.Enum('male', 'female'), nullable=False)
+    gender = db.Column(create_enum('male', 'female', name='gender_enum'), nullable=False)
     main_language = db.Column(db.String(10), db.ForeignKey('language.code'), nullable=False)
     nationality_iso2 = db.Column(db.CHAR(2), db.ForeignKey('country.iso2'), nullable=False)
     school_id = db.Column(db.BigInteger, db.ForeignKey('schools.id'), nullable=False)
@@ -97,9 +113,9 @@ class MatchRequests(db.Model):
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     requester_user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), nullable=False)
     preferred_college_id = db.Column(db.BigInteger, db.ForeignKey('colleges.id'))
-    preferred_gender = db.Column(db.Enum('male', 'female', 'any'), default='any')
+    preferred_gender = db.Column(create_enum('male', 'female', 'any', name='preferred_gender_enum'), default='any')
     notes = db.Column(db.String(500))
-    status = db.Column(db.Enum('pending', 'offered', 'accepted', 'rejected', 'cancelled'), default='pending')
+    status = db.Column(create_enum('pending', 'offered', 'accepted', 'rejected', 'cancelled', name='match_request_status_enum'), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # 요청자 정보 (매칭 수락 시 school_id를 알기 위해)
@@ -112,7 +128,7 @@ class Matches(db.Model):
     mentee_user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), nullable=False)
     school_id = db.Column(db.BigInteger)
     request_id = db.Column(db.BigInteger, db.ForeignKey('match_requests.id'))
-    status = db.Column(db.Enum('active', 'completed', 'cancelled'), default='active')
+    status = db.Column(create_enum('active', 'completed', 'cancelled', name='match_status_enum'), default='active')
     started_at = db.Column(db.DateTime, default=datetime.utcnow)
     ended_at = db.Column(db.DateTime)
 
