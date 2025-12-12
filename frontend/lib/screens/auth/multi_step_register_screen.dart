@@ -102,9 +102,9 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
       }
       
       setState(() {
-        _schools = results[0] as List<Map<String, dynamic>>;
-        _languages = results[1] as List<Map<String, dynamic>>;
-        _countries = results[2] as List<Map<String, dynamic>>;
+        _schools = (results[0] as List).cast<Map<String, dynamic>>();
+        _languages = (results[1] as List).cast<Map<String, dynamic>>();
+        _countries = (results[2] as List).cast<Map<String, dynamic>>();
         _isLoadingOptions = false;
         
         // Set default values only if data is available
@@ -126,12 +126,16 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
     } catch (e) {
       setState(() {
         _isLoadingOptions = false;
+        // Set empty lists to prevent errors
+        _schools = [];
+        _languages = [];
+        _countries = [];
       });
       // Show error but don't block registration
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Warning: Could not load options. Using defaults.'),
+            content: Text('Warning: Could not load options. Please check your connection.'),
             backgroundColor: Colors.orange,
             duration: const Duration(seconds: 3),
           ),
