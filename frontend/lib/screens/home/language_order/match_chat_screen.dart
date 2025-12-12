@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../services/matching_service.dart';
+import '../../../services/options_service.dart';
 
 import 'language_chat_room_screen.dart';
 
@@ -32,25 +34,90 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
   }
 
   /// Tìm người phù hợp từ API thực tế
-  /// TODO: Tích hợp với matching API khi có endpoint cho language exchange
   Future<List<_MatchResult>> _simulateMatch() async {
-    // Tạm thời trả về empty list - sẽ tích hợp với API thực tế sau
-    // Khi có API endpoint cho language exchange matching, sẽ gọi API ở đây
-    await Future.delayed(const Duration(milliseconds: 500));
-    
-    // TODO: Gọi API để tìm users phù hợp với:
-    // - targetLanguageCode: Ngôn ngữ muốn học
-    // - preferredGender: Giới tính ưa thích
-    // - preferredCollege: Trường ưa thích
-    // 
-    // Ví dụ: 
-    // final response = await MatchingService.findLanguageExchangePartners(
-    //   targetLanguage: widget.targetLanguageCode,
-    //   preferredGender: widget.preferredGender,
-    //   preferredCollege: widget.preferredCollege,
-    // );
-    
-    return [];
+    try {
+      // 1. Tạo match request với target_language
+      final matchRequest = await MatchingService.createMatchRequest(
+        targetLanguage: widget.targetLanguageCode, // Required: Ngôn ngữ muốn học
+        preferredGender: _mapGenderToApi(widget.preferredGender),
+        preferredCollegeId: await _getCollegeId(widget.preferredCollege),
+        notes: 'Language exchange: ${widget.targetLanguageCode}',
+      );
+      
+      final requestId = matchRequest['id'] as int?;
+      if (requestId == null) {
+        return [];
+      }
+      
+      // 2. Tìm helpers phù hợp
+      final helpers = await MatchingService.findHelpers(
+        requestId: requestId,
+        limit: 5,
+      );
+      
+      if (helpers.isEmpty) {
+        return [];
+      }
+      
+      // 3. Convert API response thành _MatchResult
+      final now = DateTime.now().millisecondsSinceEpoch;
+      return helpers.asMap().entries.map((e) {
+        final helper = e.value as Map<String, dynamic>;
+        final helperId = helper['id'] as int;
+        final nickname = helper['nickname'] as String? ?? 'Unknown';
+        final gender = helper['gender'] as String? ?? 'any';
+        final departmentId = helper['department_id'] as int?;
+        
+        return _MatchResult(
+          user: _User(
+            nickname,
+            _mapGenderFromApi(gender),
+            widget.preferredCollege, // Use selected college for display
+            [widget.targetLanguageCode], // Languages they can help with
+          ),
+          roomId: 'room_${helperId}_${now}_${e.key}',
+          helperId: helperId, // Store helper ID for future use
+        );
+      }).toList();
+    } catch (e) {
+      // Return empty list on error
+      return [];
+    }
+  }
+  
+  /// Map gender from UI to API format
+  String _mapGenderToApi(String uiGender) {
+    switch (uiGender) {
+      case '여':
+        return 'female';
+      case '남':
+        return 'male';
+      case '상관없음':
+      default:
+        return 'any';
+    }
+  }
+  
+  /// Map gender from API to UI format
+  String _mapGenderFromApi(String apiGender) {
+    switch (apiGender.toLowerCase()) {
+      case 'female':
+        return '여';
+      case 'male':
+        return '남';
+      default:
+        return '상관없음';
+    }
+  }
+  
+  /// Get college ID from college name (if needed)
+  Future<int?> _getCollegeId(String collegeName) async {
+    if (collegeName == '상관없음') {
+      return null;
+    }
+    // TODO: Map college name to ID if needed
+    // For now, return null to search all colleges
+    return null;
   }
 
   String _langLabel(String code) {
@@ -310,9 +377,11 @@ class _User {
 class _MatchResult {
   final _User user;
   final String roomId;
+  final int? helperId; // Store helper ID for future API calls
 
   _MatchResult({
     required this.user,
     required this.roomId,
+    this.helperId,
   });
 }

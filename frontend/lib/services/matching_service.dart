@@ -6,6 +6,7 @@ import 'auth_service.dart';
 class MatchingService {
   /// Tạo yêu cầu tìm helper
   static Future<Map<String, dynamic>> createMatchRequest({
+    required String targetLanguage, // Required: Ngôn ngữ muốn học
     int? preferredCollegeId,
     String preferredGender = 'any',
     String? notes,
@@ -13,6 +14,7 @@ class MatchingService {
     final headers = await AuthService.getAuthHeaders();
     
     final body = <String, dynamic>{
+      'target_language': targetLanguage, // Required
       'preferred_gender': preferredGender,
     };
     
