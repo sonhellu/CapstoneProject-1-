@@ -2,11 +2,12 @@
   # Base directory: frontend folder
   base = "frontend"
   
-  # Build command: Build Flutter web
-  command = "flutter build web --release"
+  # Build command: Install Flutter SDK and build
+  # Using multi-line command to install Flutter first
+  command = "git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter && export PATH=\"$HOME/flutter/bin:$PATH\" && flutter doctor && flutter pub get && flutter build web --release"
   
-  # Publish directory: Where the built files are
-  publish = "frontend/build/web"
+  # Publish directory: Relative to base directory
+  publish = "build/web"
 
 [build.environment]
   # Flutter SDK version (adjust if needed)
@@ -41,4 +42,3 @@
   for = "/*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-
