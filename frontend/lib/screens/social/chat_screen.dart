@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../home/language_order/chat_room_screen.dart';
 import '../../models/language_chat_room.dart';
 import '../../models/language_chat_history.dart';
+import '../../services/matching_service.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -11,49 +12,49 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  // Sample conversations list
-  final List<Conversation> _conversations = [
-    Conversation(
-      id: 1,
-      partnerName: 'Alice',
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-      lastMessage: '안녕하세요! How are you today?',
-      lastMessageTime: DateTime.now().subtract(const Duration(minutes: 5)),
-      unreadCount: 2,
-    ),
-    Conversation(
-      id: 2,
-      partnerName: 'Bob',
-      avatarUrl: 'https://i.pravatar.cc/150?img=2',
-      lastMessage: 'See you tomorrow!',
-      lastMessageTime: DateTime.now().subtract(const Duration(hours: 2)),
-      unreadCount: 0,
-    ),
-    Conversation(
-      id: 3,
-      partnerName: 'Chloe',
-      avatarUrl: 'https://i.pravatar.cc/150?img=3',
-      lastMessage: 'Thanks for your help!',
-      lastMessageTime: DateTime.now().subtract(const Duration(hours: 5)),
-      unreadCount: 1,
-    ),
-    Conversation(
-      id: 4,
-      partnerName: 'Dan',
-      avatarUrl: 'https://i.pravatar.cc/150?img=4',
-      lastMessage: 'Can we meet at the library?',
-      lastMessageTime: DateTime.now().subtract(const Duration(days: 1)),
-      unreadCount: 0,
-    ),
-    Conversation(
-      id: 5,
-      partnerName: 'Emma',
-      avatarUrl: 'https://i.pravatar.cc/150?img=5',
-      lastMessage: 'Great! See you there.',
-      lastMessageTime: DateTime.now().subtract(const Duration(days: 2)),
-      unreadCount: 0,
-    ),
-  ];
+  List<Conversation> _conversations = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadConversations();
+  }
+
+  /// Load conversations from API
+  Future<void> _loadConversations() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final conversationsData = await MatchingService.getConversations();
+      
+      setState(() {
+        _conversations = conversationsData.map((conv) {
+          final otherUser = conv['other_user'] as Map<String, dynamic>?;
+          final lastMessage = conv['last_message'] as Map<String, dynamic>?;
+          
+          return Conversation(
+            id: conv['id'] as int,
+            partnerName: otherUser?['nickname'] as String? ?? 'Unknown',
+            avatarUrl: 'https://i.pravatar.cc/150?img=${conv['id']}',
+            lastMessage: lastMessage?['content'] as String? ?? '',
+            lastMessageTime: lastMessage?['created_at'] != null
+                ? DateTime.parse(lastMessage!['created_at'] as String)
+                : DateTime.now(),
+            unreadCount: conv['unread_count'] as int? ?? 0,
+          );
+        }).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _conversations = [];
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,16 +82,18 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             // Conversations list
             Expanded(
-              child: _conversations.isEmpty
-                  ? _buildEmptyState(isDark)
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      itemCount: _conversations.length,
-                      itemBuilder: (context, index) {
-                        final conversation = _conversations[index];
-                        return _buildConversationItem(context, conversation, isDark);
-                      },
-                    ),
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _conversations.isEmpty
+                      ? _buildEmptyState(isDark)
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          itemCount: _conversations.length,
+                          itemBuilder: (context, index) {
+                            final conversation = _conversations[index];
+                            return _buildConversationItem(context, conversation, isDark);
+                          },
+                        ),
             ),
           ],
         ),
