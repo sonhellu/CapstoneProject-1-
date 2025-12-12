@@ -1,0 +1,44 @@
+[build]
+  # Base directory: frontend folder
+  base = "frontend"
+  
+  # Build command: Build Flutter web
+  command = "flutter build web --release"
+  
+  # Publish directory: Where the built files are
+  publish = "frontend/build/web"
+
+[build.environment]
+  # Flutter SDK version (adjust if needed)
+  FLUTTER_VERSION = "3.9.2"
+
+# Redirect all routes to index.html for Flutter web routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for better performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
