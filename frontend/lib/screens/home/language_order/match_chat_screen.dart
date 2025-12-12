@@ -45,8 +45,31 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
         notes: 'Language exchange: Learning ${widget.targetLanguageCode}',
       );
       
+      // Check for error in response
+      if (matchRequest.containsKey('error')) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${matchRequest['error']}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+        return [];
+      }
+      
       final requestId = matchRequest['id'] as int?;
       if (requestId == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to create match request'),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
         return [];
       }
       
@@ -57,6 +80,7 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
       );
       
       if (helpers.isEmpty) {
+        // No helpers found - this is normal if no users match the criteria
         return [];
       }
       
@@ -81,7 +105,16 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
         );
       }).toList();
     } catch (e) {
-      // Return empty list on error
+      // Show error to user
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error finding match: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
       return [];
     }
   }
