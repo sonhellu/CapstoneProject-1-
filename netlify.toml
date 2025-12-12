@@ -3,8 +3,8 @@
   base = "frontend"
   
   # Build command: Install Flutter SDK and build
-  # Using multi-line command to install Flutter first
-  command = "git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter && export PATH=\"$HOME/flutter/bin:$PATH\" && flutter doctor && flutter pub get && flutter build web --release"
+  # Install Flutter, accept licenses, get dependencies, then build
+  command = "git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter && export PATH=\"$HOME/flutter/bin:$PATH\" && flutter --version && flutter pub get && flutter build web --release"
   
   # Publish directory: Relative to base directory
   publish = "build/web"
