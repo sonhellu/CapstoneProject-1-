@@ -52,22 +52,60 @@ def _ensure_target_language_column():
             exists = result.fetchone() is not None
         
         if not exists:
+            # Add column as nullable first
             if is_postgresql:
+                # PostgreSQL: Add column as nullable first, then set default for existing rows
                 db.session.execute(db.text("""
                     ALTER TABLE match_requests 
-                    ADD COLUMN target_language VARCHAR(10) REFERENCES language(code)
+                    ADD COLUMN target_language VARCHAR(10)
+                """))
+                # Set default value for existing rows (use 'ko' as default)
+                db.session.execute(db.text("""
+                    UPDATE match_requests 
+                    SET target_language = 'ko' 
+                    WHERE target_language IS NULL
+                """))
+                # Add foreign key constraint
+                db.session.execute(db.text("""
+                    ALTER TABLE match_requests 
+                    ADD CONSTRAINT match_requests_target_language_fkey 
+                    FOREIGN KEY (target_language) REFERENCES language(code)
+                """))
+                # Make NOT NULL after setting defaults
+                db.session.execute(db.text("""
+                    ALTER TABLE match_requests 
+                    ALTER COLUMN target_language SET NOT NULL
                 """))
             else:
+                # MySQL
                 db.session.execute(db.text("""
                     ALTER TABLE match_requests 
-                    ADD COLUMN target_language VARCHAR(10) NULL AFTER requester_user_id,
-                    ADD FOREIGN KEY (target_language) REFERENCES language(code)
+                    ADD COLUMN target_language VARCHAR(10) NULL AFTER requester_user_id
+                """))
+                # Set default value for existing rows
+                db.session.execute(db.text("""
+                    UPDATE match_requests 
+                    SET target_language = 'ko' 
+                    WHERE target_language IS NULL
+                """))
+                # Add foreign key constraint
+                db.session.execute(db.text("""
+                    ALTER TABLE match_requests 
+                    ADD CONSTRAINT match_requests_target_language_fkey 
+                    FOREIGN KEY (target_language) REFERENCES language(code)
+                """))
+                # Make NOT NULL
+                db.session.execute(db.text("""
+                    ALTER TABLE match_requests 
+                    MODIFY COLUMN target_language VARCHAR(10) NOT NULL
                 """))
             db.session.commit()
     except Exception as e:
         db.session.rollback()
-        # Ignore if column already exists
-        pass
+        # Log error but don't fail - migration can be run manually if needed
+        import traceback
+        print(f"Warning: Failed to add target_language column: {e}")
+        print(traceback.format_exc())
 
 def _auto_seed_data():
     """Automatically seed initial data if database is empty"""
