@@ -207,7 +207,7 @@ def send_message(conv_id):
         return jsonify({"error": f"Failed to send message: {str(e)}"}), 500
 
 
-# 6) 대화 메시지 조회
+# 6) 대화 메시지 조회 (개선: sender 정보 포함)
 @matching_bp.route("/conversations/<int:conv_id>/messages", methods=["GET"])
 @require_auth
 def get_messages(conv_id):
@@ -225,10 +225,137 @@ def get_messages(conv_id):
                              .order_by(Messages.created_at.asc())\
                              .all()
         
-        out = [{"id": m.id, "sender_user_id": m.sender_user_id, "content": m.content,
-                "created_at": m.created_at.isoformat()} for m in msgs]
+        # Include sender information
+        out = []
+        for m in msgs:
+            sender = Users.query.get(m.sender_user_id)
+            out.append({
+                "id": m.id,
+                "sender_user_id": m.sender_user_id,
+                "sender_nickname": sender.nickname if sender else "Unknown",
+                "content": m.content,
+                "created_at": m.created_at.isoformat(),
+                "is_sent_by_me": m.sender_user_id == user.id
+            })
         
         return jsonify(out), 200
     except Exception as e:
         current_app.logger.error(f"Get messages error: {str(e)}", exc_info=True)
         return jsonify({"error": f"Failed to get messages: {str(e)}"}), 500
+
+
+# 7) 사용자의 모든 대화 목록 조회
+@matching_bp.route("/conversations", methods=["GET"])
+@require_auth
+def get_conversations():
+    """Get all conversations for the logged-in user with last message and unread count"""
+    try:
+        user = request.user
+        
+        # Get all conversations where user is a participant
+        participants = ConversationParticipants.query.filter_by(user_id=user.id).all()
+        conversation_ids = [p.conversation_id for p in participants]
+        
+        if not conversation_ids:
+            return jsonify([]), 200
+        
+        conversations = Conversations.query.filter(Conversations.id.in_(conversation_ids)).all()
+        
+        result = []
+        for conv in conversations:
+            # Get the other participant (not the current user)
+            other_participant = ConversationParticipants.query.filter(
+                ConversationParticipants.conversation_id == conv.id,
+                ConversationParticipants.user_id != user.id
+            ).first()
+            
+            if not other_participant:
+                continue
+            
+            other_user = Users.query.get(other_participant.user_id)
+            if not other_user:
+                continue
+            
+            # Get last message
+            last_message = Messages.query.filter_by(conversation_id=conv.id)\
+                                         .order_by(Messages.created_at.desc())\
+                                         .first()
+            
+            # Get unread count (messages after last_read_at)
+            current_participant = ConversationParticipants.query.filter_by(
+                conversation_id=conv.id,
+                user_id=user.id
+            ).first()
+            
+            unread_count = 0
+            if current_participant and current_participant.last_read_at:
+                unread_count = Messages.query.filter(
+                    Messages.conversation_id == conv.id,
+                    Messages.sender_user_id != user.id,
+                    Messages.created_at > current_participant.last_read_at
+                ).count()
+            elif current_participant:
+                # If never read, count all messages from others
+                unread_count = Messages.query.filter(
+                    Messages.conversation_id == conv.id,
+                    Messages.sender_user_id != user.id
+                ).count()
+            
+            result.append({
+                "id": conv.id,
+                "match_id": conv.match_id,
+                "other_user": {
+                    "id": other_user.id,
+                    "nickname": other_user.nickname,
+                    "realname": other_user.realname,
+                },
+                "last_message": {
+                    "id": last_message.id,
+                    "content": last_message.content,
+                    "sender_user_id": last_message.sender_user_id,
+                    "created_at": last_message.created_at.isoformat() if last_message else None
+                } if last_message else None,
+                "unread_count": unread_count,
+                "created_at": conv.created_at.isoformat()
+            })
+        
+        # Sort by last message time (most recent first)
+        result.sort(key=lambda x: (
+            x["last_message"]["created_at"] if x["last_message"] else x["created_at"]
+        ), reverse=True)
+        
+        return jsonify(result), 200
+    except Exception as e:
+        current_app.logger.error(f"Get conversations error: {str(e)}", exc_info=True)
+        return jsonify({"error": f"Failed to get conversations: {str(e)}"}), 500
+
+
+# 8) 대화 읽음 표시
+@matching_bp.route("/conversations/<int:conv_id>/read", methods=["PUT"])
+@require_auth
+def mark_conversation_read(conv_id):
+    """Mark all messages in conversation as read by updating last_read_at"""
+    try:
+        user = request.user
+        
+        participant = ConversationParticipants.query.filter_by(
+            conversation_id=conv_id,
+            user_id=user.id
+        ).first()
+        
+        if not participant:
+            return jsonify({"error": "You are not a participant in this conversation"}), 403
+        
+        # Update last_read_at to current time
+        from datetime import datetime
+        participant.last_read_at = datetime.utcnow()
+        db.session.commit()
+        
+        return jsonify({
+            "conversation_id": conv_id,
+            "last_read_at": participant.last_read_at.isoformat()
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Mark conversation read error: {str(e)}", exc_info=True)
+        return jsonify({"error": f"Failed to mark conversation as read: {str(e)}"}), 500

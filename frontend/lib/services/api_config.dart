@@ -25,7 +25,9 @@ class ApiConfig {
   static String findHelpersEndpoint(int requestId) => '/api/match_requests/$requestId/find_helpers';
   static String offerMatchEndpoint(int requestId) => '/api/match_requests/$requestId/offer';
   static String acceptMatchEndpoint(int requestId) => '/api/match_requests/$requestId/accept';
+  static const String conversationsEndpoint = '/api/conversations';
   static String conversationMessagesEndpoint(int convId) => '/api/conversations/$convId/messages';
+  static String markConversationReadEndpoint(int convId) => '/api/conversations/$convId/read';
   
   // Translation endpoints
   static const String translateEndpoint = '/api/translate';

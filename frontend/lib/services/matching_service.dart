@@ -142,4 +142,35 @@ class MatchingService {
       useCache: false,
     );
   }
+  
+  /// Lấy danh sách tất cả conversations của user
+  static Future<List<dynamic>> getConversations() async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    final response = await ApiService.get(
+      ApiConfig.conversationsEndpoint,
+      headers: headers,
+      useCache: false, // Don't cache to get latest conversations
+    );
+    
+    if (response is List) {
+      return response;
+    }
+    
+    return [];
+  }
+  
+  /// Đánh dấu conversation đã đọc
+  static Future<Map<String, dynamic>> markConversationRead({
+    required int conversationId,
+  }) async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    final response = await ApiService.put(
+      ApiConfig.markConversationReadEndpoint(conversationId),
+      headers: headers,
+    );
+    
+    return response;
+  }
 }
