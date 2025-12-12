@@ -113,6 +113,7 @@ class MatchRequests(db.Model):
     __tablename__ = "match_requests"
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     requester_user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), nullable=False)
+    target_language = db.Column(db.String(10), db.ForeignKey('language.code'), nullable=False)  # Ngôn ngữ muốn học
     preferred_college_id = db.Column(db.BigInteger, db.ForeignKey('colleges.id'))
     preferred_gender = db.Column(create_enum('male', 'female', 'any', name='preferred_gender_enum'), default='any')
     notes = db.Column(db.String(500))

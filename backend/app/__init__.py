@@ -33,6 +33,42 @@ def _ensure_student_id_column():
         # Ignore if column already exists
         pass
 
+def _ensure_target_language_column():
+    """Ensure target_language column exists in match_requests table (for existing databases)"""
+    try:
+        database_url = os.getenv("DATABASE_URL", "")
+        is_postgresql = database_url.startswith("postgresql://") or database_url.startswith("postgres://")
+        
+        # Check if column exists
+        if is_postgresql:
+            result = db.session.execute(db.text("""
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'match_requests' AND column_name = 'target_language'
+            """))
+            exists = result.fetchone() is not None
+        else:
+            # MySQL
+            result = db.session.execute(db.text("SHOW COLUMNS FROM match_requests LIKE 'target_language'"))
+            exists = result.fetchone() is not None
+        
+        if not exists:
+            if is_postgresql:
+                db.session.execute(db.text("""
+                    ALTER TABLE match_requests 
+                    ADD COLUMN target_language VARCHAR(10) REFERENCES language(code)
+                """))
+            else:
+                db.session.execute(db.text("""
+                    ALTER TABLE match_requests 
+                    ADD COLUMN target_language VARCHAR(10) NULL AFTER requester_user_id,
+                    ADD FOREIGN KEY (target_language) REFERENCES language(code)
+                """))
+            db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        # Ignore if column already exists
+        pass
+
 def _auto_seed_data():
     """Automatically seed initial data if database is empty"""
     try:

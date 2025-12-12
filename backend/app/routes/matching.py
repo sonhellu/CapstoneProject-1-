@@ -1,11 +1,11 @@
 from flask import Blueprint, jsonify, request, current_app
-from ..models import (db, Users, Departments, HelperProfiles, HelperLanguages, 
+from ..models import (db, Users, Departments, 
                        MatchRequests, Matches, Conversations, ConversationParticipants, Messages)
 from ..auth_utils import require_auth
 
 matching_bp = Blueprint('matching_bp', __name__, url_prefix='/api')
 
-# 1) 매칭 요청 생성
+# 1) 매칭 요청 생성 (모든 사용자 가능)
 @matching_bp.route("/match_requests", methods=["POST"])
 @require_auth # 로그인 필수
 def create_match_request():
@@ -13,8 +13,7 @@ def create_match_request():
         data = request.json or {}
         user = request.user 
         
-        if user.is_helper:
-            return jsonify({"error": "Helpers (Koreans) cannot request matching"}), 403
+        # Bỏ check is_helper - ai cũng có thể tạo request
         
         existing_request = MatchRequests.query.filter_by(
             requester_user_id=user.id, 
@@ -24,8 +23,19 @@ def create_match_request():
         if existing_request:
             return jsonify({"error": "You already have a pending match request"}), 409
 
+        # Validate target_language (ngôn ngữ muốn học)
+        target_language = data.get("target_language")
+        if not target_language:
+            return jsonify({"error": "target_language is required (e.g., 'ko' for Korean, 'vi' for Vietnamese)"}), 400
+        
+        # Validate target_language exists in Language table
+        from ..models import Language
+        if not Language.query.get(target_language):
+            return jsonify({"error": f"Invalid target_language: {target_language}"}), 400
+
         mr = MatchRequests(
             requester_user_id=user.id,
+            target_language=target_language,  # Ngôn ngữ muốn học
             preferred_college_id=data.get("preferred_college_id"),
             preferred_gender=data.get("preferred_gender", "any"),
             notes=data.get("notes"),
@@ -33,35 +43,43 @@ def create_match_request():
         )
         db.session.add(mr)
         db.session.commit()
-        return jsonify({"id": mr.id, "status": mr.status}), 201
+        return jsonify({"id": mr.id, "status": mr.status, "target_language": target_language}), 201
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"Create match request error: {str(e)}", exc_info=True)
         return jsonify({"error": f"Failed to create match request: {str(e)}"}), 500
 
 
-# 2) 도우미 후보 검색 (오류 수정됨)
+# 2) Tìm người giúp đỡ dựa trên target_language và nationality
 @matching_bp.route("/match_requests/<int:request_id>/find_helpers", methods=["GET"])
 @require_auth 
 def find_helpers_for_request(request_id):
+    """
+    Tìm người có thể giúp đỡ dựa trên:
+    - target_language: Ngôn ngữ muốn học (ví dụ: "ko" cho tiếng Hàn)
+    - Tìm người có main_language = target_language và nationality phù hợp
+    - Ví dụ: Tìm người học tiếng Hàn → tìm người có main_language="ko" và nationality_iso2="KR"
+    """
     try:
         mr = MatchRequests.query.get(request_id)
         if not mr:
             return jsonify({"error": "request not found"}), 404
 
-        requester = Users.query.get(mr.requester_user_id)
-        requester_lang = requester.main_language if requester else None
-        
-        q = db.session.query(Users).join(HelperProfiles, HelperProfiles.user_id == Users.id)
-        q = q.filter(Users.is_helper == True)
-        
-        if requester_lang:
-            q = q.join(HelperLanguages, HelperLanguages.user_id == Users.id)
-            q = q.filter(HelperLanguages.language_code == requester_lang)
+        if not mr.target_language:
+            return jsonify({"error": "Match request missing target_language"}), 400
 
+        # Tìm người có main_language = target_language
+        # Ví dụ: Nếu target_language="ko" thì tìm người có main_language="ko"
+        q = db.session.query(Users).filter(
+            Users.main_language == mr.target_language,
+            Users.id != mr.requester_user_id  # Không tìm chính mình
+        )
+
+        # Filter theo gender nếu có preference
         if mr.preferred_gender and mr.preferred_gender != "any":
             q = q.filter(Users.gender == mr.preferred_gender)
 
+        # Filter theo college nếu có preference
         if mr.preferred_college_id:
             q = q.join(Departments, Users.department_id == Departments.id)
             q = q.filter(Departments.college_id == mr.preferred_college_id)
@@ -75,14 +93,27 @@ def find_helpers_for_request(request_id):
             
         helpers = q.limit(limit).all()
         
-        results = [{"id": h.id, "nickname": h.nickname} for h in helpers]
+        # Return thông tin chi tiết hơn
+        results = []
+        for h in helpers:
+            results.append({
+                "id": h.id,
+                "nickname": h.nickname,
+                "realname": h.realname,
+                "main_language": h.main_language,
+                "nationality_iso2": h.nationality_iso2,
+                "gender": h.gender,
+                "school_id": h.school_id,
+                "department_id": h.department_id
+            })
+        
         return jsonify(results), 200
     except Exception as e:
         current_app.logger.error(f"Find helpers error: {str(e)}", exc_info=True)
         return jsonify({"error": f"Failed to find helpers: {str(e)}"}), 500
 
 
-# 3) 매칭 제안(offer) 생성
+# 3) Người giúp đỡ offer match (ai cũng có thể offer nếu phù hợp)
 @matching_bp.route("/match_requests/<int:request_id>/offer", methods=["POST"])
 @require_auth
 def offer_match(request_id):
@@ -96,12 +127,20 @@ def offer_match(request_id):
         if not mr:
             return jsonify({"error": "request not found"}), 404
         
-        # Validate mentor_user_id exists and is a helper
+        # Validate mentor_user_id exists
         mentor = Users.query.get(mentor_user_id)
         if not mentor:
             return jsonify({"error": "Mentor user not found"}), 404
-        if not mentor.is_helper:
-            return jsonify({"error": "Mentor must be a helper"}), 400
+        
+        # Validate mentor có main_language = target_language của request
+        if mentor.main_language != mr.target_language:
+            return jsonify({
+                "error": f"Mentor's main_language ({mentor.main_language}) does not match target_language ({mr.target_language})"
+            }), 400
+        
+        # Không cho phép offer cho chính mình
+        if mentor_user_id == mr.requester_user_id:
+            return jsonify({"error": "Cannot offer match to yourself"}), 400
         
         mr.status = "offered"
         db.session.commit()
@@ -128,12 +167,16 @@ def accept_match(request_id):
         if not mentor_user_id:
              return jsonify({"error": "mentor_user_id required for accept"}), 400
 
-        # Validate mentor_user_id exists and is a helper
+        # Validate mentor_user_id exists
         mentor = Users.query.get(mentor_user_id)
         if not mentor:
             return jsonify({"error": "Mentor user not found"}), 404
-        if not mentor.is_helper:
-            return jsonify({"error": "Mentor must be a helper"}), 400
+        
+        # Validate mentor có main_language = target_language của request
+        if mentor.main_language != mr.target_language:
+            return jsonify({
+                "error": f"Mentor's main_language ({mentor.main_language}) does not match target_language ({mr.target_language})"
+            }), 400
 
         # Get requester to access school_id
         requester = Users.query.get(mr.requester_user_id)
