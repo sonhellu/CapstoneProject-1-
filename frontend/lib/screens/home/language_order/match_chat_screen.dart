@@ -31,49 +31,26 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
     _future = _simulateMatch();
   }
 
-  /// 실제 서비스에서는 서버/DB 질의로 교체될 부분
+  /// Tìm người phù hợp từ API thực tế
+  /// TODO: Tích hợp với matching API khi có endpoint cho language exchange
   Future<List<_MatchResult>> _simulateMatch() async {
-    await Future.delayed(const Duration(milliseconds: 900));
-
-    // 더미 유저 풀
-    final users = <_User>[
-      _User('Alice', '여', '경영대학', ['en', 'ko']),
-      _User('Bob', '남', '공과대학', ['ko', 'ja']),
-      _User('Chloe', '여', '간호대학', ['vi', 'ko']),
-      _User('Dan', '남', '사회과학대학', ['zh', 'en']),
-      _User('Emma', '여', '상관없음', ['ja', 'en']),
-      _User('Fred', '남', '경영대학', ['en', 'ko']),
-      _User('Gina', '여', '공과대학', ['ko', 'zh']),
-    ];
-
-    // 조건 필터
-    final filtered = users.where((u) {
-      final langOk = u.languages.contains(widget.targetLanguageCode);
-      final genderOk =
-          widget.preferredGender == '상관없음' || u.gender == widget.preferredGender;
-      final collegeOk =
-          widget.preferredCollege == '상관없음' || u.college == widget.preferredCollege;
-      return langOk && genderOk && collegeOk;
-    }).toList();
-
-    if (filtered.isEmpty) return [];
-
-    // 최대 5명까지 랜덤 선택
-    final random = Random();
-    filtered.shuffle(random);
-    final picked = filtered.take(5).toList();
-
-    final now = DateTime.now().millisecondsSinceEpoch;
-    return picked
-        .asMap()
-        .entries
-        .map(
-          (e) => _MatchResult(
-            user: e.value,
-            roomId: 'room_${e.value.name}_${now}_${e.key}',
-          ),
-        )
-        .toList();
+    // Tạm thời trả về empty list - sẽ tích hợp với API thực tế sau
+    // Khi có API endpoint cho language exchange matching, sẽ gọi API ở đây
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    // TODO: Gọi API để tìm users phù hợp với:
+    // - targetLanguageCode: Ngôn ngữ muốn học
+    // - preferredGender: Giới tính ưa thích
+    // - preferredCollege: Trường ưa thích
+    // 
+    // Ví dụ: 
+    // final response = await MatchingService.findLanguageExchangePartners(
+    //   targetLanguage: widget.targetLanguageCode,
+    //   preferredGender: widget.preferredGender,
+    //   preferredCollege: widget.preferredCollege,
+    // );
+    
+    return [];
   }
 
   String _langLabel(String code) {
