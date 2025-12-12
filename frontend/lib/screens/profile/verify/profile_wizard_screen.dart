@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../services/profile_service.dart';
+import '../../../services/options_service.dart';
+import '../../../services/api_service.dart';
 
 class ProfileWizardScreen extends StatefulWidget {
   const ProfileWizardScreen({super.key});
@@ -219,44 +222,118 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
       _isLoading = true;
     });
 
-    final prefs = await SharedPreferences.getInstance();
-    
-    // Save to registration keys for consistency
-    await prefs.setString('realName', _nameController.text);
-    await prefs.setString('nickname', _usernameController.text);
-    
-    // Convert university name back to ID
-    int schoolId = _getSchoolIdFromName(_selectedUniversity);
-    await prefs.setInt('schoolId', schoolId);
-    
-    // Convert major name back to ID
-    int departmentId = _getDepartmentIdFromName(_selectedMajor);
-    await prefs.setInt('departmentId', departmentId);
-    
-    // Convert year string to int
-    int enrollmentYear = _getEnrollmentYearFromString(_selectedYear);
-    await prefs.setInt('enrollmentYear', enrollmentYear);
-    
-    // Convert nationality name back to ISO2 code
-    String nationalityIso2 = _getNationalityIso2FromName(_selectedNationality);
-    await prefs.setString('nationalityIso2', nationalityIso2);
+    try {
+      // Validate required fields
+      final nickname = _usernameController.text.trim();
+      final realname = _nameController.text.trim();
+      
+      if (nickname.isEmpty) {
+        throw ApiException('Nickname cannot be empty');
+      }
+      if (realname.isEmpty) {
+        throw ApiException('Real name cannot be empty');
+      }
+      
+      // Convert university name back to ID
+      int schoolId = _getSchoolIdFromName(_selectedUniversity);
+      if (schoolId <= 0) {
+        throw ApiException('Please select a university');
+      }
+      
+      // Convert major name back to ID
+      int departmentId = _getDepartmentIdFromName(_selectedMajor);
+      if (departmentId <= 0) {
+        throw ApiException('Please select a major');
+      }
+      
+      // Convert year string to int
+      int enrollmentYear = _getEnrollmentYearFromString(_selectedYear);
+      
+      // Convert nationality name back to ISO2 code
+      String nationalityIso2 = _getNationalityIso2FromName(_selectedNationality);
+      if (nationalityIso2.isEmpty) {
+        throw ApiException('Please select a nationality');
+      }
 
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.profileUpdated),
-          backgroundColor: Colors.green[600],
-        ),
+      // Call API to update profile and get updated data
+      final updatedProfile = await ProfileService.updateMyProfile(
+        nickname: nickname,
+        realname: realname,
+        schoolId: schoolId,
+        departmentId: departmentId,
+        enrollmentYear: enrollmentYear,
+        nationalityIso2: nationalityIso2,
       );
 
-      Navigator.pop(context);
+      // Update local SharedPreferences with data from API response
+      final prefs = await SharedPreferences.getInstance();
+      if (updatedProfile['realname'] != null) {
+        await prefs.setString('realName', updatedProfile['realname'].toString());
+      }
+      if (updatedProfile['nickname'] != null) {
+        await prefs.setString('nickname', updatedProfile['nickname'].toString());
+      }
+      if (updatedProfile['school_id'] != null) {
+        final sid = updatedProfile['school_id'];
+        await prefs.setInt('schoolId', sid is int ? sid : int.tryParse(sid.toString()) ?? schoolId);
+      }
+      if (updatedProfile['department_id'] != null) {
+        final did = updatedProfile['department_id'];
+        await prefs.setInt('departmentId', did is int ? did : int.tryParse(did.toString()) ?? departmentId);
+      }
+      if (updatedProfile['enrollment_year'] != null) {
+        final year = updatedProfile['enrollment_year'];
+        await prefs.setInt('enrollmentYear', year is int ? year : int.tryParse(year.toString()) ?? enrollmentYear);
+      }
+      if (updatedProfile['nationality_iso2'] != null) {
+        await prefs.setString('nationalityIso2', updatedProfile['nationality_iso2'].toString());
+      }
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        final l10n = AppLocalizations.of(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.profileUpdated),
+            backgroundColor: Colors.green[600],
+            duration: const Duration(seconds: 2),
+          ),
+        );
+
+        // Return true with updated profile data to indicate successful update
+        Navigator.pop(context, {'success': true, 'profile': updatedProfile});
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.message}'),
+            backgroundColor: Colors.red[600],
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update profile: ${e.toString()}'),
+            backgroundColor: Colors.red[600],
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 

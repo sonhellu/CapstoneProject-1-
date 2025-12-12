@@ -55,6 +55,7 @@ class Users(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     nickname = db.Column(db.String(100), nullable=False)
     realname = db.Column(db.String(100), nullable=False)
+    student_id = db.Column(db.String(50), nullable=True)  # Student ID - optional, user can input freely
     gender = db.Column(create_enum('male', 'female', name='gender_enum'), nullable=False)
     main_language = db.Column(db.String(10), db.ForeignKey('language.code'), nullable=False)
     nationality_iso2 = db.Column(db.CHAR(2), db.ForeignKey('country.iso2'), nullable=False)

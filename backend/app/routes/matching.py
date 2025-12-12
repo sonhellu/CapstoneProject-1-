@@ -135,7 +135,7 @@ def accept_match(request_id):
         if not mentor.is_helper:
             return jsonify({"error": "Mentor must be a helper"}), 400
 
-        # Get requester to access school_id (fix critical bug)
+        # Get requester to access school_id
         requester = Users.query.get(mr.requester_user_id)
         if not requester:
             return jsonify({"error": "Requester user not found"}), 404

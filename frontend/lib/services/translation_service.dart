@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Translation Service với fake API (mock data)
-/// TODO: Thay thế bằng real API khi backend sẵn sàng
 class TranslationService {
   // Map language codes
   static const Map<String, String> _languageMap = {
@@ -34,7 +33,7 @@ class TranslationService {
     final targetLang = targetLanguage ?? await getCurrentLanguage();
 
     // Fake translation - thêm prefix để show đã dịch
-    // TODO: Thay thế bằng real API call
+    // Note: Replace with real API call when translation API is available
     return _fakeTranslate(text, targetLang);
   }
 

@@ -51,6 +51,7 @@ class AppLocalizations {
     'welcome': 'Welcome to Hi Campus',
     'welcomeMessage': 'Your journey in Korea starts here',
     'fullName': 'Full Name',
+    'studentId': 'Student ID',
     'university': 'University',
     'major': 'Major',
     'year': 'Year',
@@ -121,7 +122,6 @@ class AppLocalizations {
     'noMatchFound': 'No matching partner found.\n(Target Language: {targetLang})',
     'schoolInformation': 'School Information',
     'tellUsAboutAcademicBackground': 'Tell us about your academic background',
-    'schoolId': 'School ID',
     'department': 'Department',
     'southKorea': 'South Korea',
     'vietnam': 'Vietnam',
@@ -181,6 +181,7 @@ class AppLocalizations {
     'welcome': '하이 캠퍼스에 오신 것을 환영합니다',
     'welcomeMessage': '한국에서의 여정이 여기서 시작됩니다',
     'fullName': '성명',
+    'studentId': '학번',
     'university': '대학교',
     'major': '전공',
     'year': '학년',
@@ -251,7 +252,6 @@ class AppLocalizations {
     'noMatchFound': '조건에 맞는 상대를 찾지 못했어요.\n(대상 언어: {targetLang})',
     'schoolInformation': '학교 정보',
     'tellUsAboutAcademicBackground': '학력에 대해 알려주세요',
-    'schoolId': '학교 ID',
     'department': '학과',
     'southKorea': '대한민국',
     'vietnam': '베트남',
@@ -311,6 +311,7 @@ class AppLocalizations {
     'welcome': 'Chào mừng đến với Hello Campus',
     'welcomeMessage': 'Hành trình của bạn tại Hàn Quốc bắt đầu từ đây',
     'fullName': 'Họ và tên',
+    'studentId': 'Mã sinh viên',
     'university': 'Trường đại học',
     'major': 'Chuyên ngành',
     'year': 'Năm học',
@@ -381,7 +382,6 @@ class AppLocalizations {
     'noMatchFound': 'Không tìm thấy đối tác phù hợp.\n(Ngôn ngữ mục tiêu: {targetLang})',
     'schoolInformation': 'Thông tin trường học',
     'tellUsAboutAcademicBackground': 'Hãy cho chúng tôi biết về nền tảng học vấn của bạn',
-    'schoolId': 'ID Trường học',
     'department': 'Khoa',
     'southKorea': 'Hàn Quốc',
     'vietnam': 'Việt Nam',
@@ -444,6 +444,7 @@ class AppLocalizations {
     'welcome': '欢迎来到Hello Campus',
     'welcomeMessage': '您在韩国的旅程从这里开始',
     'fullName': '姓名',
+    'studentId': '学号',
     'university': '大学',
     'major': '专业',
     'year': '年级',
@@ -538,7 +539,6 @@ class AppLocalizations {
     'noMatchFound': '未找到匹配的伙伴。\n(目标语言: {targetLang})',
     'schoolInformation': '学校信息',
     'tellUsAboutAcademicBackground': '请告诉我们您的学术背景',
-    'schoolId': '学校ID',
     'department': '专业',
     'southKorea': '韩国',
     'vietnam': '越南',
@@ -599,6 +599,7 @@ class AppLocalizations {
     'welcome': 'Hello Campusへようこそ',
     'welcomeMessage': '韓国でのあなたの旅はここから始まります',
     'fullName': '氏名',
+    'studentId': '学籍番号',
     'university': '大学',
     'major': '専攻',
     'year': '学年',
@@ -693,7 +694,6 @@ class AppLocalizations {
     'noMatchFound': 'マッチするパートナーが見つかりませんでした。\n(目標言語: {targetLang})',
     'schoolInformation': '学校情報',
     'tellUsAboutAcademicBackground': '学歴について教えてください',
-    'schoolId': '学校ID',
     'department': '学科',
     'southKorea': '韓国',
     'vietnam': 'ベトナム',
@@ -754,6 +754,7 @@ class AppLocalizations {
     'welcome': 'Hello Campus မှကြိုဆိုပါတယ်',
     'welcomeMessage': 'ကိုရီးယားရှိ သင့်ခရီးသည် ဤနေရာမှ စတင်ပါသည်',
     'fullName': 'အမည်',
+    'studentId': 'ကျောင်းသားနံပါတ်',
     'university': 'တက္ကသိုလ်',
     'major': 'ဘာသာရပ်',
     'year': 'နှစ်',
@@ -848,7 +849,6 @@ class AppLocalizations {
     'noMatchFound': 'ကိုက်ညီသော လက်တွဲဖော် မတွေ့ရှိပါ။\n(ဦးတည်ဘာသာစကား: {targetLang})',
     'schoolInformation': 'ကျောင်းအချက်အလက်',
     'tellUsAboutAcademicBackground': 'သင့်ပညာရေးနောက်ခံအကြောင်း ပြောပြပါ',
-    'schoolId': 'ကျောင်း ID',
     'department': 'ဌာန',
     'southKorea': 'တောင်ကိုရီးယား',
     'vietnam': 'ဗီယက်နမ်',
@@ -933,6 +933,7 @@ class AppLocalizations {
   String get welcomeMessage => translate('welcomeMessage');
   String get fullName => translate('fullName');
   String get username => translate('username');
+  String get studentId => translate('studentId');
   String get university => translate('university');
   String get major => translate('major');
   String get year => translate('year');
@@ -1007,7 +1008,6 @@ class AppLocalizations {
   String noMatchFound(String targetLang) => translate('noMatchFound').replaceAll('{targetLang}', targetLang);
   String get schoolInformation => translate('schoolInformation');
   String get tellUsAboutAcademicBackground => translate('tellUsAboutAcademicBackground');
-  String get schoolId => translate('schoolId');
   String get department => translate('department');
   String get southKorea => translate('southKorea');
   String get vietnam => translate('vietnam');

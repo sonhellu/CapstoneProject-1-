@@ -1,10 +1,25 @@
 from .database import ma
-from .models import Users, Posts
+from .models import Users, Posts, Schools, Departments
+
+class SchoolSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Schools
+        fields = ('id', 'school_name', 'website_url')
+
+class DepartmentSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Departments
+        fields = ('id', 'department_name')
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
+    school = ma.Nested(SchoolSchema, dump_only=True)
+    department = ma.Nested(DepartmentSchema, dump_only=True)
+    
     class Meta:
         model = Users
-        exclude = ('password_hash',) # 비밀번호는 절대 반환 X
+        # Exclude password_hash only, let SQLAlchemyAutoSchema auto-detect other fields
+        exclude = ('password_hash',)
+        include_fk = True  # Include foreign keys like school_id, department_id, etc.
 
 class PostSchema(ma.SQLAlchemyAutoSchema):
     # author 필드를 닉네임만 나오도록 수정

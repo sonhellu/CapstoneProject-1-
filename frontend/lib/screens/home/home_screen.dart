@@ -24,19 +24,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  int _profileKey = 0; // Key to force rebuild ProfileScreen when tab is selected
 
-  // Lazy loading screens for better performance
-  late final List<Widget> _screens;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize screens only when needed
-    _screens = [
-      const HomeTab(),
-      const ChatScreen(),
-      const ProfileScreen(),
-    ];
+  // Get screens - ProfileScreen will rebuild when key changes
+  List<Widget> get _screens => [
+    const HomeTab(),
+    const ChatScreen(),
+    ProfileScreen(key: ValueKey(_profileKey)),
+  ];
+  
+  // Method to reload profile screen (can be called from ProfileScreen)
+  void reloadProfileScreen() {
+    setState(() {
+      _profileKey++; // Force rebuild ProfileScreen
+    });
   }
 
   @override
@@ -66,6 +67,10 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: (index) {
           setState(() {
             _currentIndex = index;
+            // Force rebuild ProfileScreen when profile tab is selected to trigger API call
+            if (index == 2) {
+              _profileKey++;
+            }
           });
         },
         type: BottomNavigationBarType.fixed,

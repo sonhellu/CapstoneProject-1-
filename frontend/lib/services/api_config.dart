@@ -1,11 +1,11 @@
 /// API Configuration - Optimized
 class ApiConfig {
   // Environment-based URLs
-  static const String _prodUrl = 'https://capstoneproject-k4fm.onrender.com';
+  static const String _prodUrl = 'https://hicampus.onrender.com';
   static const String _devUrl = 'http://127.0.0.1:5000';
   
   // Toggle between production and development
-  static const bool _isProduction = true; // Set to false for local development
+  static const bool _isProduction = true; // Set to true for production deployment
   
   static String get baseUrl => _isProduction ? _prodUrl : _devUrl;
   
@@ -29,6 +29,17 @@ class ApiConfig {
   
   // Translation endpoints
   static const String translateEndpoint = '/api/translate';
+  
+  // Options endpoints (for registration dropdowns)
+  static const String schoolsEndpoint = '/api/options/schools';
+  static const String languagesEndpoint = '/api/options/languages';
+  static const String countriesEndpoint = '/api/options/countries';
+  static String departmentsEndpoint(int schoolId) => '/api/options/departments?school_id=$schoolId';
+  static String collegesEndpoint(int schoolId) => '/api/options/colleges?school_id=$schoolId';
+  
+  // Profile endpoints
+  static const String myProfileEndpoint = '/api/profile/me';
+  static String userProfileEndpoint(int userId) => '/api/profile/$userId';
   
   // Timeout settings - Optimized for Render (cold start)
   static const Duration connectTimeout = Duration(seconds: 30); // Increased for Render cold start

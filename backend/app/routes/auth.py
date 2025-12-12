@@ -70,11 +70,15 @@ def register():
             bcrypt.gensalt()
         ).decode('utf-8')
 
+        # student_id is optional - only set if provided
+        student_id = data.get('student_id', '').strip() if data.get('student_id') else None
+        
         new_user = Users(
             email=email,
             password_hash=hashed_password,
             nickname=data['nickname'].strip(),
             realname=data['realname'].strip(),
+            student_id=student_id if student_id else None,
             gender=data['gender'],
             main_language=data['main_language'],
             nationality_iso2=data['nationality_iso2'].upper(),
@@ -90,7 +94,6 @@ def register():
     
     except Exception as e:
         db.session.rollback()
-        # Log error để debug
         current_app.logger.error(f"Registration error: {str(e)}", exc_info=True)
         return jsonify({"error": f"Registration failed: {str(e)}"}), 500
 @auth_bp.route("/login", methods=["POST"])

@@ -30,7 +30,7 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   // Temporarily disable API authentication - Set true to bypass login
-  static const bool BYPASS_AUTH = true;
+  static const bool BYPASS_AUTH = false;
   
   Locale _locale = const Locale('en', '');
   bool _isLoggedIn = false;

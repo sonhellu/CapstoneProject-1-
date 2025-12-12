@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/registration_data.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
+import '../../services/options_service.dart';
 import '../../l10n/app_localizations.dart';
 
 class MultiStepRegisterScreen extends StatefulWidget {
@@ -22,11 +23,18 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
   
   int _currentStep = 0;
   bool _isLoading = false;
+  bool _isLoadingOptions = false;
   final _formKey = GlobalKey<FormState>();
   
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  
+  // Options data from API
+  List<Map<String, dynamic>> _schools = [];
+  List<Map<String, dynamic>> _departments = [];
+  List<Map<String, dynamic>> _languages = [];
+  List<Map<String, dynamic>> _countries = [];
 
   // Form controllers
   final _emailController = TextEditingController();
@@ -34,7 +42,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
   final _confirmPasswordController = TextEditingController();
   final _realNameController = TextEditingController();
   final _nicknameController = TextEditingController();
-  final _schoolIdController = TextEditingController();
+  final _studentIdController = TextEditingController();
 
   @override
   void initState() {
@@ -61,6 +69,106 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
     ));
     
     _animationController.forward();
+    _loadOptionsData();
+  }
+  
+  /// Load all options data from API
+  Future<void> _loadOptionsData() async {
+    setState(() {
+      _isLoadingOptions = true;
+    });
+    
+    try {
+      // Load all options in parallel
+      final results = await Future.wait([
+        OptionsService.getSchools(),
+        OptionsService.getLanguages(),
+        OptionsService.getCountries(),
+      ]);
+      
+      // Set default values BEFORE setting state to avoid value mismatch
+      int? firstSchoolId;
+      String? firstLanguage;
+      String? firstCountry;
+      
+      if ((results[0] as List).isNotEmpty) {
+        firstSchoolId = (results[0] as List).first['id'] as int;
+      }
+      if ((results[1] as List).isNotEmpty) {
+        firstLanguage = (results[1] as List).first['code'] as String;
+      }
+      if ((results[2] as List).isNotEmpty) {
+        firstCountry = (results[2] as List).first['iso2'] as String;
+      }
+      
+      setState(() {
+        _schools = results[0] as List<Map<String, dynamic>>;
+        _languages = results[1] as List<Map<String, dynamic>>;
+        _countries = results[2] as List<Map<String, dynamic>>;
+        _isLoadingOptions = false;
+        
+        // Set default values only if data is available
+        if (firstSchoolId != null) {
+          _registrationData.schoolId = firstSchoolId;
+        }
+        if (firstLanguage != null) {
+          _registrationData.mainLanguage = firstLanguage;
+        }
+        if (firstCountry != null) {
+          _registrationData.nationalityIso2 = firstCountry;
+        }
+      });
+      
+      // Load departments after setting school
+      if (firstSchoolId != null) {
+        _loadDepartments(firstSchoolId);
+      }
+    } catch (e) {
+      setState(() {
+        _isLoadingOptions = false;
+      });
+      // Show error but don't block registration
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Warning: Could not load options. Using defaults.'),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+  
+  /// Load departments for selected school
+  Future<void> _loadDepartments(int schoolId) async {
+    try {
+      final departments = await OptionsService.getDepartments(schoolId);
+      setState(() {
+        _departments = departments;
+        // Set default department if available, otherwise reset to 0
+        if (_departments.isNotEmpty) {
+          _registrationData.departmentId = _departments.first['id'] as int;
+        } else {
+          _registrationData.departmentId = 0; // Reset if no departments
+        }
+      });
+    } catch (e) {
+      // Error loading departments - reset list
+      setState(() {
+        _departments = [];
+        _registrationData.departmentId = 0;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not load departments for selected school.'),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -72,7 +180,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
     _confirmPasswordController.dispose();
     _realNameController.dispose();
     _nicknameController.dispose();
-    _schoolIdController.dispose();
+    _studentIdController.dispose();
     super.dispose();
   }
 
@@ -99,7 +207,26 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
       case 1: // Step 2: Profile Info
         return _formKey.currentState!.validate();
       case 2: // Step 3: School Info
-        return true; // Dropdowns are always valid
+        // Validate that school and department are selected
+        if (_registrationData.schoolId <= 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please select a university'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return false;
+        }
+        if (_registrationData.departmentId <= 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please select a department'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return false;
+        }
+        return true;
       default:
         return true;
     }
@@ -130,7 +257,8 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
         _registrationData.nickname = _nicknameController.text;
         break;
       case 2: // Step 3: School Info
-        _registrationData.schoolIdString = _schoolIdController.text;
+        _registrationData.studentId = _studentIdController.text.trim();
+        // University và Department ID đã được lưu trực tiếp khi chọn từ dropdown
         break;
     }
   }
@@ -159,6 +287,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
         password: apiData['password'] as String,
         nickname: apiData['nickname'] as String,
         realname: apiData['realname'] as String,
+        studentId: apiData['student_id'] as String?,
         gender: apiData['gender'] as String,
         mainLanguage: apiData['main_language'] as String,
         nationalityIso2: apiData['nationality_iso2'] as String,
@@ -590,43 +719,75 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           ),
           const SizedBox(height: 20),
           
-          _buildDropdownField(
-            value: _registrationData.mainLanguage,
+          _isLoadingOptions
+              ? const Center(child: CircularProgressIndicator())
+              : _buildDropdownField<String>(
+                  value: _languages.isEmpty 
+                      ? 'ko' 
+                      : (_languages.any((l) => l['code'] == _registrationData.mainLanguage)
+                          ? _registrationData.mainLanguage
+                          : (_languages.isNotEmpty ? _languages.first['code'] as String : 'ko')),
             labelText: 'Main Language',
             icon: Icons.translate,
-            items: [
-              DropdownMenuItem(value: 'ko', child: Text(AppLocalizations.of(context).korean)),
-              DropdownMenuItem(value: 'en', child: Text(AppLocalizations.of(context).english)),
-              DropdownMenuItem(value: 'vi', child: Text(AppLocalizations.of(context).vietnamese)),
-              DropdownMenuItem(value: 'ja', child: Text(AppLocalizations.of(context).japanese)),
-              DropdownMenuItem(value: 'zh', child: Text(AppLocalizations.of(context).chinese)),
-              DropdownMenuItem(value: 'my', child: Text(AppLocalizations.of(context).myanmar)),
-            ],
-            onChanged: (value) {
+                  items: _languages.isEmpty
+                      ? [DropdownMenuItem(value: 'ko', child: Text('Loading...'))]
+                      : _languages.map((lang) {
+                          return DropdownMenuItem(
+                            value: lang['code'] as String,
+                            child: Text(lang['native_name'] as String? ?? lang['name'] as String),
+                          );
+                        }).toList(),
+                  onChanged: _languages.isEmpty ? null : (value) {
+                    if (value != null) {
               setState(() {
-                _registrationData.mainLanguage = value!;
+                        _registrationData.mainLanguage = value;
               });
+                    }
             },
             isDark: isDark,
           ),
           const SizedBox(height: 20),
           
-          _buildDropdownField(
-            value: _registrationData.nationalityIso2,
-            labelText: AppLocalizations.of(context).nationality,
+          _isLoadingOptions
+              ? const Center(child: CircularProgressIndicator())
+              : _buildDropdownField<String>(
+                  value: _countries.isEmpty 
+                      ? 'KR' 
+                      : (_countries.any((c) => c['iso2'] == _registrationData.nationalityIso2)
+                          ? _registrationData.nationalityIso2
+                          : (_countries.isNotEmpty ? _countries.first['iso2'] as String : 'KR')),
+                  labelText: AppLocalizations.of(context).nationality,
             icon: Icons.public,
-            items: [
-              DropdownMenuItem(value: 'KR', child: Text('🇰🇷 ${AppLocalizations.of(context).southKorea}')),
-              DropdownMenuItem(value: 'VN', child: Text('🇻🇳 ${AppLocalizations.of(context).vietnam}')),
-              DropdownMenuItem(value: 'US', child: Text('🇺🇸 ${AppLocalizations.of(context).unitedStates}')),
-              DropdownMenuItem(value: 'JP', child: Text('🇯🇵 ${AppLocalizations.of(context).japan}')),
-              DropdownMenuItem(value: 'CN', child: Text('🇨🇳 ${AppLocalizations.of(context).china}')),
-              DropdownMenuItem(value: 'MM', child: Text('🇲🇲 ${AppLocalizations.of(context).myanmar}')),
-            ],
-            onChanged: (value) {
+                  items: _countries.isEmpty
+                      ? [DropdownMenuItem(value: 'KR', child: Text('Loading...'))]
+                      : _countries.map((country) {
+                          final iso2 = country['iso2'] as String;
+                          final name = country['name'] as String;
+                          String displayName = name;
+                          // Add emoji based on country code
+                          switch (iso2) {
+                            case 'KR': displayName = '🇰🇷 $name'; break;
+                            case 'VN': displayName = '🇻🇳 $name'; break;
+                            case 'US': displayName = '🇺🇸 $name'; break;
+                            case 'JP': displayName = '🇯🇵 $name'; break;
+                            case 'CN': displayName = '🇨🇳 $name'; break;
+                            case 'MM': displayName = '🇲🇲 $name'; break;
+                            case 'TH': displayName = '🇹🇭 $name'; break;
+                            case 'ID': displayName = '🇮🇩 $name'; break;
+                            case 'PH': displayName = '🇵🇭 $name'; break;
+                            case 'SG': displayName = '🇸🇬 $name'; break;
+                          }
+                          return DropdownMenuItem(
+                            value: iso2,
+                            child: Text(displayName),
+                          );
+                        }).toList(),
+                  onChanged: _countries.isEmpty ? null : (value) {
+                    if (value != null) {
               setState(() {
-                _registrationData.nationalityIso2 = value!;
+                        _registrationData.nationalityIso2 = value;
               });
+                    }
             },
             isDark: isDark,
           ),
@@ -691,75 +852,69 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           const SizedBox(height: 40),
           
           // Form fields
+          // Student ID input (optional, user can input freely)
           _buildFormField(
-            controller: _schoolIdController,
-            keyboardType: TextInputType.number,
-            labelText: AppLocalizations.of(context).schoolId,
-            prefixIcon: Icons.credit_card,
+            controller: _studentIdController,
+            keyboardType: TextInputType.text,
+            labelText: AppLocalizations.of(context).studentId,
+            prefixIcon: Icons.badge,
             isDark: isDark,
           ),
           const SizedBox(height: 20),
           
-          _buildDropdownField(
-            value: _registrationData.schoolId,
-            labelText: AppLocalizations.of(context).university,
+          _isLoadingOptions
+              ? const Center(child: CircularProgressIndicator())
+              : _buildDropdownField<int>(
+                  value: _schools.isEmpty 
+                      ? 0 
+                      : (_schools.any((s) => s['id'] == _registrationData.schoolId)
+                          ? _registrationData.schoolId
+                          : (_schools.isNotEmpty ? _schools.first['id'] as int : 0)),
+                  labelText: AppLocalizations.of(context).university,
             icon: Icons.school_outlined,
-            items: const [
-              DropdownMenuItem(value: 1, child: Text(' Keimyung University')),
-              DropdownMenuItem(value: 2, child: Text(' Seoul National University')),
-              DropdownMenuItem(value: 3, child: Text(' Korea University')),
-              DropdownMenuItem(value: 4, child: Text(' Yonsei University')),
-              DropdownMenuItem(value: 5, child: Text(' KAIST')),
-              DropdownMenuItem(value: 6, child: Text(' Sungkyunkwan University')),
-              DropdownMenuItem(value: 7, child: Text(' Hongik University')),
-              DropdownMenuItem(value: 8, child: Text(' Hanyang University')),
-              DropdownMenuItem(value: 9, child: Text(' Chung-Ang University')),
-              DropdownMenuItem(value: 10, child: Text(' Kyung Hee University')),
-              DropdownMenuItem(value: 11, child: Text(' Ewha Womans University')),
-              DropdownMenuItem(value: 12, child: Text(' Sogang University')),
-              DropdownMenuItem(value: 13, child: Text(' Pusan National University')),
-              DropdownMenuItem(value: 14, child: Text(' Inha University')),
-              DropdownMenuItem(value: 15, child: Text(' Other University')),
-            ],
-            onChanged: (value) {
+                  items: _schools.isEmpty
+                      ? [DropdownMenuItem(value: 0, child: Text('Loading...'))]
+                      : _schools.map((school) {
+                          return DropdownMenuItem(
+                            value: school['id'] as int,
+                            child: Text(' ${school['name'] as String}'),
+                          );
+                        }).toList(),
+                  onChanged: _schools.isEmpty ? null : (value) {
+                    if (value != null && value != 0) {
               setState(() {
-                _registrationData.schoolId = value!;
+                        _registrationData.schoolId = value;
+                        // Load departments for selected school
+                        _loadDepartments(value);
               });
+                    }
             },
             isDark: isDark,
           ),
           const SizedBox(height: 20),
           
-          _buildDropdownField(
-            value: _registrationData.departmentId,
+          _buildDropdownField<int>(
+            value: _departments.isEmpty 
+                ? 0 
+                : (_departments.any((d) => d['id'] == _registrationData.departmentId)
+                    ? _registrationData.departmentId
+                    : (_departments.isNotEmpty ? _departments.first['id'] as int : 0)),
             labelText: AppLocalizations.of(context).department,
             icon: Icons.business_center,
-            items: const [
-              DropdownMenuItem(value: 1, child: Text(' Computer Science')),
-              DropdownMenuItem(value: 2, child: Text(' Business Administration')),
-              DropdownMenuItem(value: 3, child: Text(' Engineering')),
-              DropdownMenuItem(value: 4, child: Text(' Liberal Arts')),
-              DropdownMenuItem(value: 5, child: Text(' Medicine')),
-              DropdownMenuItem(value: 6, child: Text(' Law')),
-              DropdownMenuItem(value: 7, child: Text(' Fine Arts')),
-              DropdownMenuItem(value: 8, child: Text(' Music')),
-              DropdownMenuItem(value: 9, child: Text(' Physical Education')),
-              DropdownMenuItem(value: 10, child: Text(' Natural Sciences')),
-              DropdownMenuItem(value: 11, child: Text(' International Studies')),
-              DropdownMenuItem(value: 12, child: Text(' Media & Communication')),
-              DropdownMenuItem(value: 13, child: Text(' Architecture')),
-              DropdownMenuItem(value: 14, child: Text(' Culinary Arts')),
-              DropdownMenuItem(value: 15, child: Text(' Early Childhood Education')),
-              DropdownMenuItem(value: 16, child: Text(' Environmental Science')),
-              DropdownMenuItem(value: 17, child: Text(' Psychology')),
-              DropdownMenuItem(value: 18, child: Text(' Economics')),
-              DropdownMenuItem(value: 19, child: Text(' Information Technology')),
-              DropdownMenuItem(value: 20, child: Text(' Theater & Film')),
-            ],
-            onChanged: (value) {
+            items: _departments.isEmpty
+                ? [DropdownMenuItem(value: 0, child: Text('Select a school first'))]
+                : _departments.map((dept) {
+                    return DropdownMenuItem(
+                      value: dept['id'] as int,
+                      child: Text(' ${dept['name'] as String}'),
+                    );
+                  }).toList(),
+            onChanged: _departments.isEmpty ? null : (value) {
+              if (value != null && value != 0) {
               setState(() {
-                _registrationData.departmentId = value!;
+                  _registrationData.departmentId = value;
               });
+              }
             },
             isDark: isDark,
           ),
@@ -880,9 +1035,10 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           _buildReviewItem(AppLocalizations.of(context).realName, _registrationData.realName, isDark),
           _buildReviewItem(AppLocalizations.of(context).gender, _registrationData.gender == 'male' ? AppLocalizations.of(context).male : AppLocalizations.of(context).female, isDark),
           _buildReviewItem(AppLocalizations.of(context).nickname, _registrationData.nickname, isDark),
+          if (_registrationData.studentId.isNotEmpty)
+            _buildReviewItem(AppLocalizations.of(context).studentId, _registrationData.studentId, isDark),
           _buildReviewItem(AppLocalizations.of(context).language, _getLanguageName(_registrationData.mainLanguage), isDark),
           _buildReviewItem(AppLocalizations.of(context).nationality, _getNationalityName(_registrationData.nationalityIso2), isDark),
-          _buildReviewItem(AppLocalizations.of(context).schoolId, _registrationData.schoolIdString.isNotEmpty ? _registrationData.schoolIdString : _registrationData.schoolId.toString(), isDark),
           _buildReviewItem(AppLocalizations.of(context).university, _getSchoolName(_registrationData.schoolId), isDark),
           _buildReviewItem(AppLocalizations.of(context).department, _getDepartmentName(_registrationData.departmentId), isDark),
           _buildReviewItem(AppLocalizations.of(context).enrollmentYear, _registrationData.enrollmentYear.toString(), isDark),
@@ -923,73 +1079,38 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
 
   // Helper methods to convert codes to friendly names
   String _getLanguageName(String code) {
-    switch (code) {
-      case 'ko': return '한국어';
-      case 'en': return 'English';
-      case 'vi': return 'Tiếng Việt';
-      case 'ja': return '日本語';
-      case 'zh': return '中文';
-      case 'my': return 'မြန်မာ';
-      default: return code;
+    try {
+      final lang = _languages.firstWhere((l) => l['code'] == code);
+      return lang['native_name'] as String? ?? lang['name'] as String;
+    } catch (e) {
+      return code;
     }
   }
 
   String _getNationalityName(String code) {
-    switch (code) {
-      case 'KR': return '🇰🇷 Hàn Quốc';
-      case 'VN': return '🇻🇳 Việt Nam';
-      case 'US': return '🇺🇸 United States';
-      case 'JP': return '🇯🇵 Japan';
-      case 'CN': return '🇨🇳 China';
-      case 'MM': return '🇲🇲 Myanmar';
-      default: return code;
+    try {
+      final country = _countries.firstWhere((c) => c['iso2'] == code);
+      return country['name'] as String;
+    } catch (e) {
+      return code;
     }
   }
 
   String _getDepartmentName(int id) {
-    switch (id) {
-      case 1: return 'Computer Science';
-      case 2: return 'Business Administration';
-      case 3: return 'Engineering';
-      case 4: return ' Liberal Arts';
-      case 5: return ' Medicine';
-      case 6: return ' Law';
-      case 7: return ' Fine Arts';
-      case 8: return ' Music';
-      case 9: return ' Physical Education';
-      case 10: return ' Natural Sciences';
-      case 11: return ' International Studies';
-      case 12: return ' Media & Communication';
-      case 13: return ' Architecture';
-      case 14: return ' Culinary Arts';
-      case 15: return ' Early Childhood Education';
-      case 16: return ' Environmental Science';
-      case 17: return ' Psychology';
-      case 18: return ' Economics';
-      case 19: return ' Information Technology';
-      case 20: return ' Theater & Film';
-      default: return 'epartment $id';
+    try {
+      final dept = _departments.firstWhere((d) => d['id'] == id);
+      return dept['name'] as String;
+    } catch (e) {
+      return 'Department $id';
     }
   }
 
   String _getSchoolName(int id) {
-    switch (id) {
-      case 1: return ' Keimyung University';
-      case 2: return ' Seoul National University';
-      case 3: return ' Korea University';
-      case 4: return ' Yonsei University';
-      case 5: return ' KAIST';
-      case 6: return ' Sungkyunkwan University';
-      case 7: return ' Hongik University';
-      case 8: return ' Hanyang University';
-      case 9: return ' Chung-Ang University';
-      case 10: return ' Kyung Hee University';
-      case 11: return ' Ewha Womans University';
-      case 12: return ' Sogang University';
-      case 13: return ' Pusan National University';
-      case 14: return ' Inha University';
-      case 15: return ' Other University';
-      default: return 'School $id';
+    try {
+      final school = _schools.firstWhere((s) => s['id'] == id);
+      return school['name'] as String;
+    } catch (e) {
+      return 'School $id';
     }
   }
 
@@ -1065,7 +1186,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
     required String labelText,
     required IconData icon,
     required List<DropdownMenuItem<T>> items,
-    required ValueChanged<T?> onChanged,
+    ValueChanged<T?>? onChanged,
     required bool isDark,
   }) {
     return Container(

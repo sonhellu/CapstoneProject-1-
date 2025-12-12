@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../l10n/app_localizations.dart';
 import 'verify/profile_wizard_screen.dart';
+import '../../services/profile_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -10,37 +11,138 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserver {
   final _nameController = TextEditingController();
   
   String _selectedUniversity = '';
   String _selectedMajor = '';
   String _selectedYear = '';
   String _selectedNationality = '';
-
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadUserData();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _nameController.dispose();
     super.dispose();
   }
 
+
+
+  // Public method to reload data (can be called from outside)
+  void reloadData() {
+    _loadUserData();
+  }
+
+  // Map profile data to UI fields (extracted for reuse)
+  void _mapProfileDataToUI(Map<String, dynamic> profileData) {
+    if (!mounted) return;
+    
+    // Prepare data before setState
+    String newRealname = profileData['realname']?.toString() ?? '';
+    String newUniversity = '';
+    String newMajor = '';
+    String newYear = '';
+    String newNationality = '';
+    
+    // Get school name from nested object or use ID
+    if (profileData['school'] != null && profileData['school'] is Map<String, dynamic>) {
+      newUniversity = profileData['school']['school_name']?.toString() ?? '';
+    } else if (profileData['school_id'] != null) {
+      final schoolId = profileData['school_id'];
+      final sid = schoolId is int ? schoolId : int.tryParse(schoolId.toString()) ?? 1;
+      newUniversity = _getSchoolName(sid);
+    }
+    
+    // Get department name from nested object or use ID
+    if (profileData['department'] != null && profileData['department'] is Map<String, dynamic>) {
+      newMajor = profileData['department']['department_name']?.toString() ?? '';
+    } else if (profileData['department_id'] != null) {
+      final deptId = profileData['department_id'];
+      final did = deptId is int ? deptId : int.tryParse(deptId.toString()) ?? 1;
+      newMajor = _getDepartmentName(did);
+    }
+    
+    // Get enrollment year
+    if (profileData['enrollment_year'] != null) {
+      final year = profileData['enrollment_year'];
+      final yearInt = year is int ? year : int.tryParse(year.toString());
+      newYear = _getYearStringFromEnrollmentYear(yearInt);
+    }
+    
+    // Get nationality
+    if (profileData['nationality_iso2'] != null) {
+      newNationality = _getNationalityName(profileData['nationality_iso2'].toString());
+    }
+    
+    // Update UI in setState
+    if (mounted) {
+      setState(() {
+        _nameController.text = newRealname;
+        _selectedUniversity = newUniversity;
+        _selectedMajor = newMajor;
+        _selectedYear = newYear;
+        _selectedNationality = newNationality;
+        _isLoading = false;
+      });
+    }
+  }
+
   Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    
     setState(() {
-      // Load from registration data
-      _nameController.text = prefs.getString('realName') ?? '';
-      _selectedUniversity = _getSchoolName(prefs.getInt('schoolId') ?? 1);
-      _selectedMajor = _getDepartmentName(prefs.getInt('departmentId') ?? 1);
-      _selectedYear = _getYearStringFromEnrollmentYear(prefs.getInt('enrollmentYear'));
-      _selectedNationality = _getNationalityName(prefs.getString('nationalityIso2') ?? 'KR');
+      _isLoading = true;
     });
+
+    try {
+      // Call API to get profile data using JWT token
+      final profileData = await ProfileService.getMyProfile();
+      
+      if (!mounted) return;
+      
+      // Use the extracted mapping method
+      _mapProfileDataToUI(profileData);
+      
+      // Also save to SharedPreferences for backward compatibility
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('realName', _nameController.text);
+      if (profileData['school_id'] != null) {
+        final schoolId = profileData['school_id'];
+        await prefs.setInt('schoolId', schoolId is int ? schoolId : int.tryParse(schoolId.toString()) ?? 1);
+      }
+      if (profileData['department_id'] != null) {
+        final deptId = profileData['department_id'];
+        await prefs.setInt('departmentId', deptId is int ? deptId : int.tryParse(deptId.toString()) ?? 1);
+      }
+      if (profileData['enrollment_year'] != null) {
+        final year = profileData['enrollment_year'];
+        await prefs.setInt('enrollmentYear', year is int ? year : int.tryParse(year.toString()) ?? DateTime.now().year);
+      }
+      if (profileData['nationality_iso2'] != null) {
+        await prefs.setString('nationalityIso2', profileData['nationality_iso2'].toString());
+      }
+    } catch (e) {
+      // Fallback to SharedPreferences if API fails
+      if (!mounted) return;
+      
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        _nameController.text = prefs.getString('realName') ?? '';
+        _selectedUniversity = _getSchoolName(prefs.getInt('schoolId') ?? 1);
+        _selectedMajor = _getDepartmentName(prefs.getInt('departmentId') ?? 1);
+        _selectedYear = _getYearStringFromEnrollmentYear(prefs.getInt('enrollmentYear'));
+        _selectedNationality = _getNationalityName(prefs.getString('nationalityIso2') ?? 'KR');
+        _isLoading = false;
+      });
+    }
   }
 
   String _getSchoolName(int id) {
@@ -197,7 +299,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       child: SafeArea(
-        child: SingleChildScrollView(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
           padding: const EdgeInsets.all(18.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,15 +368,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed: () async {
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const ProfileWizardScreen(),
                           ),
-                        ).then((_) {
-                          _loadUserData(); // Reload data after wizard
-                        });
+                        );
+                        // Reload data immediately if update was successful
+                        if (result != null) {
+                          // Check if result is a map with success flag or just a boolean
+                          bool isSuccess = false;
+                          Map<String, dynamic>? updatedProfileData;
+                          
+                          if (result is Map<String, dynamic>) {
+                            isSuccess = result['success'] == true;
+                            updatedProfileData = result['profile'] as Map<String, dynamic>?;
+                          } else if (result == true) {
+                            isSuccess = true;
+                          }
+                          
+                          if (isSuccess) {
+                            // If we have updated profile data from response, use it directly
+                            if (updatedProfileData != null) {
+                              _mapProfileDataToUI(updatedProfileData);
+                            } else {
+                              // Otherwise, fetch fresh data from API
+                              await Future.delayed(const Duration(milliseconds: 200));
+                              await _loadUserData();
+                            }
+                          }
+                        }
                       },
                       icon: const Icon(Icons.edit),
                       label: Text(AppLocalizations.of(context).edit),

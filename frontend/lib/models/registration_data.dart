@@ -12,8 +12,8 @@ class RegistrationData {
   String nationalityIso2 = 'KR';
 
   // Step 3: School Information
+  String studentId = ''; // Student ID - user can input freely (optional)
   int schoolId = 1;
-  String schoolIdString = ''; // For user input
   int departmentId = 1;
   int enrollmentYear = DateTime.now().year;
 
@@ -36,7 +36,7 @@ class RegistrationData {
   }
 
   bool isStep3Valid() {
-    return (schoolId > 0 || schoolIdString.isNotEmpty) && 
+    return schoolId > 0 && 
            departmentId > 0 && 
            enrollmentYear > 2000;
   }
@@ -56,10 +56,11 @@ class RegistrationData {
       'password': password,
       'nickname': nickname,
       'realname': realName,
-      'gender': gender, // Thêm gender vào API format
+      'student_id': studentId.trim(), // Student ID - optional
+      'gender': gender,
       'main_language': mainLanguage,
       'nationality_iso2': nationalityIso2,
-      'school_id': schoolIdString.isNotEmpty ? int.tryParse(schoolIdString) ?? schoolId : schoolId,
+      'school_id': schoolId,
       'department_id': departmentId,
       'enrollment_year': enrollmentYear,
     };
@@ -75,8 +76,8 @@ class RegistrationData {
     nickname = '';
     mainLanguage = 'ko';
     nationalityIso2 = 'KR';
+    studentId = '';
     schoolId = 1;
-    schoolIdString = '';
     departmentId = 1;
     enrollmentYear = DateTime.now().year;
   }

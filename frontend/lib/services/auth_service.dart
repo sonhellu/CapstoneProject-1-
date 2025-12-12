@@ -5,7 +5,7 @@ import 'api_config.dart';
 /// Authentication Service - Optimized
 class AuthService {
   // Temporarily disable API authentication - Set true to bypass auth
-  static const bool BYPASS_AUTH = true;
+  static const bool BYPASS_AUTH = false;
   /// Login with backend Render
   static Future<Map<String, dynamic>> login({
     required String email,
@@ -44,6 +44,7 @@ class AuthService {
     required String password,
     required String nickname,
     required String realname,
+    String? studentId, // Optional student ID
     required String gender,
     required String mainLanguage,
     required String nationalityIso2,
@@ -51,20 +52,27 @@ class AuthService {
     required int departmentId,
     required int enrollmentYear,
   }) async {
+    final body = {
+      'email': email,
+      'password': password,
+      'nickname': nickname,
+      'realname': realname,
+      'gender': gender,
+      'main_language': mainLanguage,
+      'nationality_iso2': nationalityIso2,
+      'school_id': schoolId,
+      'department_id': departmentId,
+      'enrollment_year': enrollmentYear,
+    };
+    
+    // Add student_id only if provided
+    if (studentId != null && studentId.trim().isNotEmpty) {
+      body['student_id'] = studentId.trim();
+    }
+    
     final response = await ApiService.post(
       ApiConfig.registerEndpoint,
-      body: {
-        'email': email,
-        'password': password,
-        'nickname': nickname,
-        'realname': realname,
-        'gender': gender,
-        'main_language': mainLanguage,
-        'nationality_iso2': nationalityIso2,
-        'school_id': schoolId,
-        'department_id': departmentId,
-        'enrollment_year': enrollmentYear,
-      },
+      body: body,
     );
 
     return response;
