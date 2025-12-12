@@ -37,11 +37,12 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
   Future<List<_MatchResult>> _simulateMatch() async {
     try {
       // 1. Tạo match request với target_language
+      final collegeId = await _getCollegeId(widget.preferredCollege);
       final matchRequest = await MatchingService.createMatchRequest(
         targetLanguage: widget.targetLanguageCode, // Required: Ngôn ngữ muốn học
         preferredGender: _mapGenderToApi(widget.preferredGender),
-        preferredCollegeId: await _getCollegeId(widget.preferredCollege),
-        notes: 'Language exchange: ${widget.targetLanguageCode}',
+        preferredCollegeId: collegeId,
+        notes: 'Language exchange: Learning ${widget.targetLanguageCode}',
       );
       
       final requestId = matchRequest['id'] as int?;
