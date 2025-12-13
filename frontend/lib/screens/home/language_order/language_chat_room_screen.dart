@@ -22,11 +22,13 @@ class LanguageChatRoomScreen extends StatefulWidget {
 
 class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
   final _controller = TextEditingController();
+  final _scrollController = ScrollController();
   final List<_ChatMessage> _messages = [];
   bool _isLoading = false;
   bool _isSending = false;
   String? _matchStatus; // 'active', 'completed', 'cancelled'
   bool _showAcceptedNotification = true; // Show notification when match is accepted
+  bool _isInitialLoad = true; // Track first load to scroll to bottom
 
   @override
   void initState() {
@@ -39,6 +41,7 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
   @override
   void dispose() {
     _controller.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -103,7 +106,21 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
           }
           
           _isLoading = false;
+          _isInitialLoad = false;
         });
+        
+        // Scroll to bottom after loading messages (especially on first load)
+        if (_isInitialLoad && _messages.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_scrollController.hasClients) {
+              _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            }
+          });
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -153,6 +170,19 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
       setState(() {
         _isSending = false;
       });
+      
+      // Scroll to bottom after sending message
+      if (_scrollController.hasClients) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+        });
+      }
     } catch (e) {
       setState(() {
         _isSending = false;
@@ -236,10 +266,13 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
                           ),
                         ),
                       )
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(12),
-                        itemCount: _messages.length,
-                        itemBuilder: (context, index) {
+                    : RefreshIndicator(
+                        onRefresh: _loadMessages,
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.all(12),
+                          itemCount: _messages.length,
+                          itemBuilder: (context, index) {
                           final msg = _messages[index];
                           final alignment =
                               msg.isMine ? Alignment.centerRight : Alignment.centerLeft;
@@ -282,6 +315,7 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
                             ),
                           );
                         },
+                        ),
                       ),
           ),
           SafeArea(
