@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'api_service.dart';
+import 'api_config.dart';
 
-/// Translation Service với fake API (mock data)
+/// Translation Service - Real API integration
 class TranslationService {
   // Map language codes
   static const Map<String, String> _languageMap = {
@@ -19,49 +21,57 @@ class TranslationService {
     return prefs.getString('language') ?? 'en';
   }
 
-  /// Dịch văn bản (Fake API - Mock data)
-  /// Simulate API call với delay và fake translation
+  /// Dịch văn bản - Real API call
   static Future<String> translateText({
     required String text,
     String? targetLanguage,
     String? sourceLanguage,
   }) async {
-    // Simulate API delay (1-2 seconds)
-    await Future.delayed(Duration(milliseconds: 800 + (text.length % 1000)));
+    if (text.trim().isEmpty) {
+      return text;
+    }
 
-    // Lấy ngôn ngữ đích nếu không được chỉ định
-    final targetLang = targetLanguage ?? await getCurrentLanguage();
+    try {
+      // Lấy ngôn ngữ đích nếu không được chỉ định
+      final targetLang = targetLanguage ?? await getCurrentLanguage();
+      
+      // Validate target language
+      if (!_languageMap.containsKey(targetLang)) {
+        throw ApiException('Unsupported target language: $targetLang');
+      }
 
-    // Fake translation - thêm prefix để show đã dịch
-    // Note: Replace with real API call when translation API is available
-    return _fakeTranslate(text, targetLang);
-  }
+      // Prepare request body
+      final requestBody = {
+        'text': text,
+        'target_language': targetLang,
+        if (sourceLanguage != null) 'source_language': sourceLanguage,
+      };
 
-  /// Fake translation function
-  /// Trong thực tế, đây sẽ là API call đến backend
-  static String _fakeTranslate(String text, String targetLang) {
-    // Mock translations based on target language
-    // Trong production, đây sẽ là response từ API
-    final prefix = _getTranslationPrefix(targetLang);
-    return '$prefix$text';
-  }
+      // Call backend API
+      final response = await ApiService.post(
+        ApiConfig.translateEndpoint,
+        body: requestBody,
+      );
 
-  /// Get translation prefix based on language (for demo)
-  static String _getTranslationPrefix(String lang) {
-    switch (lang) {
-      case 'ko':
-        return '[한국어] ';
-      case 'vi':
-        return '[Tiếng Việt] ';
-      case 'zh':
-        return '[中文] ';
-      case 'ja':
-        return '[日本語] ';
-      case 'my':
-        return '[မြန်မာ] ';
-      case 'en':
-      default:
-        return '[English] ';
+      // Parse response
+      if (response is Map<String, dynamic>) {
+        final translatedText = response['translated_text'] as String?;
+        if (translatedText != null && translatedText.isNotEmpty) {
+          return translatedText;
+        }
+        
+        // If translation failed but API returned success, return original
+        return response['original_text'] as String? ?? text;
+      }
+
+      // Fallback: return original text if response format is unexpected
+      return text;
+    } on ApiException catch (e) {
+      // Re-throw API exceptions
+      rethrow;
+    } catch (e) {
+      // For any other errors, throw ApiException
+      throw ApiException('Translation failed: ${e.toString()}');
     }
   }
 

@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from .config import Config
 from .database import db, ma
@@ -314,15 +314,28 @@ def create_app():
          }},
          automatic_options=True)  # Tự động xử lý OPTIONS requests
     
-    # After request handler để đảm bảo CORS headers luôn có
-    @app.after_request
-    def after_request(response):
-        # Thêm CORS headers nếu chưa có
-        if request.path.startswith('/api/'):
-            response.headers.add('Access-Control-Allow-Origin', '*')
+    # Before request handler để xử lý OPTIONS preflight
+    @app.before_request
+    def handle_preflight():
+        if request.method == "OPTIONS":
+            response = jsonify({})
+            response.headers.add("Access-Control-Allow-Origin", "*")
             response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, X-Requested-With')
             response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH')
             response.headers.add('Access-Control-Max-Age', '3600')
+            return response
+    
+    # After request handler để đảm bảo CORS headers luôn có
+    @app.after_request
+    def after_request(response):
+        # Thêm CORS headers cho tất cả API routes
+        path = request.path if hasattr(request, 'path') else ''
+        if path.startswith('/api/'):
+            # Luôn set CORS headers (override nếu cần)
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept, X-Requested-With'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS, PATCH'
+            response.headers['Access-Control-Max-Age'] = '3600'
         return response
     
     # 2. DB 및 Marshmallow 초기화

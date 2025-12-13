@@ -2,6 +2,8 @@ from flask import Blueprint, jsonify, request, current_app
 from ..models import db, Boards, Posts
 from ..schemas import post_schema, posts_schema
 from ..auth_utils import require_auth
+import requests
+import urllib.parse
 
 community_bp = Blueprint('community_bp', __name__, url_prefix='/api')
 
@@ -151,3 +153,108 @@ def create_post(board_id):
         db.session.rollback()
         current_app.logger.error(f"Create post error: {str(e)}", exc_info=True)
         return jsonify({"error": f"Failed to create post: {str(e)}"}), 500
+
+
+@community_bp.route("/translate", methods=["POST", "OPTIONS"])
+def translate_text():
+    # Handle OPTIONS preflight request
+    if request.method == "OPTIONS":
+        return jsonify({}), 200
+    """
+    Translate text to target language using MyMemory Translation API (free)
+    
+    Request body:
+    {
+        "text": "Text to translate",
+        "target_language": "vi",  # Optional, defaults to user's language preference
+        "source_language": "auto"  # Optional, defaults to "auto" (auto-detect)
+    }
+    
+    Supported languages: en, ko, vi, zh, ja, my
+    """
+    try:
+        data = request.json
+        if not data:
+            return jsonify({"error": "Request body is required"}), 400
+        
+        text = data.get("text", "").strip()
+        if not text:
+            return jsonify({"error": "Text to translate is required"}), 400
+        
+        # Get target language (default to 'en' if not provided)
+        target_lang = data.get("target_language", "en")
+        source_lang = data.get("source_language", "auto")
+        
+        # Map language codes to MyMemory format
+        # MyMemory uses ISO 639-1 codes
+        lang_map = {
+            'en': 'en',
+            'ko': 'ko',
+            'vi': 'vi',
+            'zh': 'zh',
+            'ja': 'ja',
+            'my': 'my',
+        }
+        
+        # Validate target language
+        if target_lang not in lang_map:
+            return jsonify({"error": f"Unsupported target language: {target_lang}"}), 400
+        
+        target_lang_code = lang_map[target_lang]
+        
+        # Handle source language
+        if source_lang == "auto":
+            source_lang_code = "auto"
+        else:
+            source_lang_code = lang_map.get(source_lang, "auto")
+        
+        # MyMemory Translation API (free, no API key required for basic usage)
+        # Limit: 1000 words per day for free tier
+        api_url = "https://api.mymemory.translated.net/get"
+        
+        params = {
+            'q': text,
+            'langpair': f'{source_lang_code}|{target_lang_code}'
+        }
+        
+        try:
+            response = requests.get(api_url, params=params, timeout=10)
+            response.raise_for_status()
+            
+            result = response.json()
+            
+            # Check if translation was successful
+            if result.get('responseStatus') == 200:
+                translated_text = result.get('responseData', {}).get('translatedText', text)
+                
+                return jsonify({
+                    "translated_text": translated_text,
+                    "source_language": source_lang_code,
+                    "target_language": target_lang_code,
+                    "original_text": text
+                }), 200
+            else:
+                # Fallback: return original text if translation fails
+                current_app.logger.warning(f"Translation API returned error: {result.get('responseStatus')}")
+                return jsonify({
+                    "translated_text": text,
+                    "source_language": source_lang_code,
+                    "target_language": target_lang_code,
+                    "original_text": text,
+                    "warning": "Translation service temporarily unavailable"
+                }), 200
+                
+        except requests.exceptions.RequestException as e:
+            current_app.logger.error(f"Translation API request error: {str(e)}", exc_info=True)
+            # Fallback: return original text
+            return jsonify({
+                "translated_text": text,
+                "source_language": source_lang_code,
+                "target_language": target_lang_code,
+                "original_text": text,
+                "warning": "Translation service unavailable, showing original text"
+            }), 200
+            
+    except Exception as e:
+        current_app.logger.error(f"Translate text error: {str(e)}", exc_info=True)
+        return jsonify({"error": f"Failed to translate text: {str(e)}"}), 500
