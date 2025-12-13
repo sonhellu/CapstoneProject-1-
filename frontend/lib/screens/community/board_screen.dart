@@ -59,7 +59,9 @@ class _BoardScreenState extends State<BoardScreen> {
   }
 
   /// Load posts from API
-  Future<void> _loadPosts() async {
+  Future<void> _loadPosts({bool forceRefresh = false}) async {
+    if (!mounted) return;
+    
     setState(() {
       _isLoading = true;
       _error = null;
@@ -67,29 +69,36 @@ class _BoardScreenState extends State<BoardScreen> {
 
     try {
       final boardId = _categoryToBoardId[_selected] ?? 1;
-      final postsData = await CommunityService.getPosts(
-        boardId: boardId,
-        limit: 20,
-      );
+      
+      // Use refreshPosts if forceRefresh is true (after creating new post)
+      final postsData = forceRefresh
+          ? await CommunityService.refreshPosts(boardId: boardId, limit: 20)
+          : await CommunityService.getPosts(boardId: boardId, limit: 20);
 
       final posts = postsData.map((postData) {
         return BoardPost.fromJson(postData as Map<String, dynamic>);
       }).toList();
 
-      setState(() {
-        _posts = posts;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _posts = posts;
+          _isLoading = false;
+        });
+      }
     } on ApiException catch (e) {
-      setState(() {
-        _error = e.message;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = e.message;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _error = 'Error loading data: ${e.toString()}';
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = 'Error loading data: ${e.toString()}';
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -138,14 +147,40 @@ class _BoardScreenState extends State<BoardScreen> {
             onPressed: () async {
               final result = await Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => BoardWriteScreen(initialCategory: _selected),
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      BoardWriteScreen(initialCategory: _selected),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    const begin = Offset(0.0, 1.0);
+                    const end = Offset.zero;
+                    const curve = Curves.easeInOut;
+
+                    var tween = Tween(begin: begin, end: end).chain(
+                      CurveTween(curve: curve),
+                    );
+
+                    return SlideTransition(
+                      position: animation.drive(tween),
+                      child: child,
+                    );
+                  },
                 ),
               );
               
               // Reload posts if post was created successfully
-              if (result == true && mounted) {
-                _loadPosts();
+              // result will be the BoardCategory if post was created
+              if (result != null && result is BoardCategory && mounted) {
+                // Ensure we're on the correct category
+                if (result == _selected) {
+                  // Reload posts for current category (force refresh to get new post)
+                  await _loadPosts(forceRefresh: true);
+                } else {
+                  // Switch to the category where post was created and reload
+                  setState(() {
+                    _selected = result;
+                  });
+                  await _loadPosts(forceRefresh: true);
+                }
               }
             },
           ),

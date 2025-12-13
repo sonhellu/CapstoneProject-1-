@@ -219,6 +219,20 @@ def _seed_all_data():
         ).first()
         
         if not default_community:
+            # Ensure school_id=1 exists first
+            school_1 = Schools.query.get(1)
+            if not school_1:
+                school_1 = Schools(id=1, school_name='Keimyung University', website_url='https://www.kmu.ac.kr')
+                db.session.add(school_1)
+                db.session.flush()
+            
+            # Ensure country 'KR' exists
+            country_kr = Country.query.get('KR')
+            if not country_kr:
+                country_kr = Country(iso2='KR', name='South Korea')
+                db.session.add(country_kr)
+                db.session.flush()
+            
             default_community = Communities(
                 school_id=1,
                 community_name='Default Community',
@@ -246,6 +260,7 @@ def _seed_all_data():
                     order_index=order_idx
                 )
                 db.session.add(board)
+                print(f"Created board {board_id}: {board_name_ko}")
             else:
                 # Update if exists
                 existing_board.board_name = board_name_ko
@@ -253,6 +268,7 @@ def _seed_all_data():
                 existing_board.order_index = order_idx
         
         db.session.commit()
+        print("Boards seeding completed successfully")
     except Exception as e:
         db.session.rollback()
         pass

@@ -73,7 +73,7 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
       
       final boardId = _categoryToBoardId[_selectedCategory!] ?? 1;
       
-      await CommunityService.createPost(
+      final response = await CommunityService.createPost(
         boardId: boardId,
         title: _titleController.text.trim(),
         content: _contentController.text.trim(),
@@ -81,14 +81,42 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
       );
 
       if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        
         final l10n = AppLocalizations.of(context);
+        
+        // Show success notification with better UI
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.postPublishedSuccessfully),
-            backgroundColor: Colors.green,
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    l10n.postPublishedSuccessfully,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.green[600],
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            margin: const EdgeInsets.all(16),
           ),
         );
-        Navigator.pop(context, true); // Return true để reload posts
+        
+        // Return the category so board screen knows which category to reload
+        Navigator.pop(context, _selectedCategory);
       }
     } on ApiException catch (e) {
       if (mounted) {

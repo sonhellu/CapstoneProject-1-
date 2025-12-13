@@ -15,6 +15,12 @@ def get_boards():
     try:
         boards = Boards.query.order_by(Boards.order_index.asc()).all()
         
+        # If no boards exist, try to seed them
+        if not boards:
+            current_app.logger.warning("No boards found, attempting to seed...")
+            _ensure_boards_exist()
+            boards = Boards.query.order_by(Boards.order_index.asc()).all()
+        
         result = []
         for board in boards:
             result.append({
@@ -29,6 +35,69 @@ def get_boards():
     except Exception as e:
         current_app.logger.error(f"Get boards error: {str(e)}", exc_info=True)
         return jsonify({"error": f"Failed to get boards: {str(e)}"}), 500
+
+
+def _ensure_boards_exist():
+    """Helper function to ensure boards exist in database"""
+    try:
+        from ..models import Communities, Schools, Country
+        
+        # Ensure school_id=1 exists
+        school_1 = Schools.query.get(1)
+        if not school_1:
+            school_1 = Schools(id=1, school_name='Keimyung University', website_url='https://www.kmu.ac.kr')
+            db.session.add(school_1)
+            db.session.flush()
+        
+        # Ensure country 'KR' exists
+        country_kr = Country.query.get('KR')
+        if not country_kr:
+            country_kr = Country(iso2='KR', name='South Korea')
+            db.session.add(country_kr)
+            db.session.flush()
+        
+        # Get or create default community
+        default_community = Communities.query.filter_by(
+            school_id=1,
+            nationality_iso2='KR'
+        ).first()
+        
+        if not default_community:
+            default_community = Communities(
+                school_id=1,
+                community_name='Default Community',
+                nationality_iso2='KR'
+            )
+            db.session.add(default_community)
+            db.session.flush()
+        
+        # Create boards if they don't exist
+        boards_data = [
+            (1, '공지게시판', 'Notice Board', 1),
+            (2, '자유게시판', 'Free Board', 2),
+            (3, '정보게시판', 'Info Board', 3),
+            (4, '홍보게시판', 'Promo Board', 4),
+        ]
+        
+        for board_id, board_name_ko, board_name_en, order_idx in boards_data:
+            existing_board = Boards.query.get(board_id)
+            if not existing_board:
+                board = Boards(
+                    id=board_id,
+                    community_id=default_community.id,
+                    board_name=board_name_ko,
+                    description=f'{board_name_en} - Community discussion board',
+                    order_index=order_idx
+                )
+                db.session.add(board)
+                current_app.logger.info(f"Created board {board_id}: {board_name_ko}")
+        
+        db.session.commit()
+        current_app.logger.info("Boards seeding completed")
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Failed to seed boards: {str(e)}", exc_info=True)
+        raise
 
 @community_bp.route("/board/<int:board_id>/posts", methods=["GET"])
 def get_posts(board_id):
@@ -126,10 +195,18 @@ def create_post(board_id):
         if len(content.strip()) == 0:
             return jsonify({"error": "Content cannot be empty"}), 400
 
-        # 2. Validate board exists
+        # 2. Validate board exists - if not, try to create it
         board = Boards.query.get(board_id)
         if not board:
-            return jsonify({"error": f"Board with id {board_id} not found"}), 404
+            # Try to seed the board if it doesn't exist
+            try:
+                _ensure_boards_exist()
+                board = Boards.query.get(board_id)
+                if not board:
+                    return jsonify({"error": f"Board with id {board_id} not found"}), 404
+            except Exception as seed_error:
+                current_app.logger.error(f"Failed to auto-create board: {str(seed_error)}", exc_info=True)
+                return jsonify({"error": f"Board with id {board_id} not found"}), 404
 
         # 3. 로그인한 사용자 정보 가져오기 (@require_auth 덕분)
         user = request.user
