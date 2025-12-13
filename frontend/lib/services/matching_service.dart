@@ -115,6 +115,26 @@ class MatchingService {
     return response;
   }
   
+  /// Xóa tin nhắn
+  static Future<Map<String, dynamic>> deleteMessage({
+    required int conversationId,
+    required int messageId,
+  }) async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    final response = await ApiService.delete(
+      ApiConfig.deleteMessageEndpoint(conversationId, messageId),
+      headers: headers,
+    );
+    
+    // Clear cache to refresh messages list
+    ApiService.clearCacheEntry(
+      ApiConfig.conversationMessagesEndpoint(conversationId),
+    );
+    
+    return response;
+  }
+  
   /// Lấy danh sách tin nhắn (trả về Map với messages và match_status)
   static Future<Map<String, dynamic>> getMessages({
     required int conversationId,
@@ -196,5 +216,39 @@ class MatchingService {
     );
     
     return response;
+  }
+  
+  /// Xóa conversation (xóa participation của user)
+  static Future<Map<String, dynamic>> deleteConversation({
+    required int conversationId,
+  }) async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    final endpoint = ApiConfig.conversationEndpoint(conversationId);
+    print('Deleting conversation at: ${ApiConfig.getFullUrl(endpoint)}');
+    
+    try {
+      final response = await ApiService.delete(
+        endpoint,
+        headers: headers,
+      );
+      
+      print('Delete API response type: ${response.runtimeType}');
+      print('Delete API response: $response');
+      
+      // Ensure response is a Map
+      if (response is Map<String, dynamic>) {
+        return response;
+      }
+      
+      // If response is not a Map (could be empty or other type), return success
+      return {
+        'message': 'Conversation deleted successfully',
+        'conversation_id': conversationId
+      };
+    } catch (e) {
+      print('Error in deleteConversation: $e');
+      rethrow;
+    }
   }
 }

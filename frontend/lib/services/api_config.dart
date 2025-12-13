@@ -26,7 +26,9 @@ class ApiConfig {
   static String offerMatchEndpoint(int requestId) => '/api/match_requests/$requestId/offer';
   static String acceptMatchEndpoint(int requestId) => '/api/match_requests/$requestId/accept';
   static const String conversationsEndpoint = '/api/conversations';
+  static String conversationEndpoint(int convId) => '/api/conversations/$convId';
   static String conversationMessagesEndpoint(int convId) => '/api/conversations/$convId/messages';
+  static String deleteMessageEndpoint(int convId, int messageId) => '/api/conversations/$convId/messages/$messageId';
   static String markConversationReadEndpoint(int convId) => '/api/conversations/$convId/read';
   
   // Translation endpoints

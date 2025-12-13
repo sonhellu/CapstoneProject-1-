@@ -1193,6 +1193,9 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
     ValueChanged<T?>? onChanged,
     required bool isDark,
   }) {
+    // Validate that value exists in items to prevent assertion error
+    final validValue = items.any((item) => item.value == value) ? value : null;
+    
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
@@ -1231,7 +1234,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
             Expanded(
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<T>(
-                  value: value,
+                  value: validValue,
                   items: items,
                   onChanged: onChanged,
                   isExpanded: true,

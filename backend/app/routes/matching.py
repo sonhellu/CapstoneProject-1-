@@ -298,14 +298,17 @@ def get_messages(conv_id):
                              .order_by(Messages.created_at.asc())\
                              .all()
         
-        # Include sender information
+        # Include sender information with avatar
         out = []
         for m in msgs:
             sender = Users.query.get(m.sender_user_id)
+            # Generate avatar URL (using pravatar or initials)
+            avatar_url = f"https://i.pravatar.cc/150?img={m.sender_user_id}" if sender else None
             out.append({
                 "id": m.id,
                 "sender_user_id": m.sender_user_id,
                 "sender_nickname": sender.nickname if sender else "Unknown",
+                "sender_avatar_url": avatar_url,
                 "content": m.content,
                 "created_at": m.created_at.isoformat(),
                 "is_sent_by_me": m.sender_user_id == user.id
@@ -342,7 +345,14 @@ def get_conversations():
         conversations = Conversations.query.filter(Conversations.id.in_(conversation_ids)).all()
         
         result = []
+        seen_conversation_ids = set()  # Track to avoid duplicates
+        
         for conv in conversations:
+            # Skip if already processed (avoid duplicates)
+            if conv.id in seen_conversation_ids:
+                continue
+            seen_conversation_ids.add(conv.id)
+            
             # Get the other participant (not the current user)
             other_participant = ConversationParticipants.query.filter(
                 ConversationParticipants.conversation_id == conv.id,
@@ -356,10 +366,14 @@ def get_conversations():
             if not other_user:
                 continue
             
-            # Get last message
+            # Get last message - ONLY include conversations with at least one message
             last_message = Messages.query.filter_by(conversation_id=conv.id)\
                                          .order_by(Messages.created_at.desc())\
                                          .first()
+            
+            # Skip conversations without any messages
+            if not last_message:
+                continue
             
             # Get unread count (messages after last_read_at)
             current_participant = ConversationParticipants.query.filter_by(
@@ -393,8 +407,8 @@ def get_conversations():
                     "id": last_message.id,
                     "content": last_message.content,
                     "sender_user_id": last_message.sender_user_id,
-                    "created_at": last_message.created_at.isoformat() if last_message else None
-                } if last_message else None,
+                    "created_at": last_message.created_at.isoformat()
+                },
                 "unread_count": unread_count,
                 "created_at": conv.created_at.isoformat()
             })
@@ -439,3 +453,78 @@ def mark_conversation_read(conv_id):
         db.session.rollback()
         current_app.logger.error(f"Mark conversation read error: {str(e)}", exc_info=True)
         return jsonify({"error": f"Failed to mark conversation as read: {str(e)}"}), 500
+
+
+# 9) 대화 삭제 (사용자의 participation만 삭제)
+@matching_bp.route("/conversations/<int:conv_id>", methods=["DELETE"])
+@require_auth
+def delete_conversation(conv_id):
+    """Delete user's participation in conversation (soft delete - removes from user's list)"""
+    try:
+        user = request.user
+        
+        # Verify user is a participant in the conversation
+        participant = ConversationParticipants.query.filter_by(
+            conversation_id=conv_id,
+            user_id=user.id
+        ).first()
+        
+        if not participant:
+            return jsonify({"error": "You are not a participant in this conversation"}), 403
+        
+        # Delete the participant record (this removes conversation from user's list)
+        db.session.delete(participant)
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Conversation deleted successfully",
+            "conversation_id": conv_id
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Delete conversation error: {str(e)}", exc_info=True)
+        return jsonify({"error": f"Failed to delete conversation: {str(e)}"}), 500
+
+
+# 10) 메시지 삭제
+@matching_bp.route("/conversations/<int:conv_id>/messages/<int:message_id>", methods=["DELETE"])
+@require_auth
+def delete_message(conv_id, message_id):
+    """Delete a message (only the sender can delete their own message)"""
+    try:
+        user = request.user
+        
+        # Verify user is a participant in the conversation
+        participant = ConversationParticipants.query.filter_by(
+            conversation_id=conv_id,
+            user_id=user.id
+        ).first()
+        
+        if not participant:
+            return jsonify({"error": "You are not a participant in this conversation"}), 403
+        
+        # Get the message
+        msg = Messages.query.filter_by(
+            id=message_id,
+            conversation_id=conv_id
+        ).first()
+        
+        if not msg:
+            return jsonify({"error": "Message not found"}), 404
+        
+        # Only the sender can delete their own message
+        if msg.sender_user_id != user.id:
+            return jsonify({"error": "You can only delete your own messages"}), 403
+        
+        # Delete the message
+        db.session.delete(msg)
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Message deleted successfully",
+            "message_id": message_id
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Delete message error: {str(e)}", exc_info=True)
+        return jsonify({"error": f"Failed to delete message: {str(e)}"}), 500

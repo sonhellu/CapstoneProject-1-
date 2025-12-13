@@ -155,14 +155,23 @@ class ApiService {
     // Parse response body - can be List or Map
     dynamic responseBody;
     try {
-      responseBody = jsonDecode(response.body);
+      if (response.body.isNotEmpty) {
+        responseBody = jsonDecode(response.body);
+      } else {
+        // Empty response body - return success message for DELETE requests
+        responseBody = {'message': 'Success'};
+      }
     } catch (e) {
-      responseBody = {'message': response.body};
+      responseBody = {'message': response.body.isNotEmpty ? response.body : 'Success'};
     }
 
     // Handle status codes
     if (statusCode >= 200 && statusCode < 300) {
       // Success (200, 201, etc.) - return as-is (List or Map)
+      // If response is empty, return success message
+      if (responseBody == null || (responseBody is Map && responseBody.isEmpty)) {
+        return {'message': 'Success', 'status_code': statusCode};
+      }
       return responseBody;
     } else {
       // Error - parse error message

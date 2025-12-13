@@ -299,11 +299,31 @@ def create_app():
     
     app = Flask(__name__)
     
-    # CORS 설정 - cho phép frontend gọi API
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
-    
     # 1. 설정 로드
     app.config.from_object(Config)
+    
+    # CORS 설정 - cho phép frontend gọi API với tất cả methods
+    CORS(app, 
+         resources={r"/api/*": {
+             "origins": "*",
+             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+             "allow_headers": ["Content-Type", "Authorization", "Accept", "X-Requested-With"],
+             "expose_headers": ["Content-Type"],
+             "supports_credentials": False,
+             "max_age": 3600
+         }},
+         automatic_options=True)  # Tự động xử lý OPTIONS requests
+    
+    # After request handler để đảm bảo CORS headers luôn có
+    @app.after_request
+    def after_request(response):
+        # Thêm CORS headers nếu chưa có
+        if request.path.startswith('/api/'):
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, X-Requested-With')
+            response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH')
+            response.headers.add('Access-Control-Max-Age', '3600')
+        return response
     
     # 2. DB 및 Marshmallow 초기화
     db.init_app(app)

@@ -10,6 +10,10 @@ def require_auth(func):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
+        # Allow OPTIONS requests for CORS preflight
+        if request.method == "OPTIONS":
+            return jsonify({}), 200
+        
         token = None
         auth_header = request.headers.get("Authorization")
         

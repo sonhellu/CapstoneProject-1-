@@ -587,7 +587,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
           // University dropdown
           DropdownButtonFormField<String>(
-            initialValue: _selectedUniversity.isEmpty
+            value: _selectedUniversity.isEmpty || !_universities.contains(_selectedUniversity)
                 ? null
                 : _selectedUniversity,
             decoration: InputDecoration(
@@ -617,7 +617,9 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
           // Major dropdown
           DropdownButtonFormField<String>(
-            initialValue: _selectedMajor.isEmpty ? null : _selectedMajor,
+            value: _selectedMajor.isEmpty || !_majors.contains(_selectedMajor)
+                ? null
+                : _selectedMajor,
             decoration: InputDecoration(
               labelText: AppLocalizations.of(context).major,
               prefixIcon: const Icon(Icons.book),
@@ -642,7 +644,9 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
           // Year dropdown
           DropdownButtonFormField<String>(
-            initialValue: _selectedYear.isEmpty ? null : _selectedYear,
+            value: _selectedYear.isEmpty || !_years.contains(_selectedYear)
+                ? null
+                : _selectedYear,
             decoration: InputDecoration(
               labelText: AppLocalizations.of(context).year,
               prefixIcon: const Icon(Icons.calendar_today),
@@ -667,7 +671,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
           // Nationality dropdown
           DropdownButtonFormField<String>(
-            initialValue: _selectedNationality.isEmpty
+            value: _selectedNationality.isEmpty || !_nationalities.contains(_selectedNationality)
                 ? null
                 : _selectedNationality,
             decoration: InputDecoration(
