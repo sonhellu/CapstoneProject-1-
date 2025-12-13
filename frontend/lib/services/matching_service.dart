@@ -115,8 +115,8 @@ class MatchingService {
     return response;
   }
   
-  /// Lấy danh sách tin nhắn
-  static Future<List<dynamic>> getMessages({
+  /// Lấy danh sách tin nhắn (trả về Map với messages và match_status)
+  static Future<Map<String, dynamic>> getMessages({
     required int conversationId,
     bool useCache = false, // Default no cache to get latest messages
   }) async {
@@ -128,11 +128,24 @@ class MatchingService {
       useCache: useCache,
     );
     
-    if (response is List) {
+    if (response is Map<String, dynamic>) {
       return response;
     }
     
-    return [];
+    // Fallback for old format (List)
+    if (response is List) {
+      return {
+        'messages': response,
+        'match_status': null,
+        'match_id': null,
+      };
+    }
+    
+    return {
+      'messages': [],
+      'match_status': null,
+      'match_id': null,
+    };
   }
   
   /// Refresh messages (force reload)

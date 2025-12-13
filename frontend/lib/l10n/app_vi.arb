@@ -75,5 +75,9 @@
   "selectBoard": "Chọn Bảng Tin",
   "pleaseSelectBoard": "Vui lòng chọn một bảng tin",
   "searching": "Đang tìm kiếm đối tác...",
-  "tryAgainLater": "Vui lòng thử lại sau hoặc điều chỉnh tiêu chí tìm kiếm"
+  "tryAgainLater": "Vui lòng thử lại sau hoặc điều chỉnh tiêu chí tìm kiếm",
+  "noMessagesYet": "Chưa có tin nhắn nào. Hãy bắt đầu cuộc trò chuyện!",
+  "typeMessage": "Nhập tin nhắn...",
+  "matchAccepted": "Đã chấp nhận kết nối! Bạn có thể bắt đầu trò chuyện với đối tác trao đổi ngôn ngữ.",
+  "matchRejected": "Kết nối đã bị từ chối."
 }

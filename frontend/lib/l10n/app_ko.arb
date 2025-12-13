@@ -75,5 +75,9 @@
   "selectBoard": "게시판 선택",
   "pleaseSelectBoard": "게시판을 선택해주세요",
   "searching": "매칭 검색 중...",
-  "tryAgainLater": "나중에 다시 시도하거나 검색 조건을 조정해주세요"
+  "tryAgainLater": "나중에 다시 시도하거나 검색 조건을 조정해주세요",
+  "noMessagesYet": "아직 메시지가 없습니다. 대화를 시작하세요!",
+  "typeMessage": "메시지를 입력하세요...",
+  "matchAccepted": "매칭이 수락되었습니다! 이제 언어 교환 파트너와 대화할 수 있습니다.",
+  "matchRejected": "매칭이 거절되었습니다."
 }

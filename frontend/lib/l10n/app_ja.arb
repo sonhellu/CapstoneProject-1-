@@ -106,5 +106,9 @@
   "selectBoard": "掲示板を選択",
   "pleaseSelectBoard": "掲示板を選択してください",
   "searching": "マッチング検索中...",
-  "tryAgainLater": "後でもう一度お試しください、または検索条件を調整してください"
+  "tryAgainLater": "後でもう一度お試しください、または検索条件を調整してください",
+  "noMessagesYet": "まだメッセージがありません。会話を始めましょう！",
+  "typeMessage": "メッセージを入力...",
+  "matchAccepted": "マッチングが承認されました！言語交換パートナーとチャットできます。",
+  "matchRejected": "マッチングが拒否されました。"
 }

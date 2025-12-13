@@ -75,5 +75,9 @@
   "selectBoard": "Select Board",
   "pleaseSelectBoard": "Please select a board",
   "searching": "Searching for matches...",
-  "tryAgainLater": "Please try again later or adjust your search criteria"
+  "tryAgainLater": "Please try again later or adjust your search criteria",
+  "noMessagesYet": "No messages yet. Start the conversation!",
+  "typeMessage": "Type a message...",
+  "matchAccepted": "Match accepted! You can now chat with your language exchange partner.",
+  "matchRejected": "Match was rejected."
 }

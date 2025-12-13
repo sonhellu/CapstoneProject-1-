@@ -1047,6 +1047,10 @@ class AppLocalizations {
   String get pleaseSelectBoard => translate('pleaseSelectBoard');
   String get searching => translate('searching');
   String get tryAgainLater => translate('tryAgainLater');
+  String get noMessagesYet => translate('noMessagesYet');
+  String get typeMessage => translate('typeMessage');
+  String get matchAccepted => translate('matchAccepted');
+  String get matchRejected => translate('matchRejected');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

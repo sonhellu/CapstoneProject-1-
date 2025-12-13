@@ -106,5 +106,9 @@
   "selectBoard": "选择版块",
   "pleaseSelectBoard": "请选择一个版块",
   "searching": "正在搜索匹配...",
-  "tryAgainLater": "请稍后重试或调整搜索条件"
+  "tryAgainLater": "请稍后重试或调整搜索条件",
+  "noMessagesYet": "还没有消息。开始对话吧！",
+  "typeMessage": "输入消息...",
+  "matchAccepted": "匹配已接受！您现在可以与语言交换伙伴聊天了。",
+  "matchRejected": "匹配已被拒绝。"
 }
