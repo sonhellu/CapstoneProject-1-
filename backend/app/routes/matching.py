@@ -272,7 +272,7 @@ def send_message(conv_id):
         return jsonify({"error": f"Failed to send message: {str(e)}"}), 500
 
 
-# 6) 대화 메시지 조회 (개선: sender 정보 포함)
+# 6) 대화 메시지 조회 (개선: sender 정보 포함 + match status)
 @matching_bp.route("/conversations/<int:conv_id>/messages", methods=["GET"])
 @require_auth
 def get_messages(conv_id):
@@ -285,6 +285,14 @@ def get_messages(conv_id):
         ).first()
         if not participant:
             return jsonify({"error": "You are not a participant in this conversation"}), 403
+
+        # Get conversation with match info
+        conv = Conversations.query.options(
+            joinedload(Conversations.match)
+        ).filter_by(id=conv_id).first()
+        
+        if not conv:
+            return jsonify({"error": "Conversation not found"}), 404
 
         msgs = Messages.query.filter_by(conversation_id=conv_id)\
                              .order_by(Messages.created_at.asc())\
@@ -303,7 +311,14 @@ def get_messages(conv_id):
                 "is_sent_by_me": m.sender_user_id == user.id
             })
         
-        return jsonify(out), 200
+        # Include match status in response
+        response_data = {
+            "messages": out,
+            "match_status": conv.match.status if conv.match else None,
+            "match_id": conv.match.id if conv.match else None,
+        }
+        
+        return jsonify(response_data), 200
     except Exception as e:
         current_app.logger.error(f"Get messages error: {str(e)}", exc_info=True)
         return jsonify({"error": f"Failed to get messages: {str(e)}"}), 500

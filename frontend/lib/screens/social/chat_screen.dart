@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../home/language_order/chat_room_screen.dart';
+import '../home/language_order/language_chat_room_screen.dart';
 import '../../models/language_chat_room.dart';
 import '../../models/language_chat_history.dart';
 import '../../services/matching_service.dart';
@@ -35,6 +35,10 @@ class _ChatScreenState extends State<ChatScreen> {
           final otherUser = conv['other_user'] as Map<String, dynamic>?;
           final lastMessage = conv['last_message'] as Map<String, dynamic>?;
           
+          // Get target language from match if available, or use default
+          String targetLanguageLabel = '언어교류'; // Default
+          // TODO: Get target language from match data if available
+          
           return Conversation(
             id: conv['id'] as int,
             partnerName: otherUser?['nickname'] as String? ?? 'Unknown',
@@ -44,6 +48,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ? DateTime.parse(lastMessage!['created_at'] as String)
                 : DateTime.now(),
             unreadCount: conv['unread_count'] as int? ?? 0,
+            targetLanguageLabel: targetLanguageLabel,
           );
         }).toList();
         _isLoading = false;
@@ -104,16 +109,22 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildConversationItem(BuildContext context, Conversation conversation, bool isDark) {
     return InkWell(
       onTap: () {
+        // Mark conversation as read when opening
+        MatchingService.markConversationRead(conversationId: conversation.id);
+        
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ChatRoomScreen(
-              roomId: conversation.id.toString(),
+            builder: (_) => LanguageChatRoomScreen(
+              conversationId: conversation.id,
               partnerName: conversation.partnerName,
-              targetLanguageLabel: '언어교류',
+              targetLanguageLabel: conversation.targetLanguageLabel,
             ),
           ),
-        );
+        ).then((_) {
+          // Reload conversations when returning to update unread count
+          _loadConversations();
+        });
       },
 
       child: Container(
@@ -302,6 +313,7 @@ class Conversation {
   final String lastMessage;
   final DateTime lastMessageTime;
   final int unreadCount;
+  final String targetLanguageLabel;
 
   Conversation({
     required this.id,
@@ -310,5 +322,6 @@ class Conversation {
     required this.lastMessage,
     required this.lastMessageTime,
     this.unreadCount = 0,
+    required this.targetLanguageLabel,
   });
 }

@@ -61,34 +61,50 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
         final messages = response['messages'] as List<dynamic>? ?? [];
         final matchStatus = response['match_status'] as String?;
         
-        setState(() {
-          _messages.clear();
-          for (var msgData in messages) {
-            if (msgData is Map<String, dynamic>) {
-              final isSentByMe = msgData['is_sent_by_me'] as bool? ?? false;
-              final content = msgData['content']?.toString() ?? '';
-              final createdAt = msgData['created_at']?.toString();
-              
-              DateTime? time;
-              if (createdAt != null) {
-                try {
-                  time = DateTime.parse(createdAt).toLocal();
-                } catch (e) {
-                  time = DateTime.now();
-                }
-              } else {
+        // Debug: Log số lượng messages nhận được
+        print('Loaded ${messages.length} messages for conversation ${widget.conversationId}');
+        
+        final List<_ChatMessage> loadedMessages = [];
+        
+        for (var msgData in messages) {
+          if (msgData is Map<String, dynamic>) {
+            final isSentByMe = msgData['is_sent_by_me'] as bool? ?? false;
+            final content = msgData['content']?.toString() ?? '';
+            
+            // Skip empty messages
+            if (content.isEmpty) {
+              continue;
+            }
+            
+            final createdAt = msgData['created_at']?.toString();
+            
+            DateTime? time;
+            if (createdAt != null) {
+              try {
+                time = DateTime.parse(createdAt).toLocal();
+              } catch (e) {
+                print('Error parsing date: $createdAt, error: $e');
                 time = DateTime.now();
               }
-
-              _messages.add(
-                _ChatMessage(
-                  text: content,
-                  isMine: isSentByMe,
-                  time: time,
-                ),
-              );
+            } else {
+              time = DateTime.now();
             }
+
+            loadedMessages.add(
+              _ChatMessage(
+                text: content,
+                isMine: isSentByMe,
+                time: time,
+              ),
+            );
+          } else {
+            print('Warning: Message data is not a Map: $msgData');
           }
+        }
+        
+        setState(() {
+          _messages.clear();
+          _messages.addAll(loadedMessages);
           
           // Update match status
           _matchStatus = matchStatus;
@@ -109,8 +125,9 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
           _isInitialLoad = false;
         });
         
-        // Scroll to bottom after loading messages (especially on first load)
-        if (_isInitialLoad && _messages.isNotEmpty) {
+        // Scroll to bottom after loading messages
+        // Always scroll to bottom when messages are loaded (not just first time)
+        if (_messages.isNotEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (_scrollController.hasClients) {
               _scrollController.animateTo(
@@ -123,14 +140,16 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
         }
       }
     } catch (e) {
+      print('Error loading messages: $e');
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load messages: ${e.toString()}'),
+            content: Text('Không thể tải tin nhắn: ${e.toString()}'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -152,26 +171,51 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
     final text = _controller.text.trim();
     if (text.isEmpty || _isSending) return;
 
+    // Optimistic update: Add message to UI immediately
+    final tempMessage = _ChatMessage(
+      text: text,
+      isMine: true,
+      time: DateTime.now(),
+    );
+    
+    final tempMessageIndex = _messages.length; // Save index for potential removal
+    
     setState(() {
       _isSending = true;
+      _messages.add(tempMessage);
     });
 
+    // Clear input immediately
+    _controller.clear();
+    
+    // Scroll to bottom immediately to show the new message
+    if (_scrollController.hasClients) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
+
     try {
+      // Send message to server
       await MatchingService.sendMessage(
         conversationId: widget.conversationId,
         content: text,
       );
 
-      _controller.clear();
-      
-      // Reload messages to get the latest
+      // Reload messages to get the latest from server (with proper IDs and timestamps)
       await _loadMessages();
       
       setState(() {
         _isSending = false;
       });
       
-      // Scroll to bottom after sending message
+      // Scroll to bottom after reload
       if (_scrollController.hasClients) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_scrollController.hasClients) {
@@ -184,15 +228,26 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
         });
       }
     } catch (e) {
+      // Remove the optimistic message on error
       setState(() {
         _isSending = false;
+        // Remove by index if still exists and at expected position
+        if (tempMessageIndex < _messages.length && 
+            _messages[tempMessageIndex].text == text &&
+            _messages[tempMessageIndex].isMine) {
+          _messages.removeAt(tempMessageIndex);
+        }
       });
+      
+      // Restore the text to input field
+      _controller.text = text;
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to send message: ${e.toString()}'),
+            content: Text('Gửi tin nhắn thất bại: ${e.toString()}'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
           ),
         );
       }

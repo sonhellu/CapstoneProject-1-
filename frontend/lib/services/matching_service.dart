@@ -152,10 +152,19 @@ class MatchingService {
   static Future<List<dynamic>> refreshMessages({
     required int conversationId,
   }) async {
-    return await getMessages(
+    final response = await MatchingService.getMessages(
       conversationId: conversationId,
       useCache: false,
     );
+    
+    if (response is Map<String, dynamic> && response.containsKey('messages')) {
+      final messages = response['messages'];
+      if (messages is List) {
+        return messages;
+      }
+    }
+    
+    return [];
   }
   
   /// Lấy danh sách tất cả conversations của user
