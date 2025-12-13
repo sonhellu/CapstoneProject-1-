@@ -272,14 +272,14 @@ def create_app():
     from . import models
     
     # 4. 서버가 시작될 때 자동으로 테이블 생성
-           with app.app_context():
-               db.create_all()
-               # Auto-migrate: Add student_id column if it doesn't exist (for existing databases)
-               _ensure_student_id_column()
-               # Auto-migrate: Add target_language column if it doesn't exist
-               _ensure_target_language_column()
-               # Auto-seed: Seed initial data if database is empty
-               _auto_seed_data()
+    with app.app_context():
+        db.create_all()
+        # Auto-migrate: Add student_id column if it doesn't exist (for existing databases)
+        _ensure_student_id_column()
+        # Auto-migrate: Add target_language column if it doesn't exist
+        _ensure_target_language_column()
+        # Auto-seed: Seed initial data if database is empty
+        _auto_seed_data()
     
     # 5. 블루프린트(기능별 파일) 등록
     from .routes.auth import auth_bp
