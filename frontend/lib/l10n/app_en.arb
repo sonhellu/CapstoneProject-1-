@@ -71,5 +71,7 @@
   "translate": "Translate",
   "showOriginal": "Show Original",
   "translating": "Translating...",
-  "translationFailed": "Translation failed"
+  "translationFailed": "Translation failed",
+  "selectBoard": "Select Board",
+  "pleaseSelectBoard": "Please select a board"
 }

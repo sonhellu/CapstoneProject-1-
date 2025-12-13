@@ -15,13 +15,18 @@ def create_match_request():
         
         # Bỏ check is_helper - ai cũng có thể tạo request
         
-        existing_request = MatchRequests.query.filter_by(
+        # Auto-cancel existing pending requests before creating a new one
+        # This allows users to create a new request with different criteria
+        existing_requests = MatchRequests.query.filter_by(
             requester_user_id=user.id, 
             status='pending'
-        ).first()
+        ).all()
         
-        if existing_request:
-            return jsonify({"error": "You already have a pending match request"}), 409
+        if existing_requests:
+            # Cancel all existing pending requests
+            for req in existing_requests:
+                req.status = 'cancelled'
+            db.session.commit()
 
         # Validate target_language (ngôn ngữ muốn học)
         target_language = data.get("target_language")

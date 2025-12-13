@@ -102,5 +102,7 @@
   "translate": "翻訳",
   "showOriginal": "原文を表示",
   "translating": "翻訳中...",
-  "translationFailed": "翻訳に失敗しました"
+  "translationFailed": "翻訳に失敗しました",
+  "selectBoard": "掲示板を選択",
+  "pleaseSelectBoard": "掲示板を選択してください"
 }

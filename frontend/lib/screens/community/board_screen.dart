@@ -139,7 +139,7 @@ class _BoardScreenState extends State<BoardScreen> {
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => BoardWriteScreen(category: _selected),
+                  builder: (_) => BoardWriteScreen(initialCategory: _selected),
                 ),
               );
               

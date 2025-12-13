@@ -71,5 +71,7 @@
   "translate": "번역",
   "showOriginal": "원문 보기",
   "translating": "번역 중...",
-  "translationFailed": "번역 실패"
+  "translationFailed": "번역 실패",
+  "selectBoard": "게시판 선택",
+  "pleaseSelectBoard": "게시판을 선택해주세요"
 }

@@ -71,5 +71,7 @@
   "translate": "Dịch",
   "showOriginal": "Hiển thị bản gốc",
   "translating": "Đang dịch...",
-  "translationFailed": "Dịch thất bại"
+  "translationFailed": "Dịch thất bại",
+  "selectBoard": "Chọn Bảng Tin",
+  "pleaseSelectBoard": "Vui lòng chọn một bảng tin"
 }

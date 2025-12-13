@@ -1043,6 +1043,8 @@ class AppLocalizations {
   String get completeRegistration => translate('completeRegistration');
   
   String get visitOfficialWebsite => translate('visitOfficialWebsite');
+  String get selectBoard => translate('selectBoard');
+  String get pleaseSelectBoard => translate('pleaseSelectBoard');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

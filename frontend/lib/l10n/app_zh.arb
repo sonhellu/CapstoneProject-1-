@@ -102,5 +102,7 @@
   "translate": "翻译",
   "showOriginal": "显示原文",
   "translating": "翻译中...",
-  "translationFailed": "翻译失败"
+  "translationFailed": "翻译失败",
+  "selectBoard": "选择版块",
+  "pleaseSelectBoard": "请选择一个版块"
 }

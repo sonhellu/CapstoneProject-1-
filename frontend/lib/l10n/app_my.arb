@@ -102,5 +102,7 @@
   "translate": "ဘာသာပြန်ရန်",
   "showOriginal": "မူရင်းကို ပြရန်",
   "translating": "ဘာသာပြန်နေသည်...",
-  "translationFailed": "ဘာသာပြန်ခြင်း မအောင်မြင်ပါ"
+  "translationFailed": "ဘာသာပြန်ခြင်း မအောင်မြင်ပါ",
+  "selectBoard": "ဘုတ်အဖွဲ့ ရွေးချယ်ပါ",
+  "pleaseSelectBoard": "ဘုတ်အဖွဲ့ တစ်ခု ရွေးချယ်ပါ"
 }

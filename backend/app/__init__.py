@@ -125,9 +125,9 @@ def _auto_seed_data():
         pass
 
 def _seed_all_data():
-    """Seed all initial data (languages, countries, schools, colleges, departments)"""
+    """Seed all initial data (languages, countries, schools, colleges, departments, communities, boards)"""
     try:
-        from .models import Schools, Colleges, Departments, Language, Country
+        from .models import Schools, Colleges, Departments, Language, Country, Communities, Boards
         
         # 1. Seed Languages
         languages = [
@@ -210,6 +210,47 @@ def _seed_all_data():
                         department_name=dept_name
                     )
                     db.session.add(dept)
+        
+        # 5. Seed Communities (default community for all schools)
+        # Create a default community for board system
+        default_community = Communities.query.filter_by(
+            school_id=1,  # Use Keimyung University as default
+            nationality_iso2='KR'  # Korean community
+        ).first()
+        
+        if not default_community:
+            default_community = Communities(
+                school_id=1,
+                community_name='Default Community',
+                nationality_iso2='KR'
+            )
+            db.session.add(default_community)
+            db.session.flush()
+        
+        # 6. Seed Boards (4 boards: notice, free, info, promo)
+        boards_data = [
+            (1, '공지게시판', 'Notice Board', 1),
+            (2, '자유게시판', 'Free Board', 2),
+            (3, '정보게시판', 'Info Board', 3),
+            (4, '홍보게시판', 'Promo Board', 4),
+        ]
+        
+        for board_id, board_name_ko, board_name_en, order_idx in boards_data:
+            existing_board = Boards.query.get(board_id)
+            if not existing_board:
+                board = Boards(
+                    id=board_id,
+                    community_id=default_community.id,
+                    board_name=board_name_ko,
+                    description=f'{board_name_en} - Community discussion board',
+                    order_index=order_idx
+                )
+                db.session.add(board)
+            else:
+                # Update if exists
+                existing_board.board_name = board_name_ko
+                existing_board.community_id = default_community.id
+                existing_board.order_index = order_idx
         
         db.session.commit()
     except Exception as e:

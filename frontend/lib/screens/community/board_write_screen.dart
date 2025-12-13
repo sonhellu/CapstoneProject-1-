@@ -14,9 +14,9 @@ const Map<BoardCategory, int> _categoryToBoardId = {
 };
 
 class BoardWriteScreen extends StatefulWidget {
-  final BoardCategory category;
+  final BoardCategory? initialCategory; // Optional: default category if provided
 
-  const BoardWriteScreen({super.key, required this.category});
+  const BoardWriteScreen({super.key, this.initialCategory});
 
   @override
   State<BoardWriteScreen> createState() => _BoardWriteScreenState();
@@ -28,6 +28,14 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
   final _contentController = TextEditingController();
   bool _isAnonymous = false;
   bool _isLoading = false;
+  BoardCategory? _selectedCategory; // Selected board category
+
+  @override
+  void initState() {
+    super.initState();
+    // Set initial category if provided, otherwise default to notice
+    _selectedCategory = widget.initialCategory ?? BoardCategory.notice;
+  }
 
   @override
   void dispose() {
@@ -47,7 +55,23 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
     });
 
     try {
-      final boardId = _categoryToBoardId[widget.category] ?? 1;
+      // Validate board category is selected
+      if (_selectedCategory == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).pleaseSelectBoard),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+      
+      final boardId = _categoryToBoardId[_selectedCategory!] ?? 1;
       
       await CommunityService.createPost(
         boardId: boardId,
@@ -112,6 +136,51 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
           padding: const EdgeInsets.all(12),
           child: Column(
             children: [
+              // Board selection dropdown
+              DropdownButtonFormField<BoardCategory>(
+                value: _selectedCategory,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).selectBoard,
+                  border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,
+                  prefixIcon: const Icon(Icons.dashboard),
+                ),
+                items: BoardCategory.values.map((category) {
+                  String label;
+                  switch (category) {
+                    case BoardCategory.notice:
+                      label = AppLocalizations.of(context).noticeBoard;
+                      break;
+                    case BoardCategory.free:
+                      label = AppLocalizations.of(context).freeBoard;
+                      break;
+                    case BoardCategory.info:
+                      label = AppLocalizations.of(context).infoBoard;
+                      break;
+                    case BoardCategory.promo:
+                      label = AppLocalizations.of(context).promoBoard;
+                      break;
+                  }
+                  return DropdownMenuItem<BoardCategory>(
+                    value: category,
+                    child: Text(label),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCategory = value;
+                  });
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return AppLocalizations.of(context).pleaseSelectBoard;
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              
               // Title field
               TextFormField(
                 controller: _titleController,
