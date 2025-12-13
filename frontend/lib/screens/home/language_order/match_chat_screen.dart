@@ -79,6 +79,7 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
         limit: 5,
       );
       
+      // Debug: Check response type and content
       if (helpers.isEmpty) {
         // No helpers found - this is normal if no users match the criteria
         return [];
@@ -86,24 +87,55 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
       
       // 3. Convert API response thành _MatchResult
       final now = DateTime.now().millisecondsSinceEpoch;
-      return helpers.asMap().entries.map((e) {
-        final helper = e.value as Map<String, dynamic>;
-        final helperId = helper['id'] as int;
-        final nickname = helper['nickname'] as String? ?? 'Unknown';
-        final gender = helper['gender'] as String? ?? 'any';
-        final departmentId = helper['department_id'] as int?;
-        
-        return _MatchResult(
-          user: _User(
-            nickname,
-            _mapGenderFromApi(gender),
-            widget.preferredCollege, // Use selected college for display
-            [widget.targetLanguageCode], // Languages they can help with
-          ),
-          roomId: 'room_${helperId}_${now}_${e.key}',
-          helperId: helperId, // Store helper ID for future use
-        );
-      }).toList();
+      try {
+        return helpers.asMap().entries.map((entry) {
+          final index = entry.key;
+          final helperData = entry.value;
+          
+          // Ensure helperData is a Map
+          if (helperData is! Map<String, dynamic>) {
+            // Try to convert if it's a different type
+            throw FormatException('Helper data is not a Map: ${helperData.runtimeType}');
+          }
+          
+          final helper = helperData as Map<String, dynamic>;
+          final helperId = helper['id'];
+          if (helperId == null) {
+            throw FormatException('Helper data missing id: $helper');
+          }
+          
+          final helperIdInt = helperId is int ? helperId : int.tryParse(helperId.toString());
+          if (helperIdInt == null) {
+            throw FormatException('Invalid helper id: $helperId');
+          }
+          
+          final nickname = helper['nickname']?.toString() ?? helper['realname']?.toString() ?? 'Unknown';
+          final gender = helper['gender']?.toString() ?? 'any';
+          
+          return _MatchResult(
+            user: _User(
+              nickname,
+              _mapGenderFromApi(gender),
+              widget.preferredCollege, // Use selected college for display
+              [helper['main_language']?.toString() ?? widget.targetLanguageCode], // Languages they can help with
+            ),
+            roomId: 'room_${helperIdInt}_${now}_$index',
+            helperId: helperIdInt, // Store helper ID for future use
+          );
+        }).toList();
+      } catch (e) {
+        // Show detailed error
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error parsing helpers: ${e.toString()}\nData: ${helpers.toString()}'),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
+        return [];
+      }
     } catch (e) {
       // Show error to user
       if (mounted) {

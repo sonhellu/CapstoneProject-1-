@@ -40,8 +40,8 @@ class ApiService {
     return data;
   }
 
-  /// POST request với retry logic
-  static Future<Map<String, dynamic>> post(
+  /// POST request với retry logic - returns dynamic to support both List and Map
+  static Future<dynamic> post(
     String endpoint, {
     Map<String, dynamic>? body,
     Map<String, String>? headers,
@@ -57,8 +57,8 @@ class ApiService {
     return _handleResponse(response);
   }
   
-  /// PUT request
-  static Future<Map<String, dynamic>> put(
+  /// PUT request - returns dynamic to support both List and Map
+  static Future<dynamic> put(
     String endpoint, {
     Map<String, dynamic>? body,
     Map<String, String>? headers,
@@ -74,8 +74,8 @@ class ApiService {
     return _handleResponse(response);
   }
   
-  /// DELETE request
-  static Future<Map<String, dynamic>> delete(
+  /// DELETE request - returns dynamic to support both List and Map
+  static Future<dynamic> delete(
     String endpoint, {
     Map<String, String>? headers,
   }) async {
@@ -148,46 +148,56 @@ class ApiService {
     throw ApiException('Failed after ${ApiConfig.maxRetries} attempts');
   }
 
-  /// Handle HTTP response
-  static Map<String, dynamic> _handleResponse(http.Response response) {
+  /// Handle HTTP response - returns dynamic to support both List and Map
+  static dynamic _handleResponse(http.Response response) {
     final statusCode = response.statusCode;
     
-    // Parse response body
-    Map<String, dynamic> responseBody;
+    // Parse response body - can be List or Map
+    dynamic responseBody;
     try {
-      responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+      responseBody = jsonDecode(response.body);
     } catch (e) {
       responseBody = {'message': response.body};
     }
 
     // Handle status codes
     if (statusCode >= 200 && statusCode < 300) {
-      // Success (200, 201, etc.)
+      // Success (200, 201, etc.) - return as-is (List or Map)
       return responseBody;
-    } else if (statusCode == 401) {
-      throw ApiException(
-        responseBody['error'] ?? 
-        responseBody['detail'] ?? 
-        'Invalid email or password'
-      );
-    } else if (statusCode == 409) {
-      throw ApiException(
-        responseBody['error'] ?? 
-        responseBody['detail'] ?? 
-        'Email already exists'
-      );
-    } else if (statusCode == 500) {
-      throw ApiException(
-        responseBody['error'] ?? 
-        responseBody['detail'] ?? 
-        'Server error. Please try again later.'
-      );
     } else {
-      throw ApiException(
-        responseBody['error'] ?? 
-        responseBody['detail'] ?? 
-        'Unknown error (Status: $statusCode)'
-      );
+      // Error - parse error message
+      Map<String, dynamic> errorBody;
+      if (responseBody is Map<String, dynamic>) {
+        errorBody = responseBody;
+      } else {
+        errorBody = {'error': 'Unknown error', 'message': response.body};
+      }
+      
+      if (statusCode == 401) {
+        throw ApiException(
+          errorBody['error'] ?? 
+          errorBody['detail'] ?? 
+          'Invalid email or password'
+        );
+      } else if (statusCode == 409) {
+        throw ApiException(
+          errorBody['error'] ?? 
+          errorBody['detail'] ?? 
+          'Email already exists'
+        );
+      } else if (statusCode == 500) {
+        throw ApiException(
+          errorBody['error'] ?? 
+          errorBody['detail'] ?? 
+          'Server error. Please try again later.'
+        );
+      } else {
+        throw ApiException(
+          errorBody['error'] ?? 
+          errorBody['detail'] ?? 
+          'Unknown error (Status: $statusCode)'
+        );
+      }
     }
   }
   
