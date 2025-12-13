@@ -156,6 +156,16 @@ class AppLocalizations {
     'reviewAndComplete': 'Review & Complete',
     'realName': 'Real Name',
     'completeRegistration': 'Complete Registration',
+    'deletePost': 'Delete Post',
+    'deletePostConfirm': 'Are you sure you want to delete this post?',
+    'postDeleted': 'Post deleted successfully',
+    'cannotDeletePost': 'Cannot delete post',
+    'delete': 'Delete',
+    'latestNoticeTitle': 'Semester Start and Academic Schedule Notice',
+    'latestFreeTitle': 'Exams are over! What are you doing this Saturday?',
+    'latestInfoTitle': '2025 Exchange Student Recruitment Information',
+    'latestPromoTitle': 'Club Promotion – New Member Recruitment',
+    'postLabel': 'Post',
   };
   
   // Korean translations
@@ -286,6 +296,16 @@ class AppLocalizations {
     'reviewAndComplete': '검토 및 완료',
     'realName': '실명',
     'completeRegistration': '회원가입 완료',
+    'deletePost': '게시글 삭제',
+    'deletePostConfirm': '이 게시글을 삭제하시겠습니까?',
+    'postDeleted': '게시글이 성공적으로 삭제되었습니다',
+    'cannotDeletePost': '게시글을 삭제할 수 없습니다',
+    'delete': '삭제',
+    'latestNoticeTitle': '개강 및 학사 일정 안내',
+    'latestFreeTitle': '시험 끝! 토요일에 뭐 하세요?',
+    'latestInfoTitle': '2025 교환학생 모집 정보 공유',
+    'latestPromoTitle': '동아리 홍보 – ○○ 동아리 신입 모집',
+    'postLabel': '게시글',
   };
   
   // Vietnamese translations
@@ -416,6 +436,16 @@ class AppLocalizations {
     'reviewAndComplete': 'Xem Lại & Hoàn Tất',
     'realName': 'Tên Thật',
     'completeRegistration': 'Hoàn Tất Đăng Ký',
+    'deletePost': 'Xóa bài viết',
+    'deletePostConfirm': 'Bạn có chắc chắn muốn xóa bài viết này?',
+    'postDeleted': 'Đã xóa bài viết thành công',
+    'cannotDeletePost': 'Không thể xóa bài viết',
+    'delete': 'Xóa',
+    'latestNoticeTitle': 'Thông báo khai giảng và lịch học vụ',
+    'latestFreeTitle': 'Thi xong rồi! Thứ bảy này bạn làm gì?',
+    'latestInfoTitle': 'Thông tin tuyển sinh trao đổi 2025',
+    'latestPromoTitle': 'Quảng bá câu lạc bộ – Tuyển thành viên mới',
+    'postLabel': 'Bài viết',
   };
   
   // Chinese translations
@@ -571,6 +601,16 @@ class AppLocalizations {
     'reviewAndComplete': '审查和完成',
     'realName': '真实姓名',
     'completeRegistration': '完成注册',
+    'deletePost': '删除帖子',
+    'deletePostConfirm': '您确定要删除此帖子吗？',
+    'postDeleted': '帖子已成功删除',
+    'cannotDeletePost': '无法删除帖子',
+    'delete': '删除',
+    'latestNoticeTitle': '开学及教务日程通知',
+    'latestFreeTitle': '考试结束了！这个星期六你做什么？',
+    'latestInfoTitle': '2025交换生招募信息',
+    'latestPromoTitle': '社团宣传 – 新成员招募',
+    'postLabel': '帖子',
   };
   
   // Japanese translations
@@ -726,6 +766,16 @@ class AppLocalizations {
     'reviewAndComplete': '確認と完了',
     'realName': '本名',
     'completeRegistration': '登録完了',
+    'deletePost': '投稿を削除',
+    'deletePostConfirm': 'この投稿を削除してもよろしいですか？',
+    'postDeleted': '投稿が正常に削除されました',
+    'cannotDeletePost': '投稿を削除できません',
+    'delete': '削除',
+    'latestNoticeTitle': '開講および学務スケジュールのお知らせ',
+    'latestFreeTitle': '試験終了！土曜日は何をしますか？',
+    'latestInfoTitle': '2025交換留学生募集情報',
+    'latestPromoTitle': 'サークル宣伝 – 新メンバー募集',
+    'postLabel': '投稿',
   };
   
   // Myanmar translations
@@ -881,6 +931,16 @@ class AppLocalizations {
     'reviewAndComplete': 'ပြန်လည်စစ်ဆေးပြီး ပြီးမြောက်ရန်',
     'realName': 'အမည်ရင်း',
     'completeRegistration': 'အကောင့်ဖွင့်ခြင်း ပြီးမြောက်ရန်',
+    'deletePost': 'စာတမ်း ဖျက်ရန်',
+    'deletePostConfirm': 'ဤစာတမ်းကို ဖျက်ရန် သေချာပါသလား?',
+    'postDeleted': 'စာတမ်း အောင်မြင်စွာ ဖျက်ပြီးပါပြီ',
+    'cannotDeletePost': 'စာတမ်း ဖျက်၍မရပါ',
+    'delete': 'ဖျက်ရန်',
+    'latestNoticeTitle': 'ကျောင်းဖွင့်ခြင်းနှင့် ပညာရေးအစီအစဉ် အကြောင်းကြားချက်',
+    'latestFreeTitle': 'စာမေးပွဲပြီးပြီ! စနေနေ့မှာ ဘာလုပ်မလဲ?',
+    'latestInfoTitle': '၂၀၂၅ လဲလှယ်ကျောင်းသား စုဆောင်းမှု အချက်အလက်',
+    'latestPromoTitle': 'ကလပ်များ ကြော်ငြာ – အဖွဲ့ဝင် အသစ် စုဆောင်းခြင်း',
+    'postLabel': 'စာတမ်း',
   };
   
   String translate(String key) {
@@ -1051,6 +1111,60 @@ class AppLocalizations {
   String get typeMessage => translate('typeMessage');
   String get matchAccepted => translate('matchAccepted');
   String get matchRejected => translate('matchRejected');
+  String get deleteConversation => translate('deleteConversation');
+  String deleteConversationConfirm(String partnerName) => translate('deleteConversationConfirm').replaceAll('{partnerName}', partnerName);
+  String get conversationDeleted => translate('conversationDeleted');
+  String get cannotDeleteConversation => translate('cannotDeleteConversation');
+  String get deleteMessage => translate('deleteMessage');
+  String get deleteMessageConfirm => translate('deleteMessageConfirm');
+  String get messageDeleted => translate('messageDeleted');
+  String get cannotDeleteMessage => translate('cannotDeleteMessage');
+  String get cannotLoadMessages => translate('cannotLoadMessages');
+  String get sendMessageFailed => translate('sendMessageFailed');
+  String get noConversationsYet => translate('noConversationsYet');
+  String get startFindingLanguagePartner => translate('startFindingLanguagePartner');
+  String get loadingConversations => translate('loadingConversations');
+  String get errorLoadingData => translate('errorLoadingData');
+  String get failedToUpdateProfile => translate('failedToUpdateProfile');
+  String get couldNotLoadOptions => translate('couldNotLoadOptions');
+  String get couldNotLoadDepartments => translate('couldNotLoadDepartments');
+  String get pleaseSelectUniversity => translate('pleaseSelectUniversity');
+  String get pleaseSelectDepartment => translate('pleaseSelectDepartment');
+  String get loading => translate('loading');
+  String get selectSchoolFirst => translate('selectSchoolFirst');
+  String get error => translate('error');
+  String get failedToCreateMatchRequest => translate('failedToCreateMatchRequest');
+  String get errorParsingHelpers => translate('errorParsingHelpers');
+  String get errorFindingMatch => translate('errorFindingMatch');
+  String get missingMatchInformation => translate('missingMatchInformation');
+  String get errorOfferingMatch => translate('errorOfferingMatch');
+  String get errorAcceptingMatch => translate('errorAcceptingMatch');
+  String get failedToCreateConversation => translate('failedToCreateConversation');
+  String get justNow => translate('justNow');
+  String minutesAgo(int count) => translate('minutesAgo').replaceAll('{count}', count.toString());
+  String hoursAgoShort(int count) => translate('hoursAgoShort').replaceAll('{count}', count.toString());
+  String daysAgoShort(int count) => translate('daysAgoShort').replaceAll('{count}', count.toString());
+  String get startConversation => translate('startConversation');
+  String get translated => translate('translated');
+  String get validStudentEmail => translate('validStudentEmail');
+  String get pleaseConfirmPassword => translate('pleaseConfirmPassword');
+  String get mainLanguage => translate('mainLanguage');
+  String get studentEmail => translate('studentEmail');
+  String get selectLanguageToLearn => translate('selectLanguageToLearn');
+  String get selectLanguageToLearnRequired => translate('selectLanguageToLearnRequired');
+  String get preferredGender => translate('preferredGender');
+  String get selectLanguageGenderCollege => translate('selectLanguageGenderCollege');
+  String get noPreference => translate('noPreference');
+  String get latestNoticeTitle => translate('latestNoticeTitle');
+  String get latestFreeTitle => translate('latestFreeTitle');
+  String get latestInfoTitle => translate('latestInfoTitle');
+  String get latestPromoTitle => translate('latestPromoTitle');
+  String get deletePost => translate('deletePost');
+  String get deletePostConfirm => translate('deletePostConfirm');
+  String get postDeleted => translate('postDeleted');
+  String get cannotDeletePost => translate('cannotDeletePost');
+  String get delete => translate('delete');
+  String get postLabel => translate('postLabel');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

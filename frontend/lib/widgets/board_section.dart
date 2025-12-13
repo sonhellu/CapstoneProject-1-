@@ -5,12 +5,15 @@ import '../l10n/app_localizations.dart';
 
 /// 게시판별 최근 글 제목 (임시 더미 데이터)
 /// 나중에 실제 DB / API 연동하면 이 부분만 바꿔주면 됨.
-const Map<BoardCategory, String> _latestTitles = {
-  BoardCategory.notice: '개강 및 학사 일정 안내',
-  BoardCategory.free: '시험 끝! 토요일에 뭐 하세요?',
-  BoardCategory.info: '2025 교환학생 모집 정보 공유',
-  BoardCategory.promo: '동아리 홍보 – ○○ 동아리 신입 모집',
-};
+Map<BoardCategory, String> _getLatestTitles(BuildContext context) {
+  final l10n = AppLocalizations.of(context);
+  return {
+    BoardCategory.notice: l10n.latestNoticeTitle,
+    BoardCategory.free: l10n.latestFreeTitle,
+    BoardCategory.info: l10n.latestInfoTitle,
+    BoardCategory.promo: l10n.latestPromoTitle,
+  };
+}
 
 class BoardSection extends StatelessWidget {
   final bool isDark;
@@ -55,10 +58,13 @@ class BoardSection extends StatelessWidget {
           const SizedBox(height: 16),
 
           // ─ 공지게시판 ─
-          _BoardPreviewCard(
-            icon: Icons.campaign_outlined,
-            title: AppLocalizations.of(context).noticeBoard,
-            subtitle: _latestTitles[BoardCategory.notice] ?? AppLocalizations.of(context).noPostsYet,
+          Builder(
+            builder: (context) {
+              final latestTitles = _getLatestTitles(context);
+              return _BoardPreviewCard(
+                icon: Icons.campaign_outlined,
+                title: AppLocalizations.of(context).noticeBoard,
+                subtitle: latestTitles[BoardCategory.notice] ?? AppLocalizations.of(context).noPostsYet,
             onTap: () {
               Navigator.push(
                 context,
@@ -69,14 +75,19 @@ class BoardSection extends StatelessWidget {
                 ),
               );
             },
+          );
+            },
           ),
           const SizedBox(height: 8),
 
           // ─ 자유게시판 ─
-          _BoardPreviewCard(
-            icon: Icons.chat_bubble_outline,
-            title: AppLocalizations.of(context).freeBoard,
-            subtitle: _latestTitles[BoardCategory.free] ?? AppLocalizations.of(context).noPostsYet,
+          Builder(
+            builder: (context) {
+              final latestTitles = _getLatestTitles(context);
+              return _BoardPreviewCard(
+                icon: Icons.chat_bubble_outline,
+                title: AppLocalizations.of(context).freeBoard,
+                subtitle: latestTitles[BoardCategory.free] ?? AppLocalizations.of(context).noPostsYet,
             onTap: () {
               Navigator.push(
                 context,
@@ -87,14 +98,19 @@ class BoardSection extends StatelessWidget {
                 ),
               );
             },
+          );
+            },
           ),
           const SizedBox(height: 8),
 
           // ─ 정보게시판 ─
-          _BoardPreviewCard(
-            icon: Icons.info_outline,
-            title: AppLocalizations.of(context).infoBoard,
-            subtitle: _latestTitles[BoardCategory.info] ?? AppLocalizations.of(context).noPostsYet,
+          Builder(
+            builder: (context) {
+              final latestTitles = _getLatestTitles(context);
+              return _BoardPreviewCard(
+                icon: Icons.info_outline,
+                title: AppLocalizations.of(context).infoBoard,
+                subtitle: latestTitles[BoardCategory.info] ?? AppLocalizations.of(context).noPostsYet,
             onTap: () {
               Navigator.push(
                 context,
@@ -105,14 +121,19 @@ class BoardSection extends StatelessWidget {
                 ),
               );
             },
+          );
+            },
           ),
           const SizedBox(height: 8),
 
           // ─ 홍보게시판 ─
-          _BoardPreviewCard(
-            icon: Icons.campaign,
-            title: AppLocalizations.of(context).promoBoard,
-            subtitle: _latestTitles[BoardCategory.promo] ?? AppLocalizations.of(context).noPostsYet,
+          Builder(
+            builder: (context) {
+              final latestTitles = _getLatestTitles(context);
+              return _BoardPreviewCard(
+                icon: Icons.campaign,
+                title: AppLocalizations.of(context).promoBoard,
+                subtitle: latestTitles[BoardCategory.promo] ?? AppLocalizations.of(context).noPostsYet,
             onTap: () {
               Navigator.push(
                 context,
@@ -122,6 +143,8 @@ class BoardSection extends StatelessWidget {
                   ),
                 ),
               );
+            },
+          );
             },
           ),
         ],

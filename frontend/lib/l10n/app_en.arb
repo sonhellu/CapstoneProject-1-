@@ -42,6 +42,7 @@
   "majorRequired": "Major is required",
   "yearRequired": "Year is required",
   "nationalityRequired": "Nationality is required",
+  "studentEmail": "Student Email (@stu)",
   "visitOfficialWebsite": "Visit Official Website",
   "recentActivity": "Recent Activity",
   "welcomeToHelloCampus": "Welcome to Hello Campus!",
@@ -79,5 +80,94 @@
   "noMessagesYet": "No messages yet. Start the conversation!",
   "typeMessage": "Type a message...",
   "matchAccepted": "Match accepted! You can now chat with your language exchange partner.",
-  "matchRejected": "Match was rejected."
+  "matchRejected": "Match was rejected.",
+  "deleteConversation": "Delete Conversation",
+  "deleteConversationConfirm": "Are you sure you want to delete the conversation with {partnerName}?",
+  "@deleteConversationConfirm": {
+    "placeholders": {
+      "partnerName": {
+        "type": "String"
+      }
+    }
+  },
+  "conversationDeleted": "Conversation deleted",
+  "cannotDeleteConversation": "Cannot delete conversation",
+  "deleteMessage": "Delete Message",
+  "deleteMessageConfirm": "Are you sure you want to delete this message?",
+  "messageDeleted": "Message deleted",
+  "cannotDeleteMessage": "Cannot delete message",
+  "cannotLoadMessages": "Cannot load messages",
+  "sendMessageFailed": "Failed to send message",
+  "noConversationsYet": "No conversations yet",
+  "startFindingLanguagePartner": "Start finding a language learning partner to chat",
+  "loadingConversations": "Loading conversations...",
+  "noPostsYet": "No posts yet",
+  "errorLoadingData": "Error loading data",
+  "failedToUpdateProfile": "Failed to update profile",
+  "couldNotLoadOptions": "Warning: Could not load options. Please check your connection.",
+  "couldNotLoadDepartments": "Could not load departments for selected school.",
+  "pleaseSelectUniversity": "Please select a university",
+  "pleaseSelectDepartment": "Please select a department",
+  "loading": "Loading...",
+  "selectSchoolFirst": "Select a school first",
+  "error": "Error",
+  "failedToCreateMatchRequest": "Failed to create match request",
+  "errorParsingHelpers": "Error parsing helpers",
+  "errorFindingMatch": "Error finding match",
+  "missingMatchInformation": "Error: Missing match information",
+  "errorOfferingMatch": "Error offering match",
+  "errorAcceptingMatch": "Error accepting match",
+  "failedToCreateConversation": "Error: Failed to create conversation",
+  "justNow": "Just now",
+  "minutesAgo": "{count} minutes ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgoShort": "{count}h ago",
+  "@hoursAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgoShort": "{count}d ago",
+  "@daysAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startConversation": "Start the conversation!",
+  "translated": "Translated",
+  "validStudentEmail": "Please use a valid student email (@stu)",
+  "pleaseConfirmPassword": "Please confirm your password",
+  "mainLanguage": "Main Language",
+  "selectLanguageToLearn": "Select the language (country) you want to learn",
+  "selectLanguageToLearnRequired": "Please select the language (country) you want to learn",
+  "preferredGender": "Preferred Gender",
+  "college": "College",
+  "selectLanguageGenderCollege": "Select the language (country), gender, and college you want to learn",
+  "female": "Female",
+  "male": "Male",
+  "noPreference": "No Preference",
+  "latestNoticeTitle": "Semester Start and Academic Schedule Notice",
+  "latestFreeTitle": "Exams are over! What are you doing this Saturday?",
+  "latestInfoTitle": "2025 Exchange Student Recruitment Information",
+  "latestPromoTitle": "Club Promotion – New Member Recruitment",
+  "deletePost": "Delete Post",
+  "deletePostConfirm": "Are you sure you want to delete this post?",
+  "postDeleted": "Post deleted successfully",
+  "cannotDeletePost": "Cannot delete post",
+  "delete": "Delete",
+  "postLabel": "Post",
+  "noticeBoard": "Notice Board",
+  "freeBoard": "Free Board",
+  "infoBoard": "Info Board",
+  "promoBoard": "Promo Board"
 }

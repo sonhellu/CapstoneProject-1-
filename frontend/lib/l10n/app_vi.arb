@@ -79,5 +79,94 @@
   "noMessagesYet": "Chưa có tin nhắn nào. Hãy bắt đầu cuộc trò chuyện!",
   "typeMessage": "Nhập tin nhắn...",
   "matchAccepted": "Đã chấp nhận kết nối! Bạn có thể bắt đầu trò chuyện với đối tác trao đổi ngôn ngữ.",
-  "matchRejected": "Kết nối đã bị từ chối."
+  "matchRejected": "Kết nối đã bị từ chối.",
+  "deleteConversation": "Xóa cuộc trò chuyện",
+  "deleteConversationConfirm": "Bạn có chắc chắn muốn xóa cuộc trò chuyện với {partnerName}?",
+  "@deleteConversationConfirm": {
+    "placeholders": {
+      "partnerName": {
+        "type": "String"
+      }
+    }
+  },
+  "conversationDeleted": "Đã xóa cuộc trò chuyện",
+  "cannotDeleteConversation": "Không thể xóa cuộc trò chuyện",
+  "deleteMessage": "Xóa tin nhắn",
+  "deleteMessageConfirm": "Bạn có chắc chắn muốn xóa tin nhắn này?",
+  "messageDeleted": "Đã xóa tin nhắn",
+  "cannotDeleteMessage": "Không thể xóa tin nhắn",
+  "cannotLoadMessages": "Không thể tải tin nhắn",
+  "sendMessageFailed": "Gửi tin nhắn thất bại",
+  "noConversationsYet": "Chưa có cuộc trò chuyện nào",
+  "startFindingLanguagePartner": "Bắt đầu tìm bạn học ngôn ngữ để nhắn tin",
+  "loadingConversations": "Đang tải cuộc trò chuyện...",
+  "noPostsYet": "Chưa có bài viết nào",
+  "errorLoadingData": "Lỗi khi tải dữ liệu",
+  "failedToUpdateProfile": "Không thể cập nhật hồ sơ",
+  "couldNotLoadOptions": "Cảnh báo: Không thể tải tùy chọn. Vui lòng kiểm tra kết nối.",
+  "couldNotLoadDepartments": "Không thể tải khoa cho trường đã chọn.",
+  "pleaseSelectUniversity": "Vui lòng chọn trường đại học",
+  "pleaseSelectDepartment": "Vui lòng chọn khoa",
+  "loading": "Đang tải...",
+  "selectSchoolFirst": "Vui lòng chọn trường trước",
+  "error": "Lỗi",
+  "failedToCreateMatchRequest": "Không thể tạo yêu cầu kết nối",
+  "errorParsingHelpers": "Lỗi phân tích dữ liệu",
+  "errorFindingMatch": "Lỗi khi tìm đối tác",
+  "missingMatchInformation": "Lỗi: Thiếu thông tin kết nối",
+  "errorOfferingMatch": "Lỗi khi đề xuất kết nối",
+  "errorAcceptingMatch": "Lỗi khi chấp nhận kết nối",
+  "failedToCreateConversation": "Lỗi: Không thể tạo cuộc trò chuyện",
+  "justNow": "Vừa xong",
+  "minutesAgo": "{count} phút trước",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgoShort": "{count} giờ trước",
+  "@hoursAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgoShort": "{count} ngày trước",
+  "@daysAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startConversation": "Bắt đầu cuộc trò chuyện!",
+  "translated": "Đã dịch",
+  "validStudentEmail": "Vui lòng sử dụng email sinh viên hợp lệ (@stu)",
+  "pleaseConfirmPassword": "Vui lòng xác nhận mật khẩu",
+  "mainLanguage": "Ngôn ngữ chính",
+  "selectLanguageToLearn": "Chọn ngôn ngữ (quốc gia) bạn muốn học",
+  "selectLanguageToLearnRequired": "Vui lòng chọn ngôn ngữ (quốc gia) bạn muốn học",
+  "preferredGender": "Giới tính ưu tiên",
+  "college": "Khoa",
+  "selectLanguageGenderCollege": "Chọn ngôn ngữ (quốc gia), giới tính và khoa bạn muốn học",
+  "female": "Nữ",
+  "male": "Nam",
+  "noPreference": "Không quan trọng",
+  "latestNoticeTitle": "Thông báo khai giảng và lịch học vụ",
+  "latestFreeTitle": "Thi xong rồi! Thứ bảy này bạn làm gì?",
+  "latestInfoTitle": "Thông tin tuyển sinh trao đổi 2025",
+  "latestPromoTitle": "Quảng bá câu lạc bộ – Tuyển thành viên mới",
+  "deletePost": "Xóa bài viết",
+  "deletePostConfirm": "Bạn có chắc chắn muốn xóa bài viết này?",
+  "postDeleted": "Đã xóa bài viết thành công",
+  "cannotDeletePost": "Không thể xóa bài viết",
+  "delete": "Xóa",
+  "postLabel": "Bài viết",
+  "noticeBoard": "Bảng Thông Báo",
+  "freeBoard": "Bảng Tự Do",
+  "infoBoard": "Bảng Thông Tin",
+  "promoBoard": "Bảng Quảng Cáo"
 }

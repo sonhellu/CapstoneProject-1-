@@ -110,5 +110,86 @@
   "noMessagesYet": "အနေဖြင့် မက်ဆေ့ခ်ျမရှိသေးပါ။ စကားပြောဆိုမှု စတင်ပါ!",
   "typeMessage": "မက်ဆေ့ခ်ျရိုက်ပါ...",
   "matchAccepted": "ဖက်ရှင် လက်ခံပြီးပါပြီ! ယခု ဘာသာစကား ဖလှယ်ရေး လုပ်ဖော်ကိုင်ဖက်နှင့် စကားပြောနိုင်ပါပြီ။",
-  "matchRejected": "ဖက်ရှင် ငြင်းဆိုခံရပါပြီ။"
+  "matchRejected": "ဖက်ရှင် ငြင်းဆိုခံရပါပြီ။",
+  "deleteConversation": "စကားပြောဆိုမှု ဖျက်ရန်",
+  "deleteConversationConfirm": "{partnerName}နှင့် စကားပြောဆိုမှုကို ဖျက်ရန် သေချာပါသလား?",
+  "@deleteConversationConfirm": {
+    "placeholders": {
+      "partnerName": {
+        "type": "String"
+      }
+    }
+  },
+  "conversationDeleted": "စကားပြောဆိုမှု ဖျက်ပြီးပါပြီ",
+  "cannotDeleteConversation": "စကားပြောဆိုမှု ဖျက်၍မရပါ",
+  "deleteMessage": "မက်ဆေ့ခ်ျ ဖျက်ရန်",
+  "deleteMessageConfirm": "ဤမက်ဆေ့ခ်ျကို ဖျက်ရန် သေချာပါသလား?",
+  "messageDeleted": "မက်ဆေ့ခ်ျ ဖျက်ပြီးပါပြီ",
+  "cannotDeleteMessage": "မက်ဆေ့ခ်ျ ဖျက်၍မရပါ",
+  "cannotLoadMessages": "မက်ဆေ့ခ်ျများ မဖွင့်၍မရပါ",
+  "sendMessageFailed": "မက်ဆေ့ခ်ျ ပို့ခြင်း မအောင်မြင်ပါ",
+  "noConversationsYet": "အနေဖြင့် စကားပြောဆိုမှု မရှိသေးပါ",
+  "startFindingLanguagePartner": "ဘာသာစကား သင်ယူရေး လုပ်ဖော်ကိုင်ဖက် ရှာဖွေပြီး စကားပြောဆိုမှု စတင်ပါ",
+  "loadingConversations": "စကားပြောဆိုမှုများ ဖွင့်နေသည်...",
+  "noPostsYet": "အနေဖြင့် စာတမ်းများ မရှိသေးပါ",
+  "errorLoadingData": "ဒေတာ ဖွင့်ရာတွင် အမှားတစ်ခု ဖြစ်ပွားခဲ့သည်",
+  "failedToUpdateProfile": "ကိုယ်ရေးအချက်အလက် ပြင်ဆင်ခြင်း မအောင်မြင်ပါ",
+  "couldNotLoadOptions": "သတိပေးချက်: ရွေးချယ်စရာများ မဖွင့်၍မရပါ။ ချိတ်ဆက်မှုကို စစ်ဆေးပါ။",
+  "couldNotLoadDepartments": "ရွေးချယ်ထားသော ကျောင်း၏ ဌာနများကို မဖွင့်၍မရပါ။",
+  "pleaseSelectUniversity": "တက္ကသိုလ် ရွေးချယ်ပါ",
+  "pleaseSelectDepartment": "ဌာန ရွေးချယ်ပါ",
+  "loading": "ဖွင့်နေသည်...",
+  "selectSchoolFirst": "ဦးစွာ ကျောင်း ရွေးချယ်ပါ",
+  "error": "အမှား",
+  "failedToCreateMatchRequest": "ဖက်ရှင် တောင်းဆိုမှု ဖန်တီးခြင်း မအောင်မြင်ပါ",
+  "errorParsingHelpers": "ဒေတာ ခွဲခြမ်းစိတ်ဖြာခြင်း အမှား",
+  "errorFindingMatch": "ဖက်ရှင် ရှာဖွေရာတွင် အမှား",
+  "missingMatchInformation": "အမှား: ဖက်ရှင် အချက်အလက် မရှိပါ",
+  "errorOfferingMatch": "ဖက်ရှင် ပေးအပ်ရာတွင် အမှား",
+  "errorAcceptingMatch": "ဖက်ရှင် လက်ခံရာတွင် အမှား",
+  "failedToCreateConversation": "အမှား: စကားပြောဆိုမှု ဖန်တီးခြင်း မအောင်မြင်ပါ",
+  "justNow": "ခုတင်",
+  "minutesAgo": "{count} မိနစ်အကြာက",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgoShort": "{count} နာရီအကြာက",
+  "@hoursAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgoShort": "{count} ရက်အကြာက",
+  "@daysAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startConversation": "စကားပြောဆိုမှု စတင်ပါ!",
+  "translated": "ဘာသာပြန်ပြီး",
+  "validStudentEmail": "မှန်ကန်သော ကျောင်းသားအီးမေးလ် သုံးပါ (@stu)",
+  "pleaseConfirmPassword": "စကားဝှက်ကို အတည်ပြုပါ",
+  "mainLanguage": "အဓိက ဘာသာစကား",
+  "latestNoticeTitle": "ကျောင်းဖွင့်ခြင်းနှင့် ပညာရေးအစီအစဉ် အကြောင်းကြားချက်",
+  "latestFreeTitle": "စာမေးပွဲပြီးပြီ! စနေနေ့မှာ ဘာလုပ်မလဲ?",
+  "latestInfoTitle": "၂၀၂၅ လဲလှယ်ကျောင်းသား စုဆောင်းမှု အချက်အလက်",
+  "latestPromoTitle": "ကလပ်များ ကြော်ငြာ – အဖွဲ့ဝင် အသစ် စုဆောင်းခြင်း",
+  "deletePost": "စာတမ်း ဖျက်ရန်",
+  "deletePostConfirm": "ဤစာတမ်းကို ဖျက်ရန် သေချာပါသလား?",
+  "postDeleted": "စာတမ်း အောင်မြင်စွာ ဖျက်ပြီးပါပြီ",
+  "cannotDeletePost": "စာတမ်း ဖျက်၍မရပါ",
+  "delete": "ဖျက်ရန်",
+  "postLabel": "စာတမ်း",
+  "noticeBoard": "အကြောင်းကြားစာ",
+  "freeBoard": "လွတ်လပ်သော",
+  "infoBoard": "အချက်အလက်",
+  "promoBoard": "ကြော်ငြာ"
 }

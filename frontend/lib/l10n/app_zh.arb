@@ -110,5 +110,86 @@
   "noMessagesYet": "还没有消息。开始对话吧！",
   "typeMessage": "输入消息...",
   "matchAccepted": "匹配已接受！您现在可以与语言交换伙伴聊天了。",
-  "matchRejected": "匹配已被拒绝。"
+  "matchRejected": "匹配已被拒绝。",
+  "deleteConversation": "删除对话",
+  "deleteConversationConfirm": "您确定要删除与{partnerName}的对话吗？",
+  "@deleteConversationConfirm": {
+    "placeholders": {
+      "partnerName": {
+        "type": "String"
+      }
+    }
+  },
+  "conversationDeleted": "对话已删除",
+  "cannotDeleteConversation": "无法删除对话",
+  "deleteMessage": "删除消息",
+  "deleteMessageConfirm": "您确定要删除此消息吗？",
+  "messageDeleted": "消息已删除",
+  "cannotDeleteMessage": "无法删除消息",
+  "cannotLoadMessages": "无法加载消息",
+  "sendMessageFailed": "发送消息失败",
+  "noConversationsYet": "还没有对话",
+  "startFindingLanguagePartner": "开始寻找语言学习伙伴来聊天",
+  "loadingConversations": "正在加载对话...",
+  "noPostsYet": "还没有帖子",
+  "errorLoadingData": "加载数据时出错",
+  "failedToUpdateProfile": "更新个人资料失败",
+  "couldNotLoadOptions": "警告：无法加载选项。请检查您的连接。",
+  "couldNotLoadDepartments": "无法加载所选学校的系。",
+  "pleaseSelectUniversity": "请选择大学",
+  "pleaseSelectDepartment": "请选择系",
+  "loading": "加载中...",
+  "selectSchoolFirst": "请先选择学校",
+  "error": "错误",
+  "failedToCreateMatchRequest": "创建匹配请求失败",
+  "errorParsingHelpers": "解析数据错误",
+  "errorFindingMatch": "查找匹配时出错",
+  "missingMatchInformation": "错误：缺少匹配信息",
+  "errorOfferingMatch": "提供匹配时出错",
+  "errorAcceptingMatch": "接受匹配时出错",
+  "failedToCreateConversation": "错误：创建对话失败",
+  "justNow": "刚刚",
+  "minutesAgo": "{count}分钟前",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgoShort": "{count}小时前",
+  "@hoursAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgoShort": "{count}天前",
+  "@daysAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startConversation": "开始对话！",
+  "translated": "已翻译",
+  "validStudentEmail": "请使用有效的学生邮箱 (@stu)",
+  "pleaseConfirmPassword": "请确认您的密码",
+  "mainLanguage": "主要语言",
+  "latestNoticeTitle": "开学及教务日程通知",
+  "latestFreeTitle": "考试结束了！这个星期六你做什么？",
+  "latestInfoTitle": "2025交换生招募信息",
+  "latestPromoTitle": "社团宣传 – 新成员招募",
+  "deletePost": "删除帖子",
+  "deletePostConfirm": "您确定要删除此帖子吗？",
+  "postDeleted": "帖子已成功删除",
+  "cannotDeletePost": "无法删除帖子",
+  "delete": "删除",
+  "postLabel": "帖子",
+  "noticeBoard": "公告板",
+  "freeBoard": "自由板",
+  "infoBoard": "信息板",
+  "promoBoard": "宣传板"
 }

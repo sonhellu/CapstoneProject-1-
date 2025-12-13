@@ -79,5 +79,94 @@
   "noMessagesYet": "아직 메시지가 없습니다. 대화를 시작하세요!",
   "typeMessage": "메시지를 입력하세요...",
   "matchAccepted": "매칭이 수락되었습니다! 이제 언어 교환 파트너와 대화할 수 있습니다.",
-  "matchRejected": "매칭이 거절되었습니다."
+  "matchRejected": "매칭이 거절되었습니다.",
+  "deleteConversation": "대화 삭제",
+  "deleteConversationConfirm": "{partnerName}님과의 대화를 삭제하시겠습니까?",
+  "@deleteConversationConfirm": {
+    "placeholders": {
+      "partnerName": {
+        "type": "String"
+      }
+    }
+  },
+  "conversationDeleted": "대화가 삭제되었습니다",
+  "cannotDeleteConversation": "대화를 삭제할 수 없습니다",
+  "deleteMessage": "메시지 삭제",
+  "deleteMessageConfirm": "이 메시지를 삭제하시겠습니까?",
+  "messageDeleted": "메시지가 삭제되었습니다",
+  "cannotDeleteMessage": "메시지를 삭제할 수 없습니다",
+  "cannotLoadMessages": "메시지를 불러올 수 없습니다",
+  "sendMessageFailed": "메시지 전송 실패",
+  "noConversationsYet": "아직 대화가 없습니다",
+  "startFindingLanguagePartner": "언어 학습 파트너를 찾아 대화를 시작하세요",
+  "loadingConversations": "대화를 불러오는 중...",
+  "noPostsYet": "아직 게시물이 없습니다",
+  "errorLoadingData": "데이터를 불러오는 중 오류 발생",
+  "failedToUpdateProfile": "프로필 업데이트 실패",
+  "couldNotLoadOptions": "경고: 옵션을 불러올 수 없습니다. 연결을 확인해주세요.",
+  "couldNotLoadDepartments": "선택한 학교의 학과를 불러올 수 없습니다.",
+  "pleaseSelectUniversity": "대학교를 선택해주세요",
+  "pleaseSelectDepartment": "학과를 선택해주세요",
+  "loading": "로딩 중...",
+  "selectSchoolFirst": "먼저 학교를 선택해주세요",
+  "error": "오류",
+  "failedToCreateMatchRequest": "매칭 요청 생성 실패",
+  "errorParsingHelpers": "데이터 파싱 오류",
+  "errorFindingMatch": "매칭 찾기 오류",
+  "missingMatchInformation": "오류: 매칭 정보가 없습니다",
+  "errorOfferingMatch": "매칭 제안 오류",
+  "errorAcceptingMatch": "매칭 수락 오류",
+  "failedToCreateConversation": "오류: 대화 생성 실패",
+  "justNow": "방금 전",
+  "minutesAgo": "{count}분 전",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgoShort": "{count}시간 전",
+  "@hoursAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgoShort": "{count}일 전",
+  "@daysAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startConversation": "대화를 시작하세요!",
+  "translated": "번역됨",
+  "validStudentEmail": "유효한 학생 이메일을 사용해주세요 (@stu)",
+  "pleaseConfirmPassword": "비밀번호를 확인해주세요",
+  "mainLanguage": "주 언어",
+  "selectLanguageToLearn": "배우고 싶은 언어(국가) *",
+  "selectLanguageToLearnRequired": "배우고 싶은 언어(국가)를 선택해주세요",
+  "preferredGender": "선호 성별",
+  "college": "단과대학",
+  "selectLanguageGenderCollege": "배우고 싶은 언어(국가), 성별, 단과대학을 선택하세요.",
+  "female": "여",
+  "male": "남",
+  "noPreference": "상관없음",
+  "latestNoticeTitle": "개강 및 학사 일정 안내",
+  "latestFreeTitle": "시험 끝! 토요일에 뭐 하세요?",
+  "latestInfoTitle": "2025 교환학생 모집 정보 공유",
+  "latestPromoTitle": "동아리 홍보 – ○○ 동아리 신입 모집",
+  "deletePost": "게시글 삭제",
+  "deletePostConfirm": "이 게시글을 삭제하시겠습니까?",
+  "postDeleted": "게시글이 성공적으로 삭제되었습니다",
+  "cannotDeletePost": "게시글을 삭제할 수 없습니다",
+  "delete": "삭제",
+  "postLabel": "게시글",
+  "noticeBoard": "공지게시판",
+  "freeBoard": "자유게시판",
+  "infoBoard": "정보게시판",
+  "promoBoard": "홍보게시판"
 }

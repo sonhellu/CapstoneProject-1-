@@ -50,6 +50,10 @@ class _BoardScreenState extends State<BoardScreen> {
   List<BoardPost> _posts = [];
   bool _isLoading = false;
   String? _error;
+  
+  // Cache posts cho mỗi category để chuyển đổi mượt mà hơn
+  final Map<BoardCategory, List<BoardPost>> _postsCache = {};
+  final Map<BoardCategory, String?> _errorCache = {};
 
   @override
   void initState() {
@@ -62,9 +66,26 @@ class _BoardScreenState extends State<BoardScreen> {
   Future<void> _loadPosts({bool forceRefresh = false}) async {
     if (!mounted) return;
     
+    // Nếu đã có cache và không force refresh, dùng cache ngay
+    if (!forceRefresh && _postsCache.containsKey(_selected)) {
+      setState(() {
+        _posts = _postsCache[_selected]!;
+        _error = _errorCache[_selected];
+        _isLoading = false;
+      });
+      // Load trong background để cập nhật
+      _loadPostsInBackground();
+      return;
+    }
+    
     setState(() {
       _isLoading = true;
-      _error = null;
+      // Giữ lại posts cũ khi đang load để transition mượt hơn
+      if (!_postsCache.containsKey(_selected)) {
+        _error = null;
+      } else {
+        _error = _errorCache[_selected];
+      }
     });
 
     try {
@@ -83,7 +104,11 @@ class _BoardScreenState extends State<BoardScreen> {
         setState(() {
           _posts = posts;
           _isLoading = false;
+          _error = null;
         });
+        // Cache posts
+        _postsCache[_selected] = posts;
+        _errorCache[_selected] = null;
       }
     } on ApiException catch (e) {
       if (mounted) {
@@ -91,20 +116,71 @@ class _BoardScreenState extends State<BoardScreen> {
           _error = e.message;
           _isLoading = false;
         });
+        _errorCache[_selected] = e.message;
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Error loading data: ${e.toString()}';
+          _error = '${AppLocalizations.of(context).errorLoadingData}: ${e.toString()}';
           _isLoading = false;
         });
+        _errorCache[_selected] = _error;
       }
+    }
+  }
+  
+  /// Load posts trong background để cập nhật cache
+  Future<void> _loadPostsInBackground() async {
+    try {
+      final boardId = _categoryToBoardId[_selected] ?? 1;
+      final postsData = await CommunityService.getPosts(boardId: boardId, limit: 20);
+      final posts = postsData.map((postData) {
+        return BoardPost.fromJson(postData as Map<String, dynamic>);
+      }).toList();
+      
+      if (mounted && _selected == _selected) {
+        setState(() {
+          _postsCache[_selected] = posts;
+          _errorCache[_selected] = null;
+          if (!_isLoading) {
+            _posts = posts;
+          }
+        });
+      }
+    } catch (e) {
+      // Silent fail for background refresh
     }
   }
 
   /// Refresh posts
   Future<void> _refreshPosts() async {
     await _loadPosts();
+  }
+
+  /// Handle delete post
+  Future<void> _handleDeletePost(BoardPost post) async {
+    try {
+      final postId = int.tryParse(post.id) ?? 0;
+      if (postId == 0) {
+        throw Exception('Invalid post ID');
+      }
+      await CommunityService.deletePost(postId: postId);
+      if (mounted) {
+        // Clear cache và reload posts after deletion
+        _postsCache.remove(_selected);
+        _errorCache.remove(_selected);
+        await _loadPosts(forceRefresh: true);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${AppLocalizations.of(context).errorOccurred}: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   List<BoardPost> get _currentPosts => _posts;
@@ -133,12 +209,17 @@ class _BoardScreenState extends State<BoardScreen> {
                 delegate: _BoardSearchDelegate(posts),
               );
               if (result != null && context.mounted) {
-                Navigator.push(
+                final deleted = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => BoardDetailScreen(post: result),
                   ),
                 );
+                
+                // Reload posts if post was deleted
+                if (deleted == true && mounted) {
+                  await _loadPosts(forceRefresh: true);
+                }
               }
             },
           ),
@@ -203,7 +284,18 @@ class _BoardScreenState extends State<BoardScreen> {
                   _buildCategoryTabs(isDark),
                   const SizedBox(height: AppConstants.spacingL),
                   Expanded(
-                    child: _buildPostsList(isDark, posts),
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 150),
+                      switchInCurve: Curves.easeOut,
+                      switchOutCurve: Curves.easeIn,
+                      transitionBuilder: (Widget child, Animation<double> animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+                      },
+                      child: _buildPostsList(isDark, posts),
+                    ),
                   ),
                 ],
               ),
@@ -237,28 +329,26 @@ class _BoardScreenState extends State<BoardScreen> {
           return Expanded(
             child: GestureDetector(
               onTap: () {
-                setState(() => _selected = cat);
-                _loadPosts(); // Reload posts khi chuyển category
+                if (_selected != cat) {
+                  setState(() => _selected = cat);
+                  _loadPosts();
+                }
               },
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
+                duration: const Duration(milliseconds: 150),
                 curve: Curves.easeOut,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(28),
-                  gradient: selected
-                      ? const LinearGradient(
-                          colors: [Color(0xFFE53935), Color(0xFF1E88E5)],
-                        )
-                      : null,
-                  color: selected ? null : Colors.transparent,
+                  color: selected
+                      ? AppConstants.primaryColor
+                      : Colors.transparent,
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   _getCategoryLabel(context, cat),
                   style: TextStyle(
                     fontSize: 13,
-                    fontWeight:
-                        selected ? FontWeight.w600 : FontWeight.w500,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                     color: selected ? Colors.white : Colors.grey.shade800,
                   ),
                 ),
@@ -272,7 +362,7 @@ class _BoardScreenState extends State<BoardScreen> {
   
   /// Build posts list với loading và error states
   Widget _buildPostsList(bool isDark, List<BoardPost> posts) {
-    // Loading state
+    // Loading state - hiển thị overlay nếu đã có posts (để transition mượt hơn)
     if (_isLoading && posts.isEmpty) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -327,7 +417,7 @@ class _BoardScreenState extends State<BoardScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Chưa có bài viết nào',
+              AppLocalizations.of(context).noPostsYet,
               style: TextStyle(
                 color: isDark ? Colors.white70 : Colors.grey[600],
                 fontSize: 16,
@@ -339,9 +429,19 @@ class _BoardScreenState extends State<BoardScreen> {
     }
     
     // Posts list
-    return ListView.builder(
-      itemCount: posts.length,
-      itemBuilder: (_, i) => _BoardCard(post: posts[i]),
+    return Opacity(
+      opacity: _isLoading && posts.isNotEmpty ? 0.6 : 1.0,
+      child: IgnorePointer(
+        ignoring: _isLoading && posts.isNotEmpty,
+        child: ListView.builder(
+          key: ValueKey(_selected),
+          itemCount: posts.length,
+          itemBuilder: (_, i) => _BoardCard(
+            post: posts[i],
+            onDelete: () => _handleDeletePost(posts[i]),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -349,37 +449,92 @@ class _BoardScreenState extends State<BoardScreen> {
 // 카드 UI
 class _BoardCard extends StatelessWidget {
   final BoardPost post;
-  const _BoardCard({required this.post});
+  final VoidCallback? onDelete;
+  const _BoardCard({required this.post, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-            color: Colors.black.withOpacity(0.06),
-          ),
-        ],
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BoardDetailScreen(post: post),
+    final l10n = AppLocalizations.of(context);
+    
+    return Dismissible(
+      key: Key(post.id),
+      direction: onDelete != null ? DismissDirection.endToStart : DismissDirection.none,
+      background: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          color: Colors.red[600],
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Icon(Icons.delete, color: Colors.white, size: 28),
+            const SizedBox(width: 8),
+            Text(
+              l10n.delete.split(' ').first,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          );
-        },
-        child: Padding(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          child: Row(
+          ],
+        ),
+      ),
+      confirmDismiss: (direction) async {
+        if (onDelete == null) return false;
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(l10n.deletePost),
+            content: Text(l10n.deletePostConfirm),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: Text(l10n.delete.split(' ').first),
+              ),
+            ],
+          ),
+        );
+        return confirmed ?? false;
+      },
+      onDismissed: (direction) {
+        onDelete?.call();
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+              color: Colors.black.withOpacity(0.06),
+            ),
+          ],
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BoardDetailScreen(post: post),
+              ),
+            );
+          },
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
             children: [
               Container(
                 height: 44,
@@ -424,9 +579,9 @@ class _BoardCard extends StatelessWidget {
                             color: Colors.redAccent.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(999),
                           ),
-                          child: const Text(
-                            '게시글',
-                            style: TextStyle(
+                          child: Text(
+                            l10n.postLabel,
+                            style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                               color: Colors.redAccent,
@@ -440,6 +595,7 @@ class _BoardCard extends StatelessWidget {
               ),
               const Icon(Icons.chevron_right, color: Colors.redAccent),
             ],
+            ),
           ),
         ),
       ),
