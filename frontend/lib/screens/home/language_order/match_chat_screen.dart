@@ -119,8 +119,9 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
               widget.preferredCollege, // Use selected college for display
               [helper['main_language']?.toString() ?? widget.targetLanguageCode], // Languages they can help with
             ),
-            roomId: 'room_${helperIdInt}_${now}_$index',
-            helperId: helperIdInt, // Store helper ID for future use
+            roomId: 'room_${helperIdInt}_${now}_$index', // Temporary roomId, will be replaced with conversation_id
+            helperId: helperIdInt, // Store helper ID for accept match
+            requestId: requestId, // Store request ID for accept match
           );
         }).toList();
       } catch (e) {
@@ -270,25 +271,118 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
               );
             }
 
-            // 조건에 맞는 상대가 1명 이상 있을 때 → 최대 5명 리스트
-            return _MatchListView(
-              results: results,
-              targetLang: targetLangLabel,
-              isDark: isDark,
-              onStartChat: (item) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => LanguageChatRoomScreen(
-                      roomId: item.roomId,
-                      partnerName: item.user.name,
-                      targetLanguageLabel: targetLangLabel,
+          // 조건에 맞는 상대가 1명 이상 있을 때 → 최대 5명 리스트
+          return _MatchListView(
+            results: results,
+            targetLang: targetLangLabel,
+            isDark: isDark,
+            onStartChat: (item) async {
+              // Accept match và tạo conversation trước khi vào chat room
+              if (item.requestId == null || item.helperId == null) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Error: Missing match information'),
+                      backgroundColor: Colors.red,
                     ),
+                  );
+                }
+                return;
+              }
+
+              // Show loading dialog
+              if (mounted) {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => const Center(
+                    child: CircularProgressIndicator(),
                   ),
                 );
-              },
-              onBack: () => Navigator.pop(context),
-            );
+              }
+
+              try {
+                // Step 1: Offer match trước (chuyển status từ pending sang offered)
+                final offerResult = await MatchingService.offerMatch(
+                  requestId: item.requestId!,
+                  mentorUserId: item.helperId!,
+                );
+
+                if (offerResult.containsKey('error')) {
+                  if (mounted) {
+                    Navigator.pop(context); // Close loading dialog
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error offering match: ${offerResult['error']}'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                  return;
+                }
+
+                // Step 2: Accept match để tạo conversation (chuyển từ offered sang accepted)
+                final acceptResult = await MatchingService.acceptMatch(
+                  requestId: item.requestId!,
+                  mentorUserId: item.helperId!,
+                );
+
+                if (mounted) {
+                  Navigator.pop(context); // Close loading dialog
+                }
+
+                if (acceptResult.containsKey('error')) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error accepting match: ${acceptResult['error']}'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                  return;
+                }
+
+                final conversationId = acceptResult['conversation_id'] as int?;
+                if (conversationId == null) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Error: Failed to create conversation'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                  return;
+                }
+
+                // Navigate to chat room với conversation_id
+                if (mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LanguageChatRoomScreen(
+                        conversationId: conversationId,
+                        partnerName: item.user.name,
+                        targetLanguageLabel: targetLangLabel,
+                      ),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  Navigator.pop(context); // Close loading dialog if still open
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: ${e.toString()}'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            onBack: () => Navigator.pop(context),
+          );
           },
         ),
       ),
@@ -688,11 +782,13 @@ class _User {
 class _MatchResult {
   final _User user;
   final String roomId;
-  final int? helperId; // Store helper ID for future API calls
+  final int? helperId; // Store helper ID for accept match
+  final int? requestId; // Store request ID for accept match
 
   _MatchResult({
     required this.user,
     required this.roomId,
     this.helperId,
+    this.requestId,
   });
 }
