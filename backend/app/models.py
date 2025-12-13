@@ -139,6 +139,7 @@ class Conversations(db.Model):
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     match_id = db.Column(db.BigInteger, db.ForeignKey('matches.id'), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    match = db.relationship('Matches', backref=db.backref('conversation', uselist=False))
 
 class ConversationParticipants(db.Model):
     __tablename__ = "conversation_participants"
