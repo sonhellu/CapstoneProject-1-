@@ -11,14 +11,30 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   List<Conversation> _conversations = [];
   bool _isLoading = true;
+  late AnimationController _listAnimationController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
+    _listAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _listAnimationController,
+      curve: Curves.easeIn,
+    );
     _loadConversations();
+  }
+
+  @override
+  void dispose() {
+    _listAnimationController.dispose();
+    super.dispose();
   }
 
   /// Load conversations from API
@@ -73,6 +89,9 @@ class _ChatScreenState extends State<ChatScreen> {
         }).toList();
         _isLoading = false;
       });
+      
+      // Animate list appearance
+      _listAnimationController.forward();
     } catch (e) {
       setState(() {
         _conversations = [];
@@ -108,17 +127,56 @@ class _ChatScreenState extends State<ChatScreen> {
             // Conversations list
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Đang tải cuộc trò chuyện...',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                   : _conversations.isEmpty
-                      ? _buildEmptyState(isDark)
-                      : ListView.separated(
-                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                          itemCount: _conversations.length,
-                          separatorBuilder: (context, index) => const SizedBox(height: 4),
-                          itemBuilder: (context, index) {
-                            final conversation = _conversations[index];
-                            return _buildConversationItem(context, conversation, isDark);
-                          },
+                      ? FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: _buildEmptyState(theme, isDark),
+                        )
+                      : FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: ListView.separated(
+                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: _conversations.length,
+                            separatorBuilder: (context, index) => const SizedBox(height: 4),
+                            itemBuilder: (context, index) {
+                              final conversation = _conversations[index];
+                              return TweenAnimationBuilder<double>(
+                                tween: Tween(begin: 0.0, end: 1.0),
+                                duration: Duration(milliseconds: 300 + (index * 50)),
+                                curve: Curves.easeOut,
+                                builder: (context, value, child) {
+                                  return Opacity(
+                                    opacity: value,
+                                    child: Transform.translate(
+                                      offset: Offset(0, 20 * (1 - value)),
+                                      child: child,
+                                    ),
+                                  );
+                                },
+                                child: _buildConversationItem(context, conversation, isDark),
+                              );
+                            },
+                          ),
                         ),
             ),
           ],
@@ -252,12 +310,27 @@ class _ChatScreenState extends State<ChatScreen> {
             
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => LanguageChatRoomScreen(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    LanguageChatRoomScreen(
                   conversationId: conversation.id,
                   partnerName: conversation.partnerName,
                   targetLanguageLabel: conversation.targetLanguageLabel,
                 ),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  const begin = Offset(1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.ease;
+
+                  var tween = Tween(begin: begin, end: end).chain(
+                    CurveTween(curve: curve),
+                  );
+
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: child,
+                  );
+                },
               ),
             ).then((_) {
               _loadConversations();
@@ -426,31 +499,33 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildEmptyState(bool isDark) {
+  Widget _buildEmptyState(ThemeData theme, bool isDark) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.chat_bubble_outline,
-            size: 64,
-            color: isDark ? Colors.white38 : Colors.grey[400],
+            size: 80,
+            color: theme.colorScheme.primary.withOpacity(0.3),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Text(
-            'No conversations yet',
-            style: TextStyle(
-              fontSize: 18,
+            'Chưa có cuộc trò chuyện nào',
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: theme.colorScheme.onSurface.withOpacity(0.7),
               fontWeight: FontWeight.w500,
-              color: isDark ? Colors.white70 : Colors.grey[600],
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Start a conversation with someone!',
-            style: TextStyle(
-              fontSize: 14,
-              color: isDark ? Colors.white54 : Colors.grey[500],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              'Bắt đầu tìm bạn học ngôn ngữ để nhắn tin',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.5),
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
         ],

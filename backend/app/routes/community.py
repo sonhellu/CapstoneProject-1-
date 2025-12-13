@@ -202,54 +202,161 @@ def translate_text():
         
         target_lang_code = lang_map[target_lang]
         
-        # Handle source language
+        # Handle source language - MyMemory doesn't support "auto" well
+        # We need to detect or guess the source language
         if source_lang == "auto":
-            source_lang_code = "auto"
+            # Simple heuristic: if target is not English, assume source might be English or Korean
+            # In production, use a proper language detection service
+            # For now, try English first, then Korean if that doesn't work
+            source_lang_code = "en" if target_lang_code != "en" else "ko"
         else:
-            source_lang_code = lang_map.get(source_lang, "auto")
+            source_lang_code = lang_map.get(source_lang, "en")
+        
+        # Don't translate if source and target are the same
+        if source_lang_code == target_lang_code:
+            return jsonify({
+                "translated_text": text,
+                "source_language": source_lang_code,
+                "target_language": target_lang_code,
+                "original_text": text,
+                "warning": "Source and target languages are the same"
+            }), 200
         
         # MyMemory Translation API (free, no API key required for basic usage)
         # Limit: 1000 words per day for free tier
         api_url = "https://api.mymemory.translated.net/get"
         
-        params = {
-            'q': text,
-            'langpair': f'{source_lang_code}|{target_lang_code}'
-        }
-        
-        try:
-            response = requests.get(api_url, params=params, timeout=10)
-            response.raise_for_status()
-            
-            result = response.json()
-            
-            # Check if translation was successful
-            if result.get('responseStatus') == 200:
-                translated_text = result.get('responseData', {}).get('translatedText', text)
-                
-                return jsonify({
-                    "translated_text": translated_text,
-                    "source_language": source_lang_code,
-                    "target_language": target_lang_code,
-                    "original_text": text
-                }), 200
+        # Try multiple source languages if auto-detect is needed
+        source_languages_to_try = [source_lang_code]
+        if source_lang == "auto":
+            # Try common source languages for this app
+            if target_lang_code == "vi":
+                source_languages_to_try = ["en", "ko", "zh", "ja"]
+            elif target_lang_code == "ko":
+                source_languages_to_try = ["en", "vi", "zh", "ja"]
+            elif target_lang_code == "en":
+                source_languages_to_try = ["ko", "vi", "zh", "ja"]
             else:
-                # Fallback: return original text if translation fails
-                current_app.logger.warning(f"Translation API returned error: {result.get('responseStatus')}")
-                return jsonify({
-                    "translated_text": text,
-                    "source_language": source_lang_code,
-                    "target_language": target_lang_code,
-                    "original_text": text,
-                    "warning": "Translation service temporarily unavailable"
-                }), 200
+                source_languages_to_try = ["en", "ko"]
+        
+        # Try each source language until we get a good translation
+        for try_source in source_languages_to_try:
+            if try_source == target_lang_code:
+                continue  # Skip if same as target
                 
-        except requests.exceptions.RequestException as e:
+            params = {
+                'q': text,
+                'langpair': f'{try_source}|{target_lang_code}'
+            }
+            
+            try:
+                current_app.logger.info(f"Trying translation: {try_source} -> {target_lang_code}")
+                response = requests.get(api_url, params=params, timeout=10)
+                response.raise_for_status()
+                
+                result = response.json()
+                response_status = result.get('responseStatus', 0)
+                
+                current_app.logger.info(f"MyMemory API response status: {response_status}")
+            
+                if response_status == 200:
+                    translated_text = result.get('responseData', {}).get('translatedText', '').strip()
+                    
+                    current_app.logger.info(f"Translated text: {translated_text[:100] if translated_text else 'empty'}...")
+                    
+                    # Check if translation is actually different from original
+                    if translated_text and translated_text != text:
+                        current_app.logger.info(f"Translation successful with source: {try_source}")
+                        return jsonify({
+                            "translated_text": translated_text,
+                            "source_language": try_source,  # Use the successful source
+                            "target_language": target_lang_code,
+                            "original_text": text
+                        }), 200
+                    else:
+                        current_app.logger.warning(f"Translation returned same text for {try_source}, trying next...")
+                        continue  # Try next source language
+                else:
+                    current_app.logger.warning(f"Translation failed for {try_source} (status: {response_status}), trying next...")
+                    continue  # Try next source language
+                    
+            except requests.exceptions.RequestException as e:
+                current_app.logger.warning(f"Request failed for {try_source}: {str(e)}, trying next...")
+                continue  # Try next source language
+        
+        # If all source languages failed, try LibreTranslate as fallback
+        current_app.logger.error(f"All MyMemory translation attempts failed for text: {text[:50]}...")
+        
+        # Try LibreTranslate as fallback
+        try:
+            current_app.logger.info("Trying LibreTranslate as fallback...")
+            libre_url = "https://libretranslate.de/translate"
+            # Try with first source language from our list
+            fallback_source = source_languages_to_try[0] if source_languages_to_try else "en"
+            libre_params = {
+                'q': text,
+                'source': fallback_source,
+                'target': target_lang_code,
+                'format': 'text'
+            }
+            
+            libre_response = requests.post(libre_url, data=libre_params, timeout=10)
+            if libre_response.status_code == 200:
+                libre_result = libre_response.json()
+                libre_translated = libre_result.get('translatedText', '').strip()
+                if libre_translated and libre_translated != text:
+                    current_app.logger.info("LibreTranslate translation successful")
+                    return jsonify({
+                        "translated_text": libre_translated,
+                        "source_language": fallback_source,
+                        "target_language": target_lang_code,
+                        "original_text": text
+                    }), 200
+        except Exception as libre_error:
+            current_app.logger.warning(f"LibreTranslate fallback also failed: {str(libre_error)}")
+        
+        # Final fallback: return original text with warning
+        return jsonify({
+            "translated_text": text,
+            "source_language": source_languages_to_try[0] if source_languages_to_try else "en",  # Use actual code, not "auto"
+            "target_language": target_lang_code,
+            "original_text": text,
+            "warning": "Could not translate - all translation services unavailable or text may already be in target language"
+        }), 200
+                
+    except requests.exceptions.RequestException as e:
             current_app.logger.error(f"Translation API request error: {str(e)}", exc_info=True)
-            # Fallback: return original text
+            
+            # Try alternative translation service (LibreTranslate) as fallback
+            try:
+                current_app.logger.info("Trying LibreTranslate as fallback...")
+                libre_url = "https://libretranslate.de/translate"
+                libre_params = {
+                    'q': text,
+                    'source': source_lang_code,
+                    'target': target_lang_code,
+                    'format': 'text'
+                }
+                
+                libre_response = requests.post(libre_url, data=libre_params, timeout=10)
+                if libre_response.status_code == 200:
+                    libre_result = libre_response.json()
+                    libre_translated = libre_result.get('translatedText', '').strip()
+                    if libre_translated and libre_translated != text:
+                        current_app.logger.info("LibreTranslate translation successful")
+                        return jsonify({
+                            "translated_text": libre_translated,
+                            "source_language": source_lang_code,
+                            "target_language": target_lang_code,
+                            "original_text": text
+                        }), 200
+            except Exception as libre_error:
+                current_app.logger.warning(f"LibreTranslate fallback also failed: {str(libre_error)}")
+            
+            # Final fallback: return original text
             return jsonify({
                 "translated_text": text,
-                "source_language": source_lang_code,
+                "source_language": source_lang_code,  # Use actual code, not "auto"
                 "target_language": target_lang_code,
                 "original_text": text,
                 "warning": "Translation service unavailable, showing original text"
