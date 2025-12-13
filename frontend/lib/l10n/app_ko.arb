@@ -73,5 +73,7 @@
   "translating": "번역 중...",
   "translationFailed": "번역 실패",
   "selectBoard": "게시판 선택",
-  "pleaseSelectBoard": "게시판을 선택해주세요"
+  "pleaseSelectBoard": "게시판을 선택해주세요",
+  "searching": "매칭 검색 중...",
+  "tryAgainLater": "나중에 다시 시도하거나 검색 조건을 조정해주세요"
 }

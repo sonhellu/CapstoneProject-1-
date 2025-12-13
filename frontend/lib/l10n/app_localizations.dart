@@ -1045,6 +1045,8 @@ class AppLocalizations {
   String get visitOfficialWebsite => translate('visitOfficialWebsite');
   String get selectBoard => translate('selectBoard');
   String get pleaseSelectBoard => translate('pleaseSelectBoard');
+  String get searching => translate('searching');
+  String get tryAgainLater => translate('tryAgainLater');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

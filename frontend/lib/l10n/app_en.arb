@@ -73,5 +73,7 @@
   "translating": "Translating...",
   "translationFailed": "Translation failed",
   "selectBoard": "Select Board",
-  "pleaseSelectBoard": "Please select a board"
+  "pleaseSelectBoard": "Please select a board",
+  "searching": "Searching for matches...",
+  "tryAgainLater": "Please try again later or adjust your search criteria"
 }

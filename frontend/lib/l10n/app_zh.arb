@@ -104,5 +104,7 @@
   "translating": "翻译中...",
   "translationFailed": "翻译失败",
   "selectBoard": "选择版块",
-  "pleaseSelectBoard": "请选择一个版块"
+  "pleaseSelectBoard": "请选择一个版块",
+  "searching": "正在搜索匹配...",
+  "tryAgainLater": "请稍后重试或调整搜索条件"
 }

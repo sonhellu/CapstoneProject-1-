@@ -73,5 +73,7 @@
   "translating": "Đang dịch...",
   "translationFailed": "Dịch thất bại",
   "selectBoard": "Chọn Bảng Tin",
-  "pleaseSelectBoard": "Vui lòng chọn một bảng tin"
+  "pleaseSelectBoard": "Vui lòng chọn một bảng tin",
+  "searching": "Đang tìm kiếm đối tác...",
+  "tryAgainLater": "Vui lòng thử lại sau hoặc điều chỉnh tiêu chí tìm kiếm"
 }

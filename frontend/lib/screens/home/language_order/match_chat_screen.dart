@@ -207,50 +207,90 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final targetLangLabel = _langLabel(widget.targetLanguageCode);
 
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context).languageExchangeMatching)),
-      body: FutureBuilder<List<_MatchResult>>(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final results = snapshot.data ?? [];
-
-          if (results.isEmpty) {
-            // 조건에 맞는 상대가 1명도 없을 때
-            return _NoMatchView(
-              targetLang: targetLangLabel,
-              onRetry: () {
-                setState(() {
-                  _future = _simulateMatch();
-                });
-              },
-            );
-          }
-
-          // 조건에 맞는 상대가 1명 이상 있을 때 → 최대 5명 리스트
-          return _MatchListView(
-            results: results,
-            targetLang: targetLangLabel,
-            onStartChat: (item) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => LanguageChatRoomScreen(
-                    roomId: item.roomId,
-                    partnerName: item.user.name,
-                    targetLanguageLabel: targetLangLabel,
-                  ),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context).languageExchangeMatching),
+        backgroundColor: Colors.red[600],
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDark 
+              ? [
+                  const Color(0xFF1E1E1E),
+                  const Color(0xFF121212),
+                ]
+              : [
+                  Colors.red[50]!,
+                  Colors.white,
+                ],
+          ),
+        ),
+        child: FutureBuilder<List<_MatchResult>>(
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      AppLocalizations.of(context).searching,
+                      style: TextStyle(
+                        color: isDark ? Colors.white70 : Colors.grey[600],
+                      ),
+                    ),
+                  ],
                 ),
               );
-            },
-            onBack: () => Navigator.pop(context),
-          );
-        },
+            }
+
+            final results = snapshot.data ?? [];
+
+            if (results.isEmpty) {
+              // 조건에 맞는 상대가 1명도 없을 때
+              return _NoMatchView(
+                targetLang: targetLangLabel,
+                isDark: isDark,
+                onRetry: () {
+                  setState(() {
+                    _future = _simulateMatch();
+                  });
+                },
+              );
+            }
+
+            // 조건에 맞는 상대가 1명 이상 있을 때 → 최대 5명 리스트
+            return _MatchListView(
+              results: results,
+              targetLang: targetLangLabel,
+              isDark: isDark,
+              onStartChat: (item) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => LanguageChatRoomScreen(
+                      roomId: item.roomId,
+                      partnerName: item.user.name,
+                      targetLanguageLabel: targetLangLabel,
+                    ),
+                  ),
+                );
+              },
+              onBack: () => Navigator.pop(context),
+            );
+          },
+        ),
       ),
     );
   }
@@ -260,12 +300,14 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
 class _MatchListView extends StatelessWidget {
   final List<_MatchResult> results;
   final String targetLang;
+  final bool isDark;
   final void Function(_MatchResult) onStartChat;
   final VoidCallback onBack;
 
   const _MatchListView({
     required this.results,
     required this.targetLang,
+    required this.isDark,
     required this.onStartChat,
     required this.onBack,
   });
@@ -274,109 +316,256 @@ class _MatchListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // 상단 배너
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.check_circle, color: Colors.green),
-                const SizedBox(width: 8),
-                Text(AppLocalizations.of(context).matchFound),
-              ],
-            ),
-          ),
-
-          Text(
-            '${AppLocalizations.of(context).targetLanguage}: $targetLang',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // 프로필 리스트
-          Expanded(
-            child: ListView.separated(
-              itemCount: results.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final item = results[index];
-                final user = item.user;
-
-                return Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // 상단 배너 - Improved design
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.green[400]!, Colors.green[600]!],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.green.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 24,
-                              child: Text(
-                                user.name.substring(0, 1),
-                                style: const TextStyle(fontSize: 20),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  user.name,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text('${AppLocalizations.of(context).gender}: ${user.gender}'),
-                                Text('${AppLocalizations.of(context).college}: ${user.college}'),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: FilledButton.icon(
-                            icon: const Icon(Icons.chat_bubble_outline),
-                            label: Text(AppLocalizations.of(context).startChat),
-                            onPressed: () => onStartChat(item),
-                          ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      '${AppLocalizations.of(context).matchFound} (${results.length})',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Target language info
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: theme.colorScheme.primary.withOpacity(0.3),
+                  width: 1.5,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.language,
+                    color: theme.colorScheme.primary,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    '${AppLocalizations.of(context).targetLanguage}: ',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? Colors.white70 : Colors.grey[700],
+                    ),
+                  ),
+                  Text(
+                    targetLang,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // 프로필 리스트 - Improved design
+            Expanded(
+              child: ListView.separated(
+                itemCount: results.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  final item = results[index];
+                  final user = item.user;
+                  final colors = [
+                    [Colors.blue, Colors.purple],
+                    [Colors.pink, Colors.red],
+                    [Colors.orange, Colors.deepOrange],
+                    [Colors.teal, Colors.cyan],
+                    [Colors.indigo, Colors.blue],
+                  ];
+                  final colorPair = colors[index % colors.length];
+
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
-                  ),
-                );
-              },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              // Improved Avatar with gradient
+                              Container(
+                                width: 56,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: colorPair,
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: colorPair[0].withOpacity(0.4),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    user.name.substring(0, 1).toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      user.name,
+                                      style: theme.textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: isDark ? Colors.white : Colors.black87,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.person_outline,
+                                          size: 16,
+                                          color: isDark ? Colors.white60 : Colors.grey[600],
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          user.gender,
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: isDark ? Colors.white60 : Colors.grey[600],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Icon(
+                                          Icons.school_outlined,
+                                          size: 16,
+                                          color: isDark ? Colors.white60 : Colors.grey[600],
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Expanded(
+                                          child: Text(
+                                            user.college,
+                                            style: theme.textTheme.bodySmall?.copyWith(
+                                              color: isDark ? Colors.white60 : Colors.grey[600],
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            child: FilledButton.icon(
+                              icon: const Icon(Icons.chat_bubble_outline, size: 20),
+                              label: Text(
+                                AppLocalizations.of(context).startChat,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Colors.red[600],
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 2,
+                              ),
+                              onPressed: () => onStartChat(item),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
 
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 44,
-            child: OutlinedButton(
-              onPressed: onBack,
-              child: Text(AppLocalizations.of(context).goBack),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 50,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.arrow_back),
+                label: Text(
+                  AppLocalizations.of(context).goBack,
+                  style: const TextStyle(fontSize: 16),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: isDark ? Colors.white24 : Colors.grey[300]!,
+                    width: 1.5,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: onBack,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -385,41 +574,97 @@ class _MatchListView extends StatelessWidget {
 /// 조건에 맞는 상대가 없을 때
 class _NoMatchView extends StatelessWidget {
   final String targetLang;
+  final bool isDark;
   final VoidCallback onRetry;
 
   const _NoMatchView({
     required this.targetLang,
+    required this.isDark,
     required this.onRetry,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(24),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.search_off, size: 70),
-            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF2C2C2C) : Colors.grey[100],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.search_off,
+                size: 80,
+                color: isDark ? Colors.white38 : Colors.grey[400],
+              ),
+            ),
+            const SizedBox(height: 32),
             Text(
               AppLocalizations.of(context).noMatchFound(targetLang),
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: 140,
-              height: 44,
-              child: FilledButton(
-                onPressed: onRetry,
-                child: Text(AppLocalizations.of(context).tryAgain),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black87,
               ),
             ),
             const SizedBox(height: 12),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(AppLocalizations.of(context).changeConditions),
+            Text(
+              AppLocalizations.of(context).tryAgainLater,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? Colors.white60 : Colors.grey[600],
+              ),
+            ),
+            const SizedBox(height: 40),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: FilledButton.icon(
+                icon: const Icon(Icons.refresh),
+                label: Text(
+                  AppLocalizations.of(context).tryAgain,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.red[600],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: onRetry,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.arrow_back),
+                label: Text(AppLocalizations.of(context).changeConditions),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: isDark ? Colors.white24 : Colors.grey[300]!,
+                    width: 1.5,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
             ),
           ],
         ),
