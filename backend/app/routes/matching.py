@@ -205,6 +205,14 @@ def accept_match(request_id):
         db.session.add(conv)
         db.session.flush()  # Flush to get conv.id before creating participants
         
+        # Refresh to ensure ID is loaded
+        db.session.refresh(conv)
+        
+        # Verify conv.id is not None
+        if conv.id is None:
+            db.session.rollback()
+            return jsonify({"error": "Failed to create conversation - ID not generated"}), 500
+        
         p1 = ConversationParticipants(conversation_id=conv.id, user_id=mentor_user_id)
         p2 = ConversationParticipants(conversation_id=conv.id, user_id=mr.requester_user_id)
         db.session.add_all([p1, p2])
