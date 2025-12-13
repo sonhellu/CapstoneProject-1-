@@ -197,11 +197,13 @@ def accept_match(request_id):
             status='active'
         )
         db.session.add(match)
+        db.session.flush()  # Flush to get match.id
         
         mr.status = 'accepted'
         
         conv = Conversations(match_id=match.id)
         db.session.add(conv)
+        db.session.flush()  # Flush to get conv.id before creating participants
         
         p1 = ConversationParticipants(conversation_id=conv.id, user_id=mentor_user_id)
         p2 = ConversationParticipants(conversation_id=conv.id, user_id=mr.requester_user_id)
