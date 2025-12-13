@@ -201,19 +201,18 @@ def accept_match(request_id):
         
         mr.status = 'accepted'
         
+        # Create conversation
         conv = Conversations(match_id=match.id)
         db.session.add(conv)
-        db.session.flush()  # Flush to get conv.id before creating participants
+        db.session.commit()  # Commit to ensure conversation gets an ID
         
-        # Refresh to ensure ID is loaded from database
-        db.session.refresh(conv)
-        
-        # Verify conv.id is not None
-        if conv.id is None:
+        # Query conversation again to get the ID (in case it wasn't loaded)
+        conv = Conversations.query.filter_by(match_id=match.id).first()
+        if not conv or conv.id is None:
             db.session.rollback()
-            return jsonify({"error": "Failed to create conversation - ID not generated"}), 500
+            return jsonify({"error": "Failed to create conversation"}), 500
         
-        # Create participants one by one (not using add_all for bulk insert)
+        # Create participants with the confirmed conversation ID
         p1 = ConversationParticipants(
             conversation_id=conv.id,
             user_id=mentor_user_id
@@ -224,9 +223,7 @@ def accept_match(request_id):
         )
         db.session.add(p1)
         db.session.add(p2)
-        
-        # Single commit for all operations
-        db.session.commit()
+        db.session.commit()  # Commit participants
 
         return jsonify({"match_id": match.id, "conversation_id": conv.id}), 201
     except Exception as e:
