@@ -232,6 +232,45 @@ def create_post(board_id):
         return jsonify({"error": f"Failed to create post: {str(e)}"}), 500
 
 
+@community_bp.route("/posts/<int:post_id>", methods=["DELETE", "OPTIONS"])
+@require_auth
+def delete_post(post_id):
+    """
+    Xóa bài viết (chỉ người tạo mới có thể xóa)
+    
+    [사용 예시]
+    DELETE /api/posts/123
+    """
+    # Handle OPTIONS preflight request
+    if request.method == "OPTIONS":
+        return jsonify({}), 200
+    
+    try:
+        # 1. Tìm bài viết
+        post = Posts.query.get(post_id)
+        if not post:
+            return jsonify({"error": "Post not found"}), 404
+        
+        # 2. Kiểm tra quyền (chỉ người tạo mới có thể xóa)
+        user = request.user
+        if post.user_id != user.id:
+            return jsonify({"error": "You can only delete your own posts"}), 403
+        
+        # 3. Xóa bài viết (soft delete hoặc hard delete)
+        # Ở đây dùng hard delete, nếu muốn soft delete thì thêm field deleted_at
+        db.session.delete(post)
+        db.session.commit()
+        
+        # 4. Clear cache
+        # Có thể clear cache cho board đó nếu cần
+        
+        return jsonify({"message": "Post deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Delete post error: {str(e)}", exc_info=True)
+        return jsonify({"error": f"Failed to delete post: {str(e)}"}), 500
+
+
 @community_bp.route("/translate", methods=["POST", "OPTIONS"])
 def translate_text():
     # Handle OPTIONS preflight request
