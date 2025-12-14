@@ -58,6 +58,24 @@ class CommunityService {
       useCache: false,
     );
   }
+  
+  /// Xóa bài viết
+  static Future<Map<String, dynamic>> deletePost({
+    required int postId,
+  }) async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    final response = await ApiService.delete(
+      ApiConfig.deletePostEndpoint(postId),
+      headers: headers,
+    );
+    
+    // Clear cache sau khi xóa post
+    // Cần biết boardId để clear cache, nhưng có thể clear tất cả board caches
+    ApiService.clearCache();
+    
+    return response;
+  }
 }
 
 
