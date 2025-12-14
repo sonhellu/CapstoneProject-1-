@@ -32,16 +32,18 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     });
 
     try {
-      // Dịch title và content song song
-      final results = await Future.wait([
-        TranslationService.translateText(text: widget.post.title),
-        TranslationService.translateText(text: widget.post.content),
-      ]);
+      // Sử dụng API mới: tự động lấy original_lang từ post và main_language từ user
+      final postId = int.tryParse(widget.post.id) ?? 0;
+      if (postId == 0) {
+        throw Exception('Invalid post ID');
+      }
+      
+      final translationResult = await CommunityService.translatePost(postId: postId);
 
       if (mounted) {
         setState(() {
-          _translatedTitle = results[0];
-          _translatedContent = results[1];
+          _translatedTitle = translationResult['title'] ?? widget.post.title;
+          _translatedContent = translationResult['content'] ?? widget.post.content;
           _isTranslated = true;
           _isTranslating = false;
           _errorMessage = null;

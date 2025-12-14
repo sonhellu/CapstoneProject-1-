@@ -284,6 +284,171 @@ def delete_post(post_id):
         return jsonify({"error": f"Failed to delete post: {str(e)}"}), 500
 
 
+@community_bp.route("/posts/<int:post_id>/translate", methods=["GET", "OPTIONS"])
+@require_auth
+def translate_post(post_id):
+    """
+    Tự động dịch bài viết dựa trên original_lang của bài viết và main_language của user
+    
+    [사용 예시]
+    GET /api/posts/123/translate
+    
+    Response:
+    {
+        "title": "Translated title",
+        "content": "Translated content",
+        "original_lang": "ko",
+        "target_lang": "vi"
+    }
+    """
+    # Handle OPTIONS preflight request
+    if request.method == "OPTIONS":
+        return jsonify({}), 200
+    
+    try:
+        # 1. Tìm bài viết
+        post = Posts.query.get(post_id)
+        if not post:
+            return jsonify({"error": "Post not found"}), 404
+        
+        # 2. Lấy thông tin user
+        user = request.user
+        
+        # 3. Xác định source và target language
+        source_lang = post.original_lang or "ko"  # Default to Korean if not set
+        target_lang = user.main_language or "en"  # Default to English if not set
+        
+        # 4. Nếu source và target giống nhau, không cần dịch
+        if source_lang == target_lang:
+            return jsonify({
+                "title": post.title,
+                "content": post.content,
+                "original_lang": source_lang,
+                "target_lang": target_lang,
+                "message": "Source and target languages are the same"
+            }), 200
+        
+        # 5. Dịch title và content
+        translation_results = []
+        texts_to_translate = [post.title, post.content]
+        
+        for text in texts_to_translate:
+            try:
+                # Gọi internal translate function
+                translation_result = _translate_text_internal(
+                    text=text,
+                    source_lang=source_lang,
+                    target_lang=target_lang
+                )
+                translation_results.append(translation_result.get("translated_text", text))
+            except Exception as e:
+                current_app.logger.error(f"Translation failed for text: {str(e)}")
+                translation_results.append(text)  # Fallback to original text
+        
+        return jsonify({
+            "title": translation_results[0],
+            "content": translation_results[1],
+            "original_lang": source_lang,
+            "target_lang": target_lang,
+            "original_title": post.title,
+            "original_content": post.content
+        }), 200
+        
+    except Exception as e:
+        current_app.logger.error(f"Translate post error: {str(e)}", exc_info=True)
+        return jsonify({"error": f"Failed to translate post: {str(e)}"}), 500
+
+
+def _translate_text_internal(text, source_lang, target_lang):
+    """
+    Helper function để dịch text (tái sử dụng logic từ translate_text route)
+    """
+    # Map language codes to MyMemory format
+    lang_map = {
+        'en': 'en',
+        'ko': 'ko',
+        'vi': 'vi',
+        'zh': 'zh',
+        'ja': 'ja',
+        'my': 'my',
+    }
+    
+    # Validate languages
+    if target_lang not in lang_map:
+        raise ValueError(f"Unsupported target language: {target_lang}")
+    if source_lang not in lang_map:
+        raise ValueError(f"Unsupported source language: {source_lang}")
+    
+    source_lang_code = lang_map[source_lang]
+    target_lang_code = lang_map[target_lang]
+    
+    # Don't translate if source and target are the same
+    if source_lang_code == target_lang_code:
+        return {
+            "translated_text": text,
+            "source_language": source_lang_code,
+            "target_language": target_lang_code,
+        }
+    
+    # MyMemory Translation API
+    api_url = "https://api.mymemory.translated.net/get"
+    params = {
+        'q': text,
+        'langpair': f'{source_lang_code}|{target_lang_code}'
+    }
+    
+    try:
+        current_app.logger.info(f"Translating: {source_lang_code} -> {target_lang_code}")
+        response = requests.get(api_url, params=params, timeout=10)
+        response.raise_for_status()
+        
+        result = response.json()
+        response_status = result.get('responseStatus', 0)
+        
+        if response_status == 200:
+            translated_text = result.get('responseData', {}).get('translatedText', '').strip()
+            
+            if translated_text and translated_text != text:
+                return {
+                    "translated_text": translated_text,
+                    "source_language": source_lang_code,
+                    "target_language": target_lang_code,
+                }
+        
+        # Try LibreTranslate as fallback
+        current_app.logger.warning("MyMemory failed, trying LibreTranslate...")
+        libre_url = "https://libretranslate.de/translate"
+        libre_params = {
+            'q': text,
+            'source': source_lang_code,
+            'target': target_lang_code,
+            'format': 'text'
+        }
+        
+        libre_response = requests.post(libre_url, data=libre_params, timeout=10)
+        if libre_response.status_code == 200:
+            libre_result = libre_response.json()
+            libre_translated = libre_result.get('translatedText', '').strip()
+            if libre_translated and libre_translated != text:
+                return {
+                    "translated_text": libre_translated,
+                    "source_language": source_lang_code,
+                    "target_language": target_lang_code,
+                }
+        
+        # Final fallback: return original text
+        return {
+            "translated_text": text,
+            "source_language": source_lang_code,
+            "target_language": target_lang_code,
+            "warning": "Translation service unavailable"
+        }
+        
+    except requests.exceptions.RequestException as e:
+        current_app.logger.error(f"Translation API request error: {str(e)}")
+        raise
+
+
 @community_bp.route("/translate", methods=["POST", "OPTIONS"])
 def translate_text():
     # Handle OPTIONS preflight request

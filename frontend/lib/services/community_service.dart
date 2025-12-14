@@ -84,6 +84,21 @@ class CommunityService {
     
     return response;
   }
+  
+  /// Dịch bài viết (tự động lấy original_lang từ post và main_language từ user)
+  static Future<Map<String, dynamic>> translatePost({
+    required int postId,
+  }) async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    final response = await ApiService.get(
+      ApiConfig.translatePostEndpoint(postId),
+      headers: headers,
+      useCache: false,
+    );
+    
+    return response as Map<String, dynamic>;
+  }
 }
 
 

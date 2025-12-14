@@ -9,6 +9,7 @@ class BoardPost {
   final int commentCount;
   final bool isAnonymous;
   final String? preview;
+  final String? originalLang;
 
   BoardPost({
     required this.id,
@@ -20,6 +21,7 @@ class BoardPost {
     this.commentCount = 0,
     this.isAnonymous = false,
     this.preview,
+    this.originalLang,
   });
   
   /// Factory constructor từ API response
@@ -34,6 +36,7 @@ class BoardPost {
       commentCount: json['comment_count'] ?? 0,
       isAnonymous: json['is_anonymous'] ?? false,
       preview: json['preview'],
+      originalLang: json['original_lang'],
     );
   }
   

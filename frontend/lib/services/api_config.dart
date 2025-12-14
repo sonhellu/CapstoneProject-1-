@@ -16,6 +16,8 @@ class ApiConfig {
   // Community endpoints
   static String boardPostsEndpoint(int boardId) => '/api/board/$boardId/posts';
   static String createPostEndpoint(int boardId) => '/api/board/$boardId/posts';
+  static String deletePostEndpoint(int postId) => '/api/posts/$postId';
+  static String translatePostEndpoint(int postId) => '/api/posts/$postId/translate';
   
   // School endpoints
   static const String schoolTranslationEndpoint = '/api/school/my-homepage-translation';
