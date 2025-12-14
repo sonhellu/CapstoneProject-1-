@@ -694,7 +694,7 @@ def register_socket_events(socketio):
             # Get sender info
             avatar_url = f"https://i.pravatar.cc/150?img={user.id}"
             
-            # Prepare message data
+            # Prepare message data (is_sent_by_me will be determined by frontend based on sender_user_id)
             message_data = {
                 'id': msg.id,
                 'conversation_id': conversation_id,
@@ -703,12 +703,13 @@ def register_socket_events(socketio):
                 'sender_avatar_url': avatar_url,
                 'content': content,
                 'created_at': msg.created_at.isoformat(),
-                'is_sent_by_me': True
+                # Note: is_sent_by_me will be set by frontend based on sender_user_id vs current user_id
             }
             
             # Emit to all participants in the conversation room
+            # Each client will determine is_sent_by_me based on sender_user_id
             room = f"conversation_{conversation_id}"
-            emit('new_message', message_data, room=room)
+            emit('new_message', message_data, room=room, broadcast=True)
             
             # Also send confirmation to sender
             emit('message_sent', {

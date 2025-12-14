@@ -99,6 +99,17 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         _conversations = [];
         _isLoading = false;
       });
+      
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${AppLocalizations.of(context).error}: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 

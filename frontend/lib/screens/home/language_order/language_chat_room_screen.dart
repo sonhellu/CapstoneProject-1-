@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../services/matching_service.dart';
 import '../../../services/socket_service.dart';
+import '../../../services/profile_service.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// 언어교류용 1:1 채팅방 (서버 API 연동) - Improved with avatars, better design, and performance
@@ -30,12 +31,42 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
   String? _matchStatus;
   bool _showAcceptedNotification = true;
   bool _isInitialLoad = true;
+  int? _currentUserId; // Cache current user ID
 
   @override
   void initState() {
     super.initState();
+    _loadCurrentUserId();
     _initializeSocket();
     _loadMessages();
+  }
+
+  /// Load current user ID from profile
+  Future<void> _loadCurrentUserId() async {
+    try {
+      final profile = await ProfileService.getMyProfile();
+      if (mounted && profile['id'] != null) {
+        setState(() {
+          _currentUserId = profile['id'] as int?;
+        });
+      }
+    } catch (e) {
+      print('Error loading current user ID: $e');
+    }
+  }
+
+  /// Get current user ID (from cache or profile)
+  Future<int?> _getCurrentUserId() async {
+    if (_currentUserId != null) {
+      return _currentUserId;
+    }
+    try {
+      final profile = await ProfileService.getMyProfile();
+      _currentUserId = profile['id'] as int?;
+      return _currentUserId;
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
@@ -96,7 +127,7 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
   }
 
   /// Handle new message from socket
-  void _handleNewMessage(Map<String, dynamic> data) {
+  void _handleNewMessage(Map<String, dynamic> data) async {
     try {
       final conversationId = data['conversation_id'] as int?;
       if (conversationId != widget.conversationId) return;
@@ -106,7 +137,28 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
       final senderUserId = data['sender_user_id'] as int?;
       final senderNickname = data['sender_nickname']?.toString();
       final createdAt = data['created_at']?.toString();
-      final isSentByMe = data['is_sent_by_me'] as bool? ?? false;
+      
+      // Determine is_sent_by_me based on sender_user_id vs current user_id
+      bool isSentByMe = false;
+      final currentUserId = _currentUserId ?? await _getCurrentUserId();
+      if (senderUserId != null && currentUserId != null) {
+        isSentByMe = senderUserId == currentUserId;
+      } else {
+        // Fallback: check if message already loaded (from API) with same ID
+        // This handles case when we load messages after socket message
+        final existingMsg = _messages.firstWhere(
+          (msg) => msg.messageId == messageId,
+          orElse: () => _ChatMessage(
+            messageId: -1,
+            text: '',
+            isMine: false,
+            time: DateTime.now(),
+          ),
+        );
+        if (existingMsg.messageId != -1) {
+          isSentByMe = existingMsg.isMine;
+        }
+      }
 
       if (content.isEmpty) return;
 
