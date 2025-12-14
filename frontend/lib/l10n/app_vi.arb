@@ -54,6 +54,7 @@
   "more": "Xem thêm",
   "languageChangedTo": "Ngôn ngữ đã thay đổi thành",
   "languageOrder": "Đặt hàng ngôn ngữ",
+  "share": "Chia sẻ",
   "shareFunctionalityComingSoon": "Tính năng chia sẻ sẽ sớm có mặt!",
   "like": "Thích",
   "bookmark": "Đánh dấu",
@@ -168,5 +169,6 @@
   "noticeBoard": "Bảng Thông Báo",
   "freeBoard": "Bảng Tự Do",
   "infoBoard": "Bảng Thông Tin",
-  "promoBoard": "Bảng Quảng Cáo"
+  "promoBoard": "Bảng Quảng Cáo",
+  "shareYourThoughts": "Chia sẻ ý kiến của bạn"
 }

@@ -166,6 +166,7 @@ class AppLocalizations {
     'latestInfoTitle': '2025 Exchange Student Recruitment Information',
     'latestPromoTitle': 'Club Promotion – New Member Recruitment',
     'postLabel': 'Post',
+    'shareYourThoughts': 'Share your thoughts',
   };
   
   // Korean translations
@@ -306,6 +307,7 @@ class AppLocalizations {
     'latestInfoTitle': '2025 교환학생 모집 정보 공유',
     'latestPromoTitle': '동아리 홍보 – ○○ 동아리 신입 모집',
     'postLabel': '게시글',
+    'shareYourThoughts': '의견을 공유해주세요',
   };
   
   // Vietnamese translations
@@ -446,6 +448,7 @@ class AppLocalizations {
     'latestInfoTitle': 'Thông tin tuyển sinh trao đổi 2025',
     'latestPromoTitle': 'Quảng bá câu lạc bộ – Tuyển thành viên mới',
     'postLabel': 'Bài viết',
+    'shareYourThoughts': 'Chia sẻ ý kiến của bạn',
   };
   
   // Chinese translations
@@ -611,6 +614,7 @@ class AppLocalizations {
     'latestInfoTitle': '2025交换生招募信息',
     'latestPromoTitle': '社团宣传 – 新成员招募',
     'postLabel': '帖子',
+    'shareYourThoughts': '分享您的想法',
   };
   
   // Japanese translations
@@ -776,6 +780,7 @@ class AppLocalizations {
     'latestInfoTitle': '2025交換留学生募集情報',
     'latestPromoTitle': 'サークル宣伝 – 新メンバー募集',
     'postLabel': '投稿',
+    'shareYourThoughts': '意見を共有してください',
   };
   
   // Myanmar translations
@@ -941,6 +946,7 @@ class AppLocalizations {
     'latestInfoTitle': '၂၀၂၅ လဲလှယ်ကျောင်းသား စုဆောင်းမှု အချက်အလက်',
     'latestPromoTitle': 'ကလပ်များ ကြော်ငြာ – အဖွဲ့ဝင် အသစ် စုဆောင်းခြင်း',
     'postLabel': 'စာတမ်း',
+    'shareYourThoughts': 'သင့်အတွေးများကို မျှဝေပါ',
   };
   
   String translate(String key) {
@@ -1087,6 +1093,7 @@ class AppLocalizations {
   String get freeBoard => translate('freeBoard');
   String get infoBoard => translate('infoBoard');
   String get promoBoard => translate('promoBoard');
+  String get shareYourThoughts => translate('shareYourThoughts');
   String get languageExchangeChat => translate('languageExchangeChat');
   String get findLanguageExchangePartner => translate('findLanguageExchangePartner');
   String get noLanguageExchangeChatHistory => translate('noLanguageExchangeChatHistory');

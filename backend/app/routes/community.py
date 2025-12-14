@@ -185,6 +185,7 @@ def create_post(board_id):
         title = data.get("title")
         content = data.get("content")
         is_anonymous = data.get("is_anonymous", False)
+        original_lang = data.get("original_lang")  # Ngôn ngữ được chọn từ frontend
 
         if not title or not content:
             return jsonify({"error": "Title and content are required"}), 400
@@ -211,13 +212,25 @@ def create_post(board_id):
         # 3. 로그인한 사용자 정보 가져오기 (@require_auth 덕분)
         user = request.user
 
-        # 4. DB 저장
+        # 4. Validate và xác định original_lang
+        # Nếu frontend gửi original_lang, dùng nó; nếu không, dùng main_language của user
+        if original_lang:
+            # Validate language code
+            valid_languages = ['en', 'ko', 'vi', 'zh', 'ja', 'my']
+            if original_lang not in valid_languages:
+                return jsonify({"error": f"Invalid language code: {original_lang}"}), 400
+            final_lang = original_lang
+        else:
+            # Fallback to user's main language
+            final_lang = user.main_language
+
+        # 5. DB 저장
         new_post = Posts(
             board_id=board_id,
             user_id=user.id,
             title=title.strip(),
             content=content.strip(),
-            original_lang=user.main_language, # 작성자의 모국어 자동 저장
+            original_lang=final_lang,  # Sử dụng ngôn ngữ được chọn hoặc main_language
             is_anonymous=is_anonymous
         )
         

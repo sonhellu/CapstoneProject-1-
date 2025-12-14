@@ -28,17 +28,25 @@ class CommunityService {
     required String title,
     required String content,
     bool isAnonymous = false,
+    String? originalLang,
   }) async {
     final headers = await AuthService.getAuthHeaders();
+    
+    final body = {
+      'title': title,
+      'content': content,
+      'is_anonymous': isAnonymous,
+    };
+    
+    // Thêm original_lang nếu được cung cấp
+    if (originalLang != null) {
+      body['original_lang'] = originalLang;
+    }
     
     final response = await ApiService.post(
       ApiConfig.createPostEndpoint(boardId),
       headers: headers,
-      body: {
-        'title': title,
-        'content': content,
-        'is_anonymous': isAnonymous,
-      },
+      body: body,
     );
     
     // Clear cache sau khi tạo post mới
