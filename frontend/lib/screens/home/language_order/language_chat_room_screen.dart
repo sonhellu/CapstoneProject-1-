@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/matching_service.dart';
+import '../../../services/socket_service.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// 언어교류용 1:1 채팅방 (서버 API 연동) - Improved with avatars, better design, and performance
@@ -33,15 +34,155 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeSocket();
     _loadMessages();
-    _startMessageRefresh();
   }
 
   @override
   void dispose() {
+    // Leave conversation room and cleanup
+    SocketService.leaveConversation(widget.conversationId);
+    SocketService.off('new_message');
+    SocketService.off('message_sent');
+    SocketService.off('error');
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  /// Initialize WebSocket connection
+  Future<void> _initializeSocket() async {
+    try {
+      // Connect socket if not connected
+      if (!SocketService.isConnected) {
+        await SocketService.connect();
+      }
+
+      // Join conversation room
+      SocketService.joinConversation(widget.conversationId);
+
+      // Listen to new messages
+      SocketService.onNewMessage((data) {
+        if (mounted) {
+          _handleNewMessage(data);
+        }
+      });
+
+      // Listen to message sent confirmation
+      SocketService.onMessageSent((data) {
+        if (mounted) {
+          _handleMessageSent(data);
+        }
+      });
+
+      // Listen to errors
+      SocketService.onError((data) {
+        if (mounted) {
+          final errorMsg = data['message'] as String? ?? 'Unknown error';
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Socket error: $errorMsg'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      });
+    } catch (e) {
+      print('Socket initialization error: $e');
+      // Fallback to polling if socket fails
+      _startMessageRefresh();
+    }
+  }
+
+  /// Handle new message from socket
+  void _handleNewMessage(Map<String, dynamic> data) {
+    try {
+      final conversationId = data['conversation_id'] as int?;
+      if (conversationId != widget.conversationId) return;
+
+      final messageId = data['id'] as int?;
+      final content = data['content']?.toString() ?? '';
+      final senderUserId = data['sender_user_id'] as int?;
+      final senderNickname = data['sender_nickname']?.toString();
+      final createdAt = data['created_at']?.toString();
+      final isSentByMe = data['is_sent_by_me'] as bool? ?? false;
+
+      if (content.isEmpty) return;
+
+      DateTime? time;
+      if (createdAt != null) {
+        try {
+          time = DateTime.parse(createdAt).toLocal();
+        } catch (e) {
+          time = DateTime.now();
+        }
+      } else {
+        time = DateTime.now();
+      }
+
+      // Check if message already exists (avoid duplicates)
+      final exists = _messages.any((msg) => msg.messageId == messageId);
+      if (exists) return;
+
+      setState(() {
+        _messages.add(
+          _ChatMessage(
+            messageId: messageId,
+            text: content,
+            isMine: isSentByMe,
+            time: time,
+            senderName: senderNickname,
+          ),
+        );
+      });
+
+      // Scroll to bottom
+      if (_scrollController.hasClients) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+        });
+      }
+    } catch (e) {
+      print('Error handling new message: $e');
+    }
+  }
+
+  /// Handle message sent confirmation
+  void _handleMessageSent(Map<String, dynamic> data) {
+    try {
+      final messageId = data['message_id'] as int?;
+      if (messageId == null) return;
+
+      // Find temp message and update with real message ID
+      final tempIndex = _messages.indexWhere(
+        (msg) => msg.messageId == null && msg.isMine,
+      );
+
+      if (tempIndex != -1) {
+        setState(() {
+          _messages[tempIndex] = _ChatMessage(
+            messageId: messageId,
+            text: _messages[tempIndex].text,
+            isMine: true,
+            time: _messages[tempIndex].time,
+            senderName: _messages[tempIndex].senderName,
+          );
+          _isSending = false;
+        });
+      }
+    } catch (e) {
+      print('Error handling message sent: $e');
+      setState(() {
+        _isSending = false;
+      });
+    }
   }
 
   /// Load messages from API
@@ -142,7 +283,7 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
     }
   }
 
-  /// Start auto-refresh messages
+  /// Start auto-refresh messages (fallback if socket fails)
   void _startMessageRefresh() {
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted && !_isSending && !_isLoading) {
@@ -152,7 +293,7 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
     });
   }
 
-  /// Send message via API
+  /// Send message via WebSocket (fallback to API if socket not connected)
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty || _isSending) return;
@@ -186,27 +327,38 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
     }
 
     try {
-      await MatchingService.sendMessage(
-        conversationId: widget.conversationId,
-        content: text,
-      );
+      // Try WebSocket first
+      if (SocketService.isConnected) {
+        SocketService.sendMessage(
+          conversationId: widget.conversationId,
+          content: text,
+        );
+        // Message will be confirmed via socket event
+        // _isSending will be set to false in _handleMessageSent
+      } else {
+        // Fallback to REST API
+        await MatchingService.sendMessage(
+          conversationId: widget.conversationId,
+          content: text,
+        );
 
-      await _loadMessages();
-      
-      setState(() {
-        _isSending = false;
-      });
-      
-      if (_scrollController.hasClients) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_scrollController.hasClients) {
-            _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
-          }
+        await _loadMessages();
+        
+        setState(() {
+          _isSending = false;
         });
+        
+        if (_scrollController.hasClients) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_scrollController.hasClients) {
+              _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            }
+          });
+        }
       }
     } catch (e) {
       setState(() {

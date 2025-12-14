@@ -1,8 +1,11 @@
 from flask import Blueprint, jsonify, request, current_app
+from flask_socketio import emit, join_room, leave_room, disconnect
 from ..models import (db, Users, Departments, 
                        MatchRequests, Matches, Conversations, ConversationParticipants, Messages)
 from ..auth_utils import require_auth
 from sqlalchemy.orm import joinedload
+import jwt
+from datetime import datetime
 
 matching_bp = Blueprint('matching_bp', __name__, url_prefix='/api')
 
@@ -528,3 +531,193 @@ def delete_message(conv_id, message_id):
         db.session.rollback()
         current_app.logger.error(f"Delete message error: {str(e)}", exc_info=True)
         return jsonify({"error": f"Failed to delete message: {str(e)}"}), 500
+
+
+# ==================== WebSocket Events ====================
+
+def authenticate_socket(token):
+    """Authenticate socket connection using JWT token"""
+    try:
+        if not token:
+            return None
+        payload = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
+        user_id = payload.get("user_id")
+        if user_id is None:
+            return None
+        user = Users.query.get(user_id)
+        return user
+    except Exception as e:
+        current_app.logger.error(f"Socket auth error: {str(e)}")
+        return None
+
+
+def register_socket_events(socketio):
+    """Register all socket events for chat functionality"""
+    
+    # Store user sessions: {sid: user_id}
+    user_sessions = {}
+    
+    @socketio.on('connect')
+    def handle_connect(auth):
+        """Handle socket connection with JWT authentication"""
+        try:
+            from flask import request as flask_request
+            
+            token = auth.get('token') if auth else None
+            if not token:
+                current_app.logger.warning("Socket connection rejected: No token")
+                return False
+            
+            user = authenticate_socket(token)
+            if not user:
+                current_app.logger.warning("Socket connection rejected: Invalid token")
+                return False
+            
+            # Store user_id in session using request.sid
+            user_sessions[flask_request.sid] = user.id
+            
+            current_app.logger.info(f"Socket connected: User {user.id} ({user.nickname})")
+            emit('connected', {'user_id': user.id, 'nickname': user.nickname})
+            return True
+        except Exception as e:
+            current_app.logger.error(f"Connect error: {str(e)}")
+            return False
+    
+    @socketio.on('disconnect')
+    def handle_disconnect():
+        """Handle socket disconnection"""
+        try:
+            from flask import request as flask_request
+            user_id = user_sessions.pop(flask_request.sid, None)
+            if user_id:
+                current_app.logger.info(f"Socket disconnected: User {user_id}")
+        except Exception as e:
+            current_app.logger.error(f"Disconnect error: {str(e)}")
+    
+    def get_user_from_session():
+        """Get user from current socket session"""
+        from flask import request as flask_request
+        user_id = user_sessions.get(flask_request.sid)
+        if not user_id:
+            return None
+        return Users.query.get(user_id)
+    
+    @socketio.on('join_conversation')
+    def handle_join_conversation(data):
+        """Join a conversation room"""
+        try:
+            user = get_user_from_session()
+            if not user:
+                emit('error', {'message': 'Authentication required'})
+                return
+            
+            conversation_id = data.get('conversation_id')
+            if not conversation_id:
+                emit('error', {'message': 'conversation_id required'})
+                return
+            
+            # Verify user is a participant
+            participant = ConversationParticipants.query.filter_by(
+                conversation_id=conversation_id,
+                user_id=user.id
+            ).first()
+            
+            if not participant:
+                emit('error', {'message': 'You are not a participant in this conversation'})
+                return
+            
+            room = f"conversation_{conversation_id}"
+            join_room(room)
+            current_app.logger.info(f"User {user.id} joined conversation {conversation_id}")
+            emit('joined', {'conversation_id': conversation_id, 'room': room})
+        except Exception as e:
+            current_app.logger.error(f"Join conversation error: {str(e)}")
+            emit('error', {'message': f'Failed to join conversation: {str(e)}'})
+    
+    @socketio.on('leave_conversation')
+    def handle_leave_conversation(data):
+        """Leave a conversation room"""
+        try:
+            user = get_user_from_session()
+            if not user:
+                return
+            
+            conversation_id = data.get('conversation_id')
+            if not conversation_id:
+                return
+            
+            room = f"conversation_{conversation_id}"
+            leave_room(room)
+            current_app.logger.info(f"User {user.id} left conversation {conversation_id}")
+        except Exception as e:
+            current_app.logger.error(f"Leave conversation error: {str(e)}")
+    
+    @socketio.on('send_message')
+    def handle_send_message(data):
+        """Send a message via WebSocket"""
+        try:
+            user = get_user_from_session()
+            if not user:
+                emit('error', {'message': 'Authentication required'})
+                return
+            
+            conversation_id = data.get('conversation_id')
+            content = data.get('content')
+            
+            if not conversation_id or not content:
+                emit('error', {'message': 'conversation_id and content required'})
+                return
+            
+            if len(content.strip()) == 0:
+                emit('error', {'message': 'content cannot be empty'})
+                return
+            
+            # Verify user is a participant
+            participant = ConversationParticipants.query.filter_by(
+                conversation_id=conversation_id,
+                user_id=user.id
+            ).first()
+            
+            if not participant:
+                emit('error', {'message': 'You are not a participant in this conversation'})
+                return
+            
+            # Create message in database
+            msg = Messages(
+                conversation_id=conversation_id,
+                sender_user_id=user.id,
+                content=content
+            )
+            db.session.add(msg)
+            db.session.commit()
+            
+            # Get sender info
+            avatar_url = f"https://i.pravatar.cc/150?img={user.id}"
+            
+            # Prepare message data
+            message_data = {
+                'id': msg.id,
+                'conversation_id': conversation_id,
+                'sender_user_id': user.id,
+                'sender_nickname': user.nickname,
+                'sender_avatar_url': avatar_url,
+                'content': content,
+                'created_at': msg.created_at.isoformat(),
+                'is_sent_by_me': True
+            }
+            
+            # Emit to all participants in the conversation room
+            room = f"conversation_{conversation_id}"
+            emit('new_message', message_data, room=room)
+            
+            # Also send confirmation to sender
+            emit('message_sent', {
+                'message_id': msg.id,
+                'created_at': msg.created_at.isoformat()
+            })
+            
+            current_app.logger.info(f"Message sent via socket: User {user.id} in conversation {conversation_id}")
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"Send message via socket error: {str(e)}")
+            emit('error', {'message': f'Failed to send message: {str(e)}'})
