@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/news_model.dart';
+import '../services/community_service.dart';
+import '../services/profile_service.dart';
 
 class NewsProvider extends ChangeNotifier {
   List<NewsModel> _allNews = [];
   List<NewsModel> _internationalNews = [];
   List<NewsModel> _nationalNews = [];
-  String _userNationality = 'vietnam'; // Default nationality
+  String _userMainLanguage = 'en'; // Default main language
   bool _isLoading = false;
   String? _error;
 
@@ -13,12 +16,42 @@ class NewsProvider extends ChangeNotifier {
   List<NewsModel> get allNews => _allNews;
   List<NewsModel> get internationalNews => _internationalNews;
   List<NewsModel> get nationalNews => _nationalNews;
-  String get userNationality => _userNationality;
+  String get userMainLanguage => _userMainLanguage;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
   NewsProvider() {
     _loadNews();
+  }
+
+  /// Lấy main_language của user từ SharedPreferences hoặc Profile API
+  Future<String> _getUserMainLanguage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedMainLang = prefs.getString('mainLanguage');
+      
+      if (savedMainLang != null && savedMainLang.isNotEmpty) {
+        return savedMainLang;
+      }
+      
+      // Nếu không có trong SharedPreferences, thử lấy từ Profile API
+      try {
+        final profile = await ProfileService.getMyProfile();
+        if (profile['main_language'] != null) {
+          final mainLang = profile['main_language'].toString();
+          // Lưu vào SharedPreferences để lần sau không cần gọi API
+          await prefs.setString('mainLanguage', mainLang);
+          return mainLang;
+        }
+      } catch (e) {
+        // Ignore if profile API fails
+      }
+      
+      // Fallback to default
+      return 'en';
+    } catch (e) {
+      return 'en';
+    }
   }
 
   Future<void> _loadNews() async {
@@ -27,16 +60,26 @@ class NewsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
+      // Lấy main_language của user
+      _userMainLanguage = await _getUserMainLanguage();
       
-      // Get sample data
-      final fetchedNews = NewsModel.getSampleNews();
+      // Gọi API để lấy tất cả posts (cho International tab)
+      final allPostsData = await CommunityService.getAllPosts(limit: 50);
       
-      // Filter news based on nationality
-      _allNews = fetchedNews;
-      _internationalNews = fetchedNews.where((news) => news.nationality == 'international').toList();
-      _nationalNews = fetchedNews.where((news) => news.nationality == _userNationality).toList();
+      // Gọi API để lấy posts theo main_language (cho Domestic tab)
+      final domesticPostsData = await CommunityService.getAllPosts(
+        limit: 50,
+        originalLang: _userMainLanguage,
+      );
+      
+      // Convert posts thành NewsModel
+      final allNews = allPostsData.map((post) => NewsModel.fromPostData(post)).toList();
+      final domesticNews = domesticPostsData.map((post) => NewsModel.fromPostData(post)).toList();
+      
+      // Assign to lists
+      _allNews = allNews;
+      _internationalNews = allNews; // Tất cả posts cho International tab
+      _nationalNews = domesticNews; // Posts theo main_language cho Domestic tab
       
       // Sort by publish date (newest first)
       _internationalNews.sort((a, b) => b.publishDate.compareTo(a.publishDate));
@@ -44,26 +87,52 @@ class NewsProvider extends ChangeNotifier {
       
     } catch (e) {
       _error = 'Failed to load news: ${e.toString()}';
+      // Fallback to sample data nếu API fails
+      try {
+        final fetchedNews = NewsModel.getSampleNews();
+        _allNews = fetchedNews;
+        _internationalNews = fetchedNews.where((news) => news.nationality == 'international').toList();
+        
+        // Map main_language sang nationality để filter
+        final langToNationality = {
+          'ko': 'korea',
+          'vi': 'vietnam',
+          'zh': 'china',
+          'ja': 'japan',
+          'my': 'myanmar',
+        };
+        final userNationality = langToNationality[_userMainLanguage] ?? 'vietnam';
+        _nationalNews = fetchedNews.where((news) => news.nationality == userNationality).toList();
+        
+        _internationalNews.sort((a, b) => b.publishDate.compareTo(a.publishDate));
+        _nationalNews.sort((a, b) => b.publishDate.compareTo(a.publishDate));
+      } catch (fallbackError) {
+        // If both fail, leave empty lists
+      }
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  void setUserNationality(String nationality) {
-    if (_userNationality != nationality) {
-      _userNationality = nationality;
-      _filterNews();
-      notifyListeners();
+  /// Cập nhật main_language và reload news
+  Future<void> setUserMainLanguage(String mainLanguage) async {
+    if (_userMainLanguage != mainLanguage) {
+      _userMainLanguage = mainLanguage;
+      
+      // Lưu vào SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('mainLanguage', mainLanguage);
+      
+      // Reload news với language mới
+      await _loadNews();
     }
   }
 
-  void _filterNews() {
-    _nationalNews = _allNews.where((news) => news.nationality == _userNationality).toList();
-    _nationalNews.sort((a, b) => b.publishDate.compareTo(a.publishDate));
-  }
-
+  /// Refresh news (reload từ API)
   Future<void> refreshNews() async {
+    // Reload main_language trước khi load news
+    _userMainLanguage = await _getUserMainLanguage();
     await _loadNews();
   }
 
@@ -85,7 +154,6 @@ class NewsProvider extends ChangeNotifier {
         isPinned: _allNews[newsIndex].isPinned,
         category: _allNews[newsIndex].category,
       );
-      _filterNews();
       notifyListeners();
     }
   }
@@ -108,7 +176,6 @@ class NewsProvider extends ChangeNotifier {
         isPinned: _allNews[newsIndex].isPinned,
         category: _allNews[newsIndex].category,
       );
-      _filterNews();
       notifyListeners();
     }
   }
@@ -131,3 +198,4 @@ class NewsProvider extends ChangeNotifier {
     ).toList();
   }
 }
+

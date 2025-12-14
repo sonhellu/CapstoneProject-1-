@@ -48,6 +48,67 @@ class NewsModel {
     );
   }
 
+  /// Factory method để convert từ post data (community posts)
+  factory NewsModel.fromPostData(Map<String, dynamic> postData) {
+    // Xử lý author
+    String authorName = 'Unknown';
+    if (postData['author'] != null) {
+      if (postData['author'] is Map) {
+        authorName = postData['author']['nickname'] ?? 'Unknown';
+      } else if (postData['author'] is String) {
+        authorName = postData['author'];
+      }
+    }
+    
+    // Xử lý created_at
+    DateTime publishDate = DateTime.now();
+    if (postData['created_at'] != null) {
+      try {
+        publishDate = DateTime.parse(postData['created_at']);
+      } catch (e) {
+        publishDate = DateTime.now();
+      }
+    }
+    
+    // Xử lý board_name làm category
+    String category = postData['board_name'] ?? 'General';
+    
+    // Xác định nationality dựa vào original_lang
+    String originalLang = postData['original_lang']?.toString().toLowerCase() ?? '';
+    String nationality = 'international';
+    
+    // Map original_lang sang nationality
+    final langToNationality = {
+      'ko': 'korea',
+      'vi': 'vietnam',
+      'zh': 'china',
+      'ja': 'japan',
+      'my': 'myanmar',
+      'en': 'international',
+    };
+    
+    nationality = langToNationality[originalLang] ?? 'international';
+    
+    // Default image (có thể cải thiện sau bằng cách thêm image vào posts)
+    String imageUrl = 'https://picsum.photos/400/300?random=${postData['id'] ?? 1}';
+    
+    return NewsModel(
+      id: postData['id'].toString(),
+      title: postData['title'] ?? 'No Title',
+      content: postData['content'] ?? '',
+      imageUrl: imageUrl,
+      nationality: nationality,
+      publishDate: publishDate,
+      author: authorName,
+      views: 0, // Posts model không có view_count, có thể thêm sau
+      likes: postData['like_count'] ?? 0,
+      comments: postData['comment_count'] ?? 0,
+      tags: [], // Có thể thêm tags sau
+      isPinned: false,
+      category: category,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -67,6 +67,28 @@ class CommunityService {
     );
   }
   
+  /// Lấy tất cả bài viết từ tất cả boards (cho News Tab)
+  static Future<List<dynamic>> getAllPosts({
+    int limit = 50,
+    String? originalLang,
+    bool useCache = true,
+  }) async {
+    String endpoint = '${ApiConfig.allPostsEndpoint}?limit=$limit';
+    if (originalLang != null && originalLang.isNotEmpty) {
+      endpoint += '&original_lang=$originalLang';
+    }
+    
+    final response = await ApiService.get(endpoint, useCache: useCache);
+    
+    if (response is List) {
+      return response;
+    } else if (response is Map && response.containsKey('data')) {
+      return response['data'] as List;
+    }
+    
+    return [];
+  }
+  
   /// Xóa bài viết
   static Future<Map<String, dynamic>> deletePost({
     required int postId,

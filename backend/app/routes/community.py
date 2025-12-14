@@ -245,6 +245,72 @@ def create_post(board_id):
         return jsonify({"error": f"Failed to create post: {str(e)}"}), 500
 
 
+@community_bp.route("/posts/all", methods=["GET"])
+def get_all_posts():
+    """
+    모든 게시판의 모든 글 목록 조회 API (News Tab용)
+    
+    [Query Parameters]
+    - limit: 가져올 게시글의 개수 (기본값: 50)
+    - original_lang: 필터링할 언어 코드 (선택적, 예: 'ko', 'en', 'vi')
+    
+    [사용 예시]
+    GET /api/posts/all?limit=50
+    GET /api/posts/all?limit=50&original_lang=vi
+    """
+    try:
+        # 1. 쿼리 파라미터 받기 (limit, original_lang)
+        try:
+            limit = request.args.get('limit', default=50, type=int)
+            if limit < 1 or limit > 200:
+                limit = 50
+        except (ValueError, TypeError):
+            limit = 50
+        
+        original_lang = request.args.get('original_lang', type=str)
+        
+        # 2. DB 조회 - 모든 게시판의 글을 작성일(created_at) 역순(최신순)으로 정렬
+        query = Posts.query
+        
+        # Filter theo original_lang nếu có
+        if original_lang:
+            query = query.filter_by(original_lang=original_lang)
+        
+        posts = query.order_by(Posts.created_at.desc()).limit(limit).all()
+        
+        # 3. 데이터 직렬화 (JSON 변환) 및 가공
+        result = []
+        for post in posts:
+            try:
+                post_data = post_schema.dump(post)
+                
+                # (1) 익명 처리 로직
+                if post.is_anonymous:
+                    post_data['author'] = {"nickname": "익명"}
+                    post_data['user_id'] = None
+                
+                # (2) 미리보기(Preview) 텍스트 생성
+                if len(post_data.get('content', '')) > 100:
+                    post_data['preview'] = post_data['content'][:100] + "..."
+                else:
+                    post_data['preview'] = post_data.get('content', '')
+                
+                # (3) 게시판 정보 추가 (board_name)
+                board = Boards.query.get(post.board_id)
+                if board:
+                    post_data['board_name'] = board.board_name
+                
+                result.append(post_data)
+            except Exception as e:
+                current_app.logger.error(f"Error serializing post {post.id}: {str(e)}")
+                continue
+
+        return jsonify(result), 200
+    except Exception as e:
+        current_app.logger.error(f"Get all posts error: {str(e)}", exc_info=True)
+        return jsonify({"error": f"Failed to get all posts: {str(e)}"}), 500
+
+
 @community_bp.route("/posts/<int:post_id>", methods=["DELETE", "OPTIONS"])
 @require_auth
 def delete_post(post_id):
