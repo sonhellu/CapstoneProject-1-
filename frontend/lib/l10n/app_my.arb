@@ -173,11 +173,37 @@
       }
     }
   },
+  "today": "ယနေ့",
+  "yesterday": "မနေ့က",
+  "minutesShort": "မိနစ်",
+  "hoursShort": "နာရီ",
+  "daysShort": "ရက်",
+  "hoursAgo": "{count} နာရီ အကြာက",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} ရက် အကြာက",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "startConversation": "စကားပြောဆိုမှု စတင်ပါ!",
   "translated": "ဘာသာပြန်ပြီး",
   "validStudentEmail": "မှန်ကန်သော ကျောင်းသားအီးမေးလ် သုံးပါ (@stu)",
   "pleaseConfirmPassword": "စကားဝှက်ကို အတည်ပြုပါ",
   "mainLanguage": "အဓိက ဘာသာစကား",
+  "selectLanguageToLearn": "သင်ယူလိုသော ဘာသာစကား (နိုင်ငံ) ကို ရွေးချယ်ပါ",
+  "selectLanguageToLearnRequired": "သင်ယူလိုသော ဘာသာစကား (နိုင်ငံ) ကို ရွေးချယ်ပေးပါ",
+  "preferredGender": "ကြိုက်နှစ်သက်သော လိင်",
+  "college": "ကောလိပ်",
+  "selectLanguageGenderCollege": "သင်ယူလိုသော ဘာသာစကား (နိုင်ငံ)၊ လိင် နှင့် ကောလိပ်ကို ရွေးချယ်ပါ",
   "latestNoticeTitle": "ကျောင်းဖွင့်ခြင်းနှင့် ပညာရေးအစီအစဉ် အကြောင်းကြားချက်",
   "latestFreeTitle": "စာမေးပွဲပြီးပြီ! စနေနေ့မှာ ဘာလုပ်မလဲ?",
   "latestInfoTitle": "၂၀၂၅ လဲလှယ်ကျောင်းသား စုဆောင်းမှု အချက်အလက်",
@@ -192,5 +218,28 @@
   "freeBoard": "လွတ်လပ်သော",
   "infoBoard": "အချက်အလက်",
   "promoBoard": "ကြော်ငြာ",
-  "shareYourThoughts": "သင့်အတွေးများကို မျှဝေပါ"
+  "shareYourThoughts": "သင့်အတွေးများကို မျှဝေပါ",
+  "noNewsYet": "သတင်းမရှိသေးပါ",
+  "errorChangingLanguage": "ဘာသာစကား ပြောင်းလဲရာတွင် အမှားအယွင်း",
+  "cannotOpenWebsite": "ဝက်ဘ်ဆိုက်ကို ဖွင့်၍မရပါ",
+  "updating": "အပ်ဒိတ်လုပ်နေသည်...",
+  "confirm": "အတည်ပြုပါ",
+  "internationalNews": "နိုင်ငံတကာ သတင်း",
+  "domesticNews": "ပြည်တွင်း သတင်း",
+  "noNewsAvailable": "သတင်းမရှိပါ",
+  "noResultsFound": "ရလဒ်မတွေ့ပါ",
+  "tryDifferentKeywords": "မတူညီသော သော့ချက်စကားလုံးများဖြင့် ရှာဖွေကြည့်ပါ",
+  "failedToLoadNews": "သတင်းများ ဖွင့်၍မရပါ",
+  "cannotConnectToServer": "ဆာဗာသို့ ချိတ်ဆက်၍မရပါ",
+  "pleaseCheckNetworkConnection": "သင့်ကွန်ရက်ချိတ်ဆက်မှုကို စစ်ဆေးပါ",
+  "connectionTimeout": "ချိတ်ဆက်မှု အချိန်ကုန်သွားပါပြီ",
+  "serverMayBeStarting": "ဆာဗာသည် စတင်နေနိုင်သည်",
+  "pleaseTryAgainInFewMinutes": "မိနစ်အနည်းငယ်ကြာပြီးနောက် ထပ်စမ်းကြည့်ပါ",
+  "serverError": "ဆာဗာ အမှား။ နောက်မှ ထပ်စမ်းကြည့်ပါ",
+  "unknownError": "မသိသော အမှား",
+  "switchedToDarkMode": "အနက်ရောင် မုဒ်သို့ ပြောင်းလဲပြီးပါပြီ",
+  "switchedToLightMode": "အဖြူရောင် မုဒ်သို့ ပြောင်းလဲပြီးပါပြီ",
+  "switchToDarkMode": "အနက်ရောင် မုဒ်သို့ ပြောင်းလဲပါ",
+  "switchToLightMode": "အဖြူရောင် မုဒ်သို့ ပြောင်းလဲပါ",
+  "published": "ထုတ်ပြန်ပြီး"
 }

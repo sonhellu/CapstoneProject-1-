@@ -3,6 +3,8 @@ import '../home/language_order/language_chat_room_screen.dart';
 import '../../models/language_chat_room.dart';
 import '../../models/language_chat_history.dart';
 import '../../services/matching_service.dart';
+import '../../l10n/app_localizations.dart';
+import '../../utils/date_time_utils.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -138,7 +140,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Đang tải cuộc trò chuyện...',
+                            AppLocalizations.of(context).loadingConversations,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.onSurface.withOpacity(0.6),
                             ),
@@ -216,20 +218,22 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       
       // Success - show notification
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đã xóa cuộc trò chuyện'),
+          SnackBar(
+            content: Text(l10n.conversationDeleted),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
     } catch (e) {
       print('Error deleting conversation: $e');
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Không thể xóa cuộc trò chuyện: ${e.toString()}'),
+            content: Text('${l10n.cannotDeleteConversation}: ${e.toString()}'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -252,12 +256,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           color: Colors.red[600],
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Text(
-              'Xóa',
-              style: TextStyle(
+              AppLocalizations.of(context).deleteMessage.split(' ').first,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -273,22 +277,23 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         ),
       ),
       confirmDismiss: (direction) async {
+        final l10n = AppLocalizations.of(context);
         final confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Xóa cuộc trò chuyện'),
+            title: Text(l10n.deleteConversation),
             content: Text(
-              'Bạn có chắc chắn muốn xóa cuộc trò chuyện với ${conversation.partnerName}?',
+              l10n.deleteConversationConfirm(conversation.partnerName),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Hủy'),
+                child: Text(l10n.cancel),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
                 style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text('Xóa'),
+                child: Text(l10n.deleteMessage.split(' ').first), // "Delete" or "Xóa"
               ),
             ],
           ),
@@ -500,6 +505,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildEmptyState(ThemeData theme, bool isDark) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -511,7 +517,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 24),
           Text(
-            'Chưa có cuộc trò chuyện nào',
+            l10n.noConversationsYet,
             style: theme.textTheme.titleLarge?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.7),
               fontWeight: FontWeight.w500,
@@ -521,7 +527,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
-              'Bắt đầu tìm bạn học ngôn ngữ để nhắn tin',
+              l10n.startFindingLanguagePartner,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withOpacity(0.5),
               ),
@@ -555,20 +561,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   String _formatTime(DateTime timestamp) {
-    final now = DateTime.now();
-    final difference = now.difference(timestamp);
-    
-    if (difference.inMinutes < 1) {
-      return 'Just now';
-    } else if (difference.inHours < 1) {
-      return '${difference.inMinutes}m';
-    } else if (difference.inDays < 1) {
-      return '${difference.inHours}h';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}d';
-    } else {
-      return '${timestamp.day}/${timestamp.month}';
-    }
+    return DateTimeUtils.formatChatTime(context, timestamp);
   }
 }
 

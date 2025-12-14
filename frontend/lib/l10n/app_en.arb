@@ -143,6 +143,27 @@
       }
     }
   },
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "minutesShort": "m",
+  "hoursShort": "h",
+  "daysShort": "d",
+  "hoursAgo": "{count} hours ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "startConversation": "Start the conversation!",
   "translated": "Translated",
   "validStudentEmail": "Please use a valid student email (@stu)",
@@ -170,5 +191,28 @@
   "freeBoard": "Free Board",
   "infoBoard": "Info Board",
   "promoBoard": "Promo Board",
-  "shareYourThoughts": "Share your thoughts"
+  "shareYourThoughts": "Share your thoughts",
+  "noNewsYet": "No news yet",
+  "errorChangingLanguage": "Error changing language",
+  "cannotOpenWebsite": "Cannot open website",
+  "updating": "Updating...",
+  "confirm": "Confirm",
+  "internationalNews": "International News",
+  "domesticNews": "Domestic News",
+  "noNewsAvailable": "No news available",
+  "noResultsFound": "No results found",
+  "tryDifferentKeywords": "Try different keywords",
+  "failedToLoadNews": "Failed to load news",
+  "cannotConnectToServer": "Cannot connect to server",
+  "pleaseCheckNetworkConnection": "Please check your network connection",
+  "connectionTimeout": "Connection timeout",
+  "serverMayBeStarting": "Server may be starting up",
+  "pleaseTryAgainInFewMinutes": "Please try again in a few minutes",
+  "serverError": "Server error. Please try again later",
+  "unknownError": "Unknown error",
+  "switchedToDarkMode": "Switched to Dark Mode",
+  "switchedToLightMode": "Switched to Light Mode",
+  "switchToDarkMode": "Switch to Dark Mode",
+  "switchToLightMode": "Switch to Light Mode",
+  "published": "Published"
 }

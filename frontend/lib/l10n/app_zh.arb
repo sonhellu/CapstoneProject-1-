@@ -173,11 +173,37 @@
       }
     }
   },
+  "today": "今天",
+  "yesterday": "昨天",
+  "minutesShort": "分钟",
+  "hoursShort": "小时",
+  "daysShort": "天",
+  "hoursAgo": "{count}小时前",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count}天前",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "startConversation": "开始对话！",
   "translated": "已翻译",
   "validStudentEmail": "请使用有效的学生邮箱 (@stu)",
   "pleaseConfirmPassword": "请确认您的密码",
   "mainLanguage": "主要语言",
+  "selectLanguageToLearn": "选择您想学习的语言（国家）",
+  "selectLanguageToLearnRequired": "请选择您想学习的语言（国家）",
+  "preferredGender": "首选性别",
+  "college": "学院",
+  "selectLanguageGenderCollege": "选择您想学习的语言（国家）、性别和学院",
   "latestNoticeTitle": "开学及教务日程通知",
   "latestFreeTitle": "考试结束了！这个星期六你做什么？",
   "latestInfoTitle": "2025交换生招募信息",
@@ -192,5 +218,28 @@
   "freeBoard": "自由板",
   "infoBoard": "信息板",
   "promoBoard": "宣传板",
-  "shareYourThoughts": "分享您的想法"
+  "shareYourThoughts": "分享您的想法",
+  "noNewsYet": "暂无新闻",
+  "errorChangingLanguage": "更改语言时出错",
+  "cannotOpenWebsite": "无法打开网站",
+  "updating": "更新中...",
+  "confirm": "确认",
+  "internationalNews": "国际新闻",
+  "domesticNews": "国内新闻",
+  "noNewsAvailable": "暂无新闻",
+  "noResultsFound": "未找到结果",
+  "tryDifferentKeywords": "尝试使用不同的关键词",
+  "failedToLoadNews": "无法加载新闻",
+  "cannotConnectToServer": "无法连接到服务器",
+  "pleaseCheckNetworkConnection": "请检查您的网络连接",
+  "connectionTimeout": "连接超时",
+  "serverMayBeStarting": "服务器可能正在启动",
+  "pleaseTryAgainInFewMinutes": "请几分钟后再试",
+  "serverError": "服务器错误。请稍后再试",
+  "unknownError": "未知错误",
+  "switchedToDarkMode": "已切换到深色模式",
+  "switchedToLightMode": "已切换到浅色模式",
+  "switchToDarkMode": "切换到深色模式",
+  "switchToLightMode": "切换到浅色模式",
+  "published": "已发布"
 }

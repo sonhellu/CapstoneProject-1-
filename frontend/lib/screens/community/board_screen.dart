@@ -5,6 +5,7 @@ import '../../models/board_post.dart';
 import '../../services/community_service.dart';
 import '../../services/api_service.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/date_time_utils.dart';
 import 'board_detail_screen.dart';
 import 'board_write_screen.dart';
 
@@ -565,7 +566,7 @@ class _BoardCard extends StatelessWidget {
                             size: 14, color: Colors.redAccent),
                         const SizedBox(width: 4),
                         Text(
-                          _formatTime(post.createdAt),
+                          _formatTime(context, post.createdAt),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
@@ -603,11 +604,8 @@ class _BoardCard extends StatelessWidget {
   }
 }
 
-String _formatTime(DateTime t) {
-  final diff = DateTime.now().difference(t);
-  if (diff.inMinutes < 60) return '${diff.inMinutes}분 전';
-  if (diff.inHours < 24) return '${diff.inHours}시간 전';
-  return '${diff.inDays}일 전';
+String _formatTime(BuildContext context, DateTime t) {
+  return DateTimeUtils.formatChatTime(context, t);
 }
 
 class _BoardSearchDelegate extends SearchDelegate<BoardPost?> {

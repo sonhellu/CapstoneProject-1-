@@ -44,13 +44,18 @@ class BoardSection extends StatelessWidget {
           // ─ 헤더: "게시판" ─
           Row(
             children: [
-              const Icon(Icons.chat_bubble_outline, size: 26),
+              Icon(
+                Icons.chat_bubble_outline, 
+                size: 26,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
               const SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context).board,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black87,
                 ),
               ),
             ],
@@ -65,6 +70,7 @@ class BoardSection extends StatelessWidget {
                 icon: Icons.campaign_outlined,
                 title: AppLocalizations.of(context).noticeBoard,
                 subtitle: latestTitles[BoardCategory.notice] ?? AppLocalizations.of(context).noPostsYet,
+                isDark: isDark,
             onTap: () {
               Navigator.push(
                 context,
@@ -88,6 +94,7 @@ class BoardSection extends StatelessWidget {
                 icon: Icons.chat_bubble_outline,
                 title: AppLocalizations.of(context).freeBoard,
                 subtitle: latestTitles[BoardCategory.free] ?? AppLocalizations.of(context).noPostsYet,
+                isDark: isDark,
             onTap: () {
               Navigator.push(
                 context,
@@ -111,6 +118,7 @@ class BoardSection extends StatelessWidget {
                 icon: Icons.info_outline,
                 title: AppLocalizations.of(context).infoBoard,
                 subtitle: latestTitles[BoardCategory.info] ?? AppLocalizations.of(context).noPostsYet,
+                isDark: isDark,
             onTap: () {
               Navigator.push(
                 context,
@@ -134,6 +142,7 @@ class BoardSection extends StatelessWidget {
                 icon: Icons.campaign,
                 title: AppLocalizations.of(context).promoBoard,
                 subtitle: latestTitles[BoardCategory.promo] ?? AppLocalizations.of(context).noPostsYet,
+                isDark: isDark,
             onTap: () {
               Navigator.push(
                 context,
@@ -159,12 +168,14 @@ class _BoardPreviewCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final bool isDark;
 
   const _BoardPreviewCard({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
+    required this.isDark,
   });
 
   @override
@@ -177,11 +188,13 @@ class _BoardPreviewCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: isDark 
+                    ? Colors.black.withOpacity(0.3)
+                    : Colors.black.withOpacity(0.03),
                 blurRadius: 8,
                 offset: const Offset(0, 3),
               ),
@@ -217,9 +230,10 @@ class _BoardPreviewCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -229,7 +243,7 @@ class _BoardPreviewCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade600,
+                        color: isDark ? Colors.white60 : Colors.grey.shade600,
                       ),
                     ),
                   ],
@@ -237,9 +251,9 @@ class _BoardPreviewCard extends StatelessWidget {
               ),
 
               const SizedBox(width: 8),
-              const Icon(
+              Icon(
                 Icons.chevron_right,
-                color: Colors.grey,
+                color: isDark ? Colors.white60 : Colors.grey,
               ),
             ],
           ),

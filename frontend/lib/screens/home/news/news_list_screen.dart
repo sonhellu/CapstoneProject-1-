@@ -4,6 +4,7 @@ import '../../../models/news_model.dart';
 import '../../../providers/news_provider.dart';
 import '../../../constants/app_constants.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../utils/date_time_utils.dart';
 import 'news_detail_screen.dart';
 
 class NewsListScreen extends StatefulWidget {
@@ -61,6 +62,15 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
     super.dispose();
   }
 
+  String _getLocalizedError(String error) {
+    if (error.startsWith('failedToLoadNews:')) {
+      final details = error.substring('failedToLoadNews:'.length);
+      return '${AppLocalizations.of(context).failedToLoadNews}: $details';
+    }
+    // Fallback for other errors
+    return error;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,7 +79,9 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
         backgroundColor: AppConstants.primaryColor,
         elevation: 0,
         title: Text(
-          widget.type == 'international' ? 'Tin tức quốc tế' : 'Tin tức trong nước',
+          widget.type == 'international' 
+              ? AppLocalizations.of(context).internationalNews 
+              : AppLocalizations.of(context).domesticNews,
           style: const TextStyle(
             color: Colors.white,
             fontWeight: AppConstants.fontWeightSemiBold,
@@ -129,7 +141,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Tìm kiếm tin tức...',
+                hintText: AppLocalizations.of(context).searchNews,
                 hintStyle: TextStyle(
                   color: widget.isDark ? Colors.white60 : Colors.grey[600],
                 ),
@@ -194,7 +206,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  newsProvider.error!,
+                  _getLocalizedError(newsProvider.error!),
                   style: const TextStyle(color: Colors.red),
                   textAlign: TextAlign.center,
                 ),
@@ -230,7 +242,9 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _searchQuery.isEmpty ? 'No news available' : 'No results found',
+                  _searchQuery.isEmpty 
+                      ? AppLocalizations.of(context).noNewsAvailable 
+                      : AppLocalizations.of(context).noResultsFound,
                   style: TextStyle(
                     color: widget.isDark ? Colors.white54 : Colors.grey[600],
                     fontSize: AppConstants.fontSizeL,
@@ -239,7 +253,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
                 if (_searchQuery.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(
-                    'Thử tìm kiếm với từ khóa khác',
+                    AppLocalizations.of(context).tryDifferentKeywords,
                     style: TextStyle(
                       color: widget.isDark ? Colors.white38 : Colors.grey[500],
                       fontSize: AppConstants.fontSizeM,
@@ -375,7 +389,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
         
         // Time ago
         Text(
-          news.timeAgo,
+          DateTimeUtils.formatTimeAgo(context, news.publishDate),
           style: TextStyle(
             fontSize: AppConstants.fontSizeS,
             color: widget.isDark ? Colors.white60 : Colors.grey[600],

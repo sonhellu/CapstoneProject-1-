@@ -64,6 +64,11 @@ class ProfileService {
       headers: ApiConfig.headersWithAuth(token),
     );
     
+    // Clear school translation cache if school was changed
+    if (schoolId != null) {
+      ApiService.clearCacheEntry(ApiConfig.schoolTranslationEndpoint);
+    }
+    
     // Update local SharedPreferences after successful update
     if (response['nickname'] != null) {
       final prefs = await SharedPreferences.getInstance();

@@ -46,7 +46,11 @@ class _MainAppState extends State<MainApp> {
   Future<void> _loadAppState() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final savedLanguage = prefs.getString('language') ?? 'en';
+      
+      // Ưu tiên dùng main_language từ profile, nếu không có thì dùng language
+      String savedLanguage = prefs.getString('mainLanguage') ?? 
+                            prefs.getString('language') ?? 
+                            'en';
       
       // Bypass authentication nếu flag được bật
       final isLoggedIn = BYPASS_AUTH ? true : (prefs.getBool('isLoggedIn') ?? false);
@@ -82,7 +86,9 @@ class _MainAppState extends State<MainApp> {
     if (_locale.languageCode == languageCode) return;
     
     final prefs = await SharedPreferences.getInstance();
+    // Sync both language and mainLanguage
     await prefs.setString('language', languageCode);
+    await prefs.setString('mainLanguage', languageCode);
     
     if (mounted) {
       setState(() {

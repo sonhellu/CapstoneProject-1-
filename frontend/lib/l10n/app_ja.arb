@@ -173,11 +173,37 @@
       }
     }
   },
+  "today": "今日",
+  "yesterday": "昨日",
+  "minutesShort": "分",
+  "hoursShort": "時間",
+  "daysShort": "日",
+  "hoursAgo": "{count}時間前",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count}日前",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "startConversation": "会話を始めましょう！",
   "translated": "翻訳済み",
   "validStudentEmail": "有効な学生メールを使用してください (@stu)",
   "pleaseConfirmPassword": "パスワードを確認してください",
   "mainLanguage": "主要言語",
+  "selectLanguageToLearn": "学習したい言語（国）を選択",
+  "selectLanguageToLearnRequired": "学習したい言語（国）を選択してください",
+  "preferredGender": "希望する性別",
+  "college": "学部",
+  "selectLanguageGenderCollege": "学習したい言語（国）、性別、学部を選択してください",
   "latestNoticeTitle": "開講および学務スケジュールのお知らせ",
   "latestFreeTitle": "試験終了！土曜日は何をしますか？",
   "latestInfoTitle": "2025交換留学生募集情報",
@@ -192,5 +218,28 @@
   "freeBoard": "自由掲示板",
   "infoBoard": "情報掲示板",
   "promoBoard": "宣伝掲示板",
-  "shareYourThoughts": "意見を共有してください"
+  "shareYourThoughts": "意見を共有してください",
+  "noNewsYet": "ニュースがありません",
+  "errorChangingLanguage": "言語の変更中にエラーが発生しました",
+  "cannotOpenWebsite": "ウェブサイトを開けません",
+  "updating": "更新中...",
+  "confirm": "確認",
+  "internationalNews": "国際ニュース",
+  "domesticNews": "国内ニュース",
+  "noNewsAvailable": "ニュースがありません",
+  "noResultsFound": "結果が見つかりません",
+  "tryDifferentKeywords": "別のキーワードで検索してみてください",
+  "failedToLoadNews": "ニュースを読み込めませんでした",
+  "cannotConnectToServer": "サーバーに接続できません",
+  "pleaseCheckNetworkConnection": "ネットワーク接続を確認してください",
+  "connectionTimeout": "接続タイムアウト",
+  "serverMayBeStarting": "サーバーが起動中かもしれません",
+  "pleaseTryAgainInFewMinutes": "数分後にもう一度お試しください",
+  "serverError": "サーバーエラー。後でもう一度お試しください",
+  "unknownError": "不明なエラー",
+  "switchedToDarkMode": "ダークモードに切り替えました",
+  "switchedToLightMode": "ライトモードに切り替えました",
+  "switchToDarkMode": "ダークモードに切り替え",
+  "switchToLightMode": "ライトモードに切り替え",
+  "published": "公開済み"
 }

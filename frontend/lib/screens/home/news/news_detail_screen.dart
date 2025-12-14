@@ -4,6 +4,7 @@ import '../../../models/news_model.dart';
 import '../../../providers/news_provider.dart';
 import '../../../constants/app_constants.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../utils/date_time_utils.dart';
 import '../../../services/translation_service.dart';
 
 class NewsDetailScreen extends StatefulWidget {
@@ -373,7 +374,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
         ),
         const SizedBox(width: 4),
         Text(
-          widget.news.timeAgo,
+          DateTimeUtils.formatTimeAgo(context, widget.news.publishDate),
           style: TextStyle(
             fontSize: AppConstants.fontSizeM,
             color: isDark ? Colors.white70 : Colors.grey[600],

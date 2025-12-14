@@ -73,10 +73,17 @@ class CommunityService {
     String? originalLang,
     bool useCache = true,
   }) async {
-    String endpoint = '${ApiConfig.allPostsEndpoint}?limit=$limit';
+    // Tạo endpoint với đầy đủ query parameters
+    final uri = Uri.parse(ApiConfig.getFullUrl(ApiConfig.allPostsEndpoint));
+    final queryParams = <String, String>{
+      'limit': limit.toString(),
+    };
     if (originalLang != null && originalLang.isNotEmpty) {
-      endpoint += '&original_lang=$originalLang';
+      queryParams['original_lang'] = originalLang;
     }
+    
+    final finalUri = uri.replace(queryParameters: queryParams);
+    final endpoint = finalUri.toString().replaceFirst(ApiConfig.baseUrl, '');
     
     final response = await ApiService.get(endpoint, useCache: useCache);
     

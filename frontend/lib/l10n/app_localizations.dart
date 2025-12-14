@@ -76,7 +76,13 @@ class AppLocalizations {
     'recentActivity': 'Recent Activity',
     'welcomeToHelloCampus': 'Welcome to Hello Campus!',
     'accountCreatedSuccessfully': 'Your account has been created successfully. Start exploring your campus!',
-    'hoursAgo': 'hours ago',
+    'hoursAgo': '{count} hours ago',
+    'daysAgo': '{count} days ago',
+    'today': 'Today',
+    'yesterday': 'Yesterday',
+    'minutesShort': 'm',
+    'hoursShort': 'h',
+    'daysShort': 'd',
     'news': 'News',
     'international': 'International',
     'domestic': 'Domestic',
@@ -156,6 +162,11 @@ class AppLocalizations {
     'reviewAndComplete': 'Review & Complete',
     'realName': 'Real Name',
     'completeRegistration': 'Complete Registration',
+    'mainLanguage': 'Main Language',
+    'selectLanguageToLearn': 'Select the language (country) you want to learn',
+    'selectLanguageToLearnRequired': 'Please select the language (country) you want to learn',
+    'preferredGender': 'Preferred Gender',
+    'selectLanguageGenderCollege': 'Select the language (country), gender, and college you want to learn',
     'deletePost': 'Delete Post',
     'deletePostConfirm': 'Are you sure you want to delete this post?',
     'postDeleted': 'Post deleted successfully',
@@ -167,6 +178,28 @@ class AppLocalizations {
     'latestPromoTitle': 'Club Promotion – New Member Recruitment',
     'postLabel': 'Post',
     'shareYourThoughts': 'Share your thoughts',
+    'noNewsYet': 'No news yet',
+    'errorChangingLanguage': 'Error changing language',
+    'cannotOpenWebsite': 'Cannot open website',
+    'updating': 'Updating...',
+    'confirm': 'Confirm',
+    'internationalNews': 'International News',
+    'domesticNews': 'Domestic News',
+    'noNewsAvailable': 'No news available',
+    'noResultsFound': 'No results found',
+    'tryDifferentKeywords': 'Try different keywords',
+    'failedToLoadNews': 'Failed to load news',
+    'cannotConnectToServer': 'Cannot connect to server',
+    'pleaseCheckNetworkConnection': 'Please check your network connection',
+    'connectionTimeout': 'Connection timeout',
+    'serverMayBeStarting': 'Server may be starting up',
+    'pleaseTryAgainInFewMinutes': 'Please try again in a few minutes',
+    'serverError': 'Server error. Please try again later',
+    'unknownError': 'Unknown error',
+    'switchedToDarkMode': 'Switched to Dark Mode',
+    'switchedToLightMode': 'Switched to Light Mode',
+    'switchToDarkMode': 'Switch to Dark Mode',
+    'switchToLightMode': 'Switch to Light Mode',
   };
   
   // Korean translations
@@ -217,7 +250,13 @@ class AppLocalizations {
     'recentActivity': '최근 활동',
     'welcomeToHelloCampus': 'Hello Campus에 오신 것을 환영합니다!',
     'accountCreatedSuccessfully': '계정이 성공적으로 생성되었습니다. 캠퍼스를 탐험해보세요!',
-    'hoursAgo': '시간 전',
+    'hoursAgo': '{count}시간 전',
+    'daysAgo': '{count}일 전',
+    'today': '오늘',
+    'yesterday': '어제',
+    'minutesShort': '분',
+    'hoursShort': '시간',
+    'daysShort': '일',
     'news': '뉴스',
     'international': '국제',
     'domestic': '국내',
@@ -306,8 +345,36 @@ class AppLocalizations {
     'latestFreeTitle': '시험 끝! 토요일에 뭐 하세요?',
     'latestInfoTitle': '2025 교환학생 모집 정보 공유',
     'latestPromoTitle': '동아리 홍보 – ○○ 동아리 신입 모집',
+    'mainLanguage': '주 언어',
+    'selectLanguageToLearn': '배우고 싶은 언어(국가) *',
+    'selectLanguageToLearnRequired': '배우고 싶은 언어(국가)를 선택해주세요',
+    'preferredGender': '선호 성별',
+    'selectLanguageGenderCollege': '배우고 싶은 언어(국가), 성별, 단과대학을 선택하세요.',
     'postLabel': '게시글',
     'shareYourThoughts': '의견을 공유해주세요',
+    'noNewsYet': '뉴스가 없습니다',
+    'errorChangingLanguage': '언어 변경 중 오류 발생',
+    'cannotOpenWebsite': '웹사이트를 열 수 없습니다',
+    'updating': '업데이트 중...',
+    'confirm': '확인',
+    'internationalNews': '국제 뉴스',
+    'domesticNews': '국내 뉴스',
+    'noNewsAvailable': '뉴스가 없습니다',
+    'noResultsFound': '결과를 찾을 수 없습니다',
+    'tryDifferentKeywords': '다른 키워드로 검색해보세요',
+    'failedToLoadNews': '뉴스를 불러올 수 없습니다',
+    'cannotConnectToServer': '서버에 연결할 수 없습니다',
+    'pleaseCheckNetworkConnection': '네트워크 연결을 확인해주세요',
+    'connectionTimeout': '연결 시간 초과',
+    'serverMayBeStarting': '서버가 시작 중일 수 있습니다',
+    'pleaseTryAgainInFewMinutes': '몇 분 후에 다시 시도해주세요',
+    'serverError': '서버 오류. 나중에 다시 시도해주세요',
+    'unknownError': '알 수 없는 오류',
+    'switchedToDarkMode': '다크 모드로 전환되었습니다',
+    'switchedToLightMode': '라이트 모드로 전환되었습니다',
+    'switchToDarkMode': '다크 모드로 전환',
+    'switchToLightMode': '라이트 모드로 전환',
+    'published': '게시됨',
   };
   
   // Vietnamese translations
@@ -358,7 +425,13 @@ class AppLocalizations {
     'recentActivity': 'Hoạt động gần đây',
     'welcomeToHelloCampus': 'Chào mừng đến với Hello Campus!',
     'accountCreatedSuccessfully': 'Tài khoản của bạn đã được tạo thành công. Bắt đầu khám phá khuôn viên của bạn!',
-    'hoursAgo': 'giờ trước',
+    'hoursAgo': '{count} giờ trước',
+    'daysAgo': '{count} ngày trước',
+    'today': 'Hôm nay',
+    'yesterday': 'Hôm qua',
+    'minutesShort': 'p',
+    'hoursShort': 'g',
+    'daysShort': 'ng',
     'news': 'Tin tức',
     'international': 'Quốc tế',
     'domestic': 'Trong nước',
@@ -447,8 +520,36 @@ class AppLocalizations {
     'latestFreeTitle': 'Thi xong rồi! Thứ bảy này bạn làm gì?',
     'latestInfoTitle': 'Thông tin tuyển sinh trao đổi 2025',
     'latestPromoTitle': 'Quảng bá câu lạc bộ – Tuyển thành viên mới',
+    'mainLanguage': 'Ngôn ngữ chính',
+    'selectLanguageToLearn': 'Chọn ngôn ngữ (quốc gia) bạn muốn học',
+    'selectLanguageToLearnRequired': 'Vui lòng chọn ngôn ngữ (quốc gia) bạn muốn học',
+    'preferredGender': 'Giới tính ưu tiên',
+    'selectLanguageGenderCollege': 'Chọn ngôn ngữ (quốc gia), giới tính và khoa bạn muốn học',
     'postLabel': 'Bài viết',
     'shareYourThoughts': 'Chia sẻ ý kiến của bạn',
+    'noNewsYet': 'Chưa có tin tức nào',
+    'errorChangingLanguage': 'Lỗi khi thay đổi ngôn ngữ',
+    'cannotOpenWebsite': 'Không thể mở trang web',
+    'updating': 'Đang cập nhật...',
+    'confirm': 'Xác nhận',
+    'internationalNews': 'Tin tức quốc tế',
+    'domesticNews': 'Tin tức trong nước',
+    'noNewsAvailable': 'Chưa có tin tức',
+    'noResultsFound': 'Không tìm thấy kết quả',
+    'tryDifferentKeywords': 'Thử tìm kiếm với từ khóa khác',
+    'failedToLoadNews': 'Không thể tải tin tức',
+    'cannotConnectToServer': 'Không thể kết nối đến máy chủ',
+    'pleaseCheckNetworkConnection': 'Vui lòng kiểm tra kết nối mạng',
+    'connectionTimeout': 'Kết nối hết thời gian chờ',
+    'serverMayBeStarting': 'Máy chủ có thể đang khởi động',
+    'pleaseTryAgainInFewMinutes': 'Vui lòng thử lại sau vài phút',
+    'serverError': 'Lỗi máy chủ. Vui lòng thử lại sau',
+    'unknownError': 'Lỗi không xác định',
+    'switchedToDarkMode': 'Đã chuyển sang chế độ tối',
+    'switchedToLightMode': 'Đã chuyển sang chế độ sáng',
+    'switchToDarkMode': 'Chuyển sang chế độ tối',
+    'switchToLightMode': 'Chuyển sang chế độ sáng',
+    'published': 'Đã đăng',
   };
   
   // Chinese translations
@@ -530,7 +631,13 @@ class AppLocalizations {
     'recentActivity': '最近活动',
     'welcomeToHelloCampus': '欢迎来到Hello Campus！',
     'accountCreatedSuccessfully': '您的账户已成功创建。开始探索您的校园吧！',
-    'hoursAgo': '小时前',
+    'hoursAgo': '{count}小时前',
+    'daysAgo': '{count}天前',
+    'today': '今天',
+    'yesterday': '昨天',
+    'minutesShort': '分钟',
+    'hoursShort': '小时',
+    'daysShort': '天',
     'news': '新闻',
     'international': '国际',
     'domestic': '国内',
@@ -613,8 +720,36 @@ class AppLocalizations {
     'latestFreeTitle': '考试结束了！这个星期六你做什么？',
     'latestInfoTitle': '2025交换生招募信息',
     'latestPromoTitle': '社团宣传 – 新成员招募',
+    'mainLanguage': '主要语言',
+    'selectLanguageToLearn': '选择您想学习的语言（国家）',
+    'selectLanguageToLearnRequired': '请选择您想学习的语言（国家）',
+    'preferredGender': '首选性别',
+    'selectLanguageGenderCollege': '选择您想学习的语言（国家）、性别和学院',
     'postLabel': '帖子',
     'shareYourThoughts': '分享您的想法',
+    'noNewsYet': '暂无新闻',
+    'errorChangingLanguage': '更改语言时出错',
+    'cannotOpenWebsite': '无法打开网站',
+    'updating': '更新中...',
+    'confirm': '确认',
+    'internationalNews': '国际新闻',
+    'domesticNews': '国内新闻',
+    'noNewsAvailable': '暂无新闻',
+    'noResultsFound': '未找到结果',
+    'tryDifferentKeywords': '尝试使用不同的关键词',
+    'failedToLoadNews': '无法加载新闻',
+    'cannotConnectToServer': '无法连接到服务器',
+    'pleaseCheckNetworkConnection': '请检查您的网络连接',
+    'connectionTimeout': '连接超时',
+    'serverMayBeStarting': '服务器可能正在启动',
+    'pleaseTryAgainInFewMinutes': '请几分钟后再试',
+    'serverError': '服务器错误。请稍后再试',
+    'unknownError': '未知错误',
+    'switchedToDarkMode': '已切换到深色模式',
+    'switchedToLightMode': '已切换到浅色模式',
+    'switchToDarkMode': '切换到深色模式',
+    'switchToLightMode': '切换到浅色模式',
+    'published': '已发布',
   };
   
   // Japanese translations
@@ -696,7 +831,13 @@ class AppLocalizations {
     'recentActivity': '最近の活動',
     'welcomeToHelloCampus': 'Hello Campusへようこそ！',
     'accountCreatedSuccessfully': 'アカウントが正常に作成されました。キャンパスを探索しましょう！',
-    'hoursAgo': '時間前',
+    'hoursAgo': '{count}時間前',
+    'daysAgo': '{count}日前',
+    'today': '今日',
+    'yesterday': '昨日',
+    'minutesShort': '分',
+    'hoursShort': '時間',
+    'daysShort': '日',
     'news': 'ニュース',
     'international': '国際',
     'domestic': '国内',
@@ -779,8 +920,36 @@ class AppLocalizations {
     'latestFreeTitle': '試験終了！土曜日は何をしますか？',
     'latestInfoTitle': '2025交換留学生募集情報',
     'latestPromoTitle': 'サークル宣伝 – 新メンバー募集',
+    'mainLanguage': '主要言語',
+    'selectLanguageToLearn': '学習したい言語（国）を選択',
+    'selectLanguageToLearnRequired': '学習したい言語（国）を選択してください',
+    'preferredGender': '希望する性別',
+    'selectLanguageGenderCollege': '学習したい言語（国）、性別、学部を選択してください',
     'postLabel': '投稿',
     'shareYourThoughts': '意見を共有してください',
+    'noNewsYet': 'ニュースがありません',
+    'errorChangingLanguage': '言語の変更中にエラーが発生しました',
+    'cannotOpenWebsite': 'ウェブサイトを開けません',
+    'updating': '更新中...',
+    'confirm': '確認',
+    'internationalNews': '国際ニュース',
+    'domesticNews': '国内ニュース',
+    'noNewsAvailable': 'ニュースがありません',
+    'noResultsFound': '結果が見つかりません',
+    'tryDifferentKeywords': '別のキーワードで検索してみてください',
+    'failedToLoadNews': 'ニュースを読み込めませんでした',
+    'cannotConnectToServer': 'サーバーに接続できません',
+    'pleaseCheckNetworkConnection': 'ネットワーク接続を確認してください',
+    'connectionTimeout': '接続タイムアウト',
+    'serverMayBeStarting': 'サーバーが起動中かもしれません',
+    'pleaseTryAgainInFewMinutes': '数分後にもう一度お試しください',
+    'serverError': 'サーバーエラー。後でもう一度お試しください',
+    'unknownError': '不明なエラー',
+    'switchedToDarkMode': 'ダークモードに切り替えました',
+    'switchedToLightMode': 'ライトモードに切り替えました',
+    'switchToDarkMode': 'ダークモードに切り替え',
+    'switchToLightMode': 'ライトモードに切り替え',
+    'published': '公開済み',
   };
   
   // Myanmar translations
@@ -862,7 +1031,13 @@ class AppLocalizations {
     'recentActivity': 'လတ်တလော လုပ်ဆောင်မှုများ',
     'welcomeToHelloCampus': 'Hello Campus မှကြိုဆိုပါတယ်！',
     'accountCreatedSuccessfully': 'သင့်အကောင့်ကို အောင်မြင်စွာ ဖန်တီးပြီးပါပြီ။ သင့်တက္ကသိုလ်ကို စတင်လေ့လာပါ！',
-    'hoursAgo': 'နာရီအကြာက',
+    'hoursAgo': '{count} နာရီ အကြာက',
+    'daysAgo': '{count} ရက် အကြာက',
+    'today': 'ယနေ့',
+    'yesterday': 'မနေ့က',
+    'minutesShort': 'မိနစ်',
+    'hoursShort': 'နာရီ',
+    'daysShort': 'ရက်',
     'news': 'သတင်းများ',
     'international': 'နိုင်ငံတကာ',
     'domestic': 'ပြည်တွင်း',
@@ -945,8 +1120,36 @@ class AppLocalizations {
     'latestFreeTitle': 'စာမေးပွဲပြီးပြီ! စနေနေ့မှာ ဘာလုပ်မလဲ?',
     'latestInfoTitle': '၂၀၂၅ လဲလှယ်ကျောင်းသား စုဆောင်းမှု အချက်အလက်',
     'latestPromoTitle': 'ကလပ်များ ကြော်ငြာ – အဖွဲ့ဝင် အသစ် စုဆောင်းခြင်း',
+    'mainLanguage': 'အဓိက ဘာသာစကား',
+    'selectLanguageToLearn': 'သင်ယူလိုသော ဘာသာစကား (နိုင်ငံ) ကို ရွေးချယ်ပါ',
+    'selectLanguageToLearnRequired': 'သင်ယူလိုသော ဘာသာစကား (နိုင်ငံ) ကို ရွေးချယ်ပေးပါ',
+    'preferredGender': 'ကြိုက်နှစ်သက်သော လိင်',
+    'selectLanguageGenderCollege': 'သင်ယူလိုသော ဘာသာစကား (နိုင်ငံ)၊ လိင် နှင့် ကောလိပ်ကို ရွေးချယ်ပါ',
     'postLabel': 'စာတမ်း',
     'shareYourThoughts': 'သင့်အတွေးများကို မျှဝေပါ',
+    'noNewsYet': 'သတင်းမရှိသေးပါ',
+    'errorChangingLanguage': 'ဘာသာစကား ပြောင်းလဲရာတွင် အမှားအယွင်း',
+    'cannotOpenWebsite': 'ဝက်ဘ်ဆိုက်ကို ဖွင့်၍မရပါ',
+    'updating': 'အပ်ဒိတ်လုပ်နေသည်...',
+    'confirm': 'အတည်ပြုပါ',
+    'internationalNews': 'နိုင်ငံတကာ သတင်း',
+    'domesticNews': 'ပြည်တွင်း သတင်း',
+    'noNewsAvailable': 'သတင်းမရှိပါ',
+    'noResultsFound': 'ရလဒ်မတွေ့ပါ',
+    'tryDifferentKeywords': 'မတူညီသော သော့ချက်စကားလုံးများဖြင့် ရှာဖွေကြည့်ပါ',
+    'failedToLoadNews': 'သတင်းများ ဖွင့်၍မရပါ',
+    'cannotConnectToServer': 'ဆာဗာသို့ ချိတ်ဆက်၍မရပါ',
+    'pleaseCheckNetworkConnection': 'သင့်ကွန်ရက်ချိတ်ဆက်မှုကို စစ်ဆေးပါ',
+    'connectionTimeout': 'ချိတ်ဆက်မှု အချိန်ကုန်သွားပါပြီ',
+    'serverMayBeStarting': 'ဆာဗာသည် စတင်နေနိုင်သည်',
+    'pleaseTryAgainInFewMinutes': 'မိနစ်အနည်းငယ်ကြာပြီးနောက် ထပ်စမ်းကြည့်ပါ',
+    'serverError': 'ဆာဗာ အမှား။ နောက်မှ ထပ်စမ်းကြည့်ပါ',
+    'unknownError': 'မသိသော အမှား',
+    'switchedToDarkMode': 'အနက်ရောင် မုဒ်သို့ ပြောင်းလဲပြီးပါပြီ',
+    'switchedToLightMode': 'အဖြူရောင် မုဒ်သို့ ပြောင်းလဲပြီးပါပြီ',
+    'switchToDarkMode': 'အနက်ရောင် မုဒ်သို့ ပြောင်းလဲပါ',
+    'switchToLightMode': 'အဖြူရောင် မုဒ်သို့ ပြောင်းလဲပါ',
+    'published': 'ထုတ်ပြန်ပြီး',
   };
   
   String translate(String key) {
@@ -1024,7 +1227,6 @@ class AppLocalizations {
   String get recentActivity => translate('recentActivity');
   String get welcomeToHelloCampus => translate('welcomeToHelloCampus');
   String get accountCreatedSuccessfully => translate('accountCreatedSuccessfully');
-  String get hoursAgo => translate('hoursAgo');
   String get news => translate('news');
   String get international => translate('international');
   String get domestic => translate('domestic');
@@ -1151,6 +1353,13 @@ class AppLocalizations {
   String minutesAgo(int count) => translate('minutesAgo').replaceAll('{count}', count.toString());
   String hoursAgoShort(int count) => translate('hoursAgoShort').replaceAll('{count}', count.toString());
   String daysAgoShort(int count) => translate('daysAgoShort').replaceAll('{count}', count.toString());
+  String hoursAgo(int count) => translate('hoursAgo').replaceAll('{count}', count.toString());
+  String daysAgo(int count) => translate('daysAgo').replaceAll('{count}', count.toString());
+  String get today => translate('today');
+  String get yesterday => translate('yesterday');
+  String get minutesShort => translate('minutesShort');
+  String get hoursShort => translate('hoursShort');
+  String get daysShort => translate('daysShort');
   String get startConversation => translate('startConversation');
   String get translated => translate('translated');
   String get validStudentEmail => translate('validStudentEmail');
@@ -1172,6 +1381,29 @@ class AppLocalizations {
   String get cannotDeletePost => translate('cannotDeletePost');
   String get delete => translate('delete');
   String get postLabel => translate('postLabel');
+  String get noNewsYet => translate('noNewsYet');
+  String get errorChangingLanguage => translate('errorChangingLanguage');
+  String get cannotOpenWebsite => translate('cannotOpenWebsite');
+  String get updating => translate('updating');
+  String get confirm => translate('confirm');
+  String get internationalNews => translate('internationalNews');
+  String get domesticNews => translate('domesticNews');
+  String get noNewsAvailable => translate('noNewsAvailable');
+  String get noResultsFound => translate('noResultsFound');
+  String get tryDifferentKeywords => translate('tryDifferentKeywords');
+  String get failedToLoadNews => translate('failedToLoadNews');
+  String get cannotConnectToServer => translate('cannotConnectToServer');
+  String get pleaseCheckNetworkConnection => translate('pleaseCheckNetworkConnection');
+  String get connectionTimeout => translate('connectionTimeout');
+  String get serverMayBeStarting => translate('serverMayBeStarting');
+  String get pleaseTryAgainInFewMinutes => translate('pleaseTryAgainInFewMinutes');
+  String get serverError => translate('serverError');
+  String get unknownError => translate('unknownError');
+  String get switchedToDarkMode => translate('switchedToDarkMode');
+  String get switchedToLightMode => translate('switchedToLightMode');
+  String get switchToDarkMode => translate('switchToDarkMode');
+  String get switchToLightMode => translate('switchToLightMode');
+  String get published => translate('published');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

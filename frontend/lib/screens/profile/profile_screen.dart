@@ -5,7 +5,9 @@ import 'verify/profile_wizard_screen.dart';
 import '../../services/profile_service.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final Function(String)? onLanguageChanged;
+  
+  const ProfileScreen({super.key, this.onLanguageChanged});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -18,6 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
   String _selectedMajor = '';
   String _selectedYear = '';
   String _selectedNationality = '';
+  String _selectedMainLanguage = '';
   bool _isLoading = false;
 
   @override
@@ -82,6 +85,12 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
       newNationality = _getNationalityName(profileData['nationality_iso2'].toString());
     }
     
+    // Get main language
+    String newMainLanguage = '';
+    if (profileData['main_language'] != null) {
+      newMainLanguage = _getMainLanguageDisplayName(profileData['main_language'].toString());
+    }
+    
     // Update UI in setState
     if (mounted) {
       setState(() {
@@ -90,6 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
         _selectedMajor = newMajor;
         _selectedYear = newYear;
         _selectedNationality = newNationality;
+        _selectedMainLanguage = newMainLanguage;
         _isLoading = false;
       });
     }
@@ -129,6 +139,9 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
       if (profileData['nationality_iso2'] != null) {
         await prefs.setString('nationalityIso2', profileData['nationality_iso2'].toString());
       }
+      if (profileData['main_language'] != null) {
+        await prefs.setString('mainLanguage', profileData['main_language'].toString());
+      }
     } catch (e) {
       // Fallback to SharedPreferences if API fails
       if (!mounted) return;
@@ -140,6 +153,8 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
         _selectedMajor = _getDepartmentName(prefs.getInt('departmentId') ?? 1);
         _selectedYear = _getYearStringFromEnrollmentYear(prefs.getInt('enrollmentYear'));
         _selectedNationality = _getNationalityName(prefs.getString('nationalityIso2') ?? 'KR');
+        final mainLangCode = prefs.getString('mainLanguage') ?? 'en';
+        _selectedMainLanguage = _getMainLanguageDisplayName(mainLangCode);
         _isLoading = false;
       });
     }
@@ -201,6 +216,18 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
       case 'CN': return '🇨🇳 China';
       case 'MM': return '🇲🇲 Myanmar';
       default: return code;
+    }
+  }
+
+  String _getMainLanguageDisplayName(String code) {
+    switch (code) {
+      case 'ko': return '🇰🇷 한국어 (Korean)';
+      case 'en': return '🇺🇸 English';
+      case 'vi': return '🇻🇳 Tiếng Việt (Vietnamese)';
+      case 'zh': return '🇨🇳 中文 (Chinese)';
+      case 'ja': return '🇯🇵 日本語 (Japanese)';
+      case 'my': return '🇲🇲 မြန်မာ (Myanmar)';
+      default: return '🇺🇸 English';
     }
   }
 
@@ -380,15 +407,22 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                           // Check if result is a map with success flag or just a boolean
                           bool isSuccess = false;
                           Map<String, dynamic>? updatedProfileData;
+                          String? newMainLanguage;
                           
                           if (result is Map<String, dynamic>) {
                             isSuccess = result['success'] == true;
                             updatedProfileData = result['profile'] as Map<String, dynamic>?;
+                            newMainLanguage = result['main_language']?.toString();
                           } else if (result == true) {
                             isSuccess = true;
                           }
                           
                           if (isSuccess) {
+                            // If main_language changed, trigger app language reload
+                            if (newMainLanguage != null && widget.onLanguageChanged != null) {
+                              widget.onLanguageChanged!(newMainLanguage);
+                            }
+                            
                             // If we have updated profile data from response, use it directly
                             if (updatedProfileData != null) {
                               _mapProfileDataToUI(updatedProfileData);
@@ -442,6 +476,8 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                       _buildInfoRow(Icons.calendar_today, 'Year', _selectedYear),
                       const SizedBox(height: 16),
                       _buildInfoRow(Icons.flag, 'Nationality', _selectedNationality),
+                      const SizedBox(height: 16),
+                      _buildInfoRow(Icons.language, AppLocalizations.of(context).mainLanguage, _selectedMainLanguage),
                     ],
                   ),
                 ),

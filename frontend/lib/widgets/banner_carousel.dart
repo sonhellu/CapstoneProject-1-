@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/banner_model.dart';
 import '../screens/home/banner/banner_detail_screen.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/date_time_utils.dart';
 
 class BannerCarousel extends StatefulWidget {
   final List<BannerModel> banners;
@@ -436,17 +437,6 @@ class _BannerCarouselState extends State<BannerCarousel>
   }
 
   String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-    
-    if (difference.inDays == 0) {
-      return 'Today';
-    } else if (difference.inDays == 1) {
-      return 'Yesterday';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
-    }
+    return DateTimeUtils.formatDate(context, date);
   }
 }

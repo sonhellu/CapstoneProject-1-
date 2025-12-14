@@ -127,6 +127,40 @@ class NewsModel {
     };
   }
 
+  /// CopyWith method để tạo instance mới với một số fields được update
+  /// Giúp tối ưu performance khi chỉ cần update một vài fields
+  NewsModel copyWith({
+    String? id,
+    String? title,
+    String? content,
+    String? imageUrl,
+    String? nationality,
+    DateTime? publishDate,
+    String? author,
+    int? views,
+    int? likes,
+    int? comments,
+    List<String>? tags,
+    bool? isPinned,
+    String? category,
+  }) {
+    return NewsModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      imageUrl: imageUrl ?? this.imageUrl,
+      nationality: nationality ?? this.nationality,
+      publishDate: publishDate ?? this.publishDate,
+      author: author ?? this.author,
+      views: views ?? this.views,
+      likes: likes ?? this.likes,
+      comments: comments ?? this.comments,
+      tags: tags ?? this.tags,
+      isPinned: isPinned ?? this.isPinned,
+      category: category ?? this.category,
+    );
+  }
+
   // Sample data for demonstration
   static List<NewsModel> getSampleNews() {
     return [
@@ -391,7 +425,10 @@ class NewsModel {
     ];
   }
 
+  // Note: timeAgo is now calculated using DateTimeUtils in UI components
+  // This getter is kept for backward compatibility but should use DateTimeUtils.formatTimeAgo instead
   String get timeAgo {
+    // This will be replaced by DateTimeUtils.formatTimeAgo in UI
     final now = DateTime.now();
     final difference = now.difference(publishDate);
 

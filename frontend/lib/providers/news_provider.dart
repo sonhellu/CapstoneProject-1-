@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/news_model.dart';
 import '../services/community_service.dart';
 import '../services/profile_service.dart';
+import '../services/api_service.dart';
+import '../services/api_config.dart';
 
 class NewsProvider extends ChangeNotifier {
   List<NewsModel> _allNews = [];
@@ -54,7 +56,60 @@ class NewsProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> _loadNews() async {
+  /// Cập nhật main_language và reload news
+  Future<void> setUserMainLanguage(String mainLanguage, {bool forceReload = false}) async {
+    // Nếu ngôn ngữ giống nhau và không force reload, không làm gì
+    if (_userMainLanguage == mainLanguage && !forceReload) {
+      return;
+    }
+    
+    final oldLanguage = _userMainLanguage;
+    
+    // Cập nhật main_language
+    _userMainLanguage = mainLanguage;
+    
+    // Lưu vào SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('mainLanguage', mainLanguage);
+    
+    // Clear cache cho tất cả các variations của API posts endpoint
+    // Để đảm bảo lấy data mới với ngôn ngữ mới
+    _clearAllPostsCache(mainLanguage);
+    if (oldLanguage.isNotEmpty && oldLanguage != mainLanguage) {
+      _clearAllPostsCache(oldLanguage);
+    }
+    
+    // Reload news với language mới (force reload để đảm bảo data mới nhất)
+    await _loadNews(forceReload: true);
+  }
+  
+  /// Clear cache cho tất cả các variations của allPosts endpoint
+  void _clearAllPostsCache(String? language) {
+    // Clear base endpoint
+    ApiService.clearCacheEntry(ApiConfig.allPostsEndpoint);
+    ApiService.clearCacheEntry('${ApiConfig.allPostsEndpoint}?limit=50');
+    
+    if (language != null && language.isNotEmpty) {
+      // Clear với original_lang
+      ApiService.clearCacheEntry('${ApiConfig.allPostsEndpoint}?limit=50&original_lang=$language');
+      // Clear với các variations khác
+      ApiService.clearCacheEntry('${ApiConfig.allPostsEndpoint}?limit=50&original_lang=${language.toLowerCase()}');
+      ApiService.clearCacheEntry('${ApiConfig.allPostsEndpoint}?original_lang=$language');
+    }
+  }
+
+  /// Refresh news (reload từ API)
+  Future<void> refreshNews() async {
+    // Clear tất cả cache liên quan đến posts
+    _clearAllPostsCache(_userMainLanguage);
+    
+    // Reload main_language trước khi load news
+    _userMainLanguage = await _getUserMainLanguage();
+    // Force reload khi user manually refresh
+    await _loadNews(forceReload: true);
+  }
+  
+  Future<void> _loadNews({bool forceReload = false}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -63,16 +118,25 @@ class NewsProvider extends ChangeNotifier {
       // Lấy main_language của user
       _userMainLanguage = await _getUserMainLanguage();
       
-      // Gọi API để lấy tất cả posts (cho International tab)
-      final allPostsData = await CommunityService.getAllPosts(limit: 50);
+      // Gọi API parallel để tối ưu performance (gọi đồng thời thay vì tuần tự)
+      final results = await Future.wait([
+        // Gọi API để lấy tất cả posts (cho International tab)
+        CommunityService.getAllPosts(
+          limit: 50,
+          useCache: !forceReload,
+        ),
+        // Gọi API để lấy posts theo main_language (cho Domestic tab)
+        CommunityService.getAllPosts(
+          limit: 50,
+          originalLang: _userMainLanguage,
+          useCache: !forceReload,
+        ),
+      ]);
       
-      // Gọi API để lấy posts theo main_language (cho Domestic tab)
-      final domesticPostsData = await CommunityService.getAllPosts(
-        limit: 50,
-        originalLang: _userMainLanguage,
-      );
+      final allPostsData = results[0];
+      final domesticPostsData = results[1];
       
-      // Convert posts thành NewsModel
+      // Convert posts thành NewsModel (sử dụng toList() để eager evaluation)
       final allNews = allPostsData.map((post) => NewsModel.fromPostData(post)).toList();
       final domesticNews = domesticPostsData.map((post) => NewsModel.fromPostData(post)).toList();
       
@@ -81,12 +145,13 @@ class NewsProvider extends ChangeNotifier {
       _internationalNews = allNews; // Tất cả posts cho International tab
       _nationalNews = domesticNews; // Posts theo main_language cho Domestic tab
       
-      // Sort by publish date (newest first)
+      // Sort by publish date (newest first) - chỉ sort 1 lần
       _internationalNews.sort((a, b) => b.publishDate.compareTo(a.publishDate));
       _nationalNews.sort((a, b) => b.publishDate.compareTo(a.publishDate));
       
     } catch (e) {
-      _error = 'Failed to load news: ${e.toString()}';
+      // Store error key instead of hardcoded message
+      _error = 'failedToLoadNews:${e.toString()}';
       // Fallback to sample data nếu API fails
       try {
         final fetchedNews = NewsModel.getSampleNews();
@@ -115,68 +180,27 @@ class NewsProvider extends ChangeNotifier {
     }
   }
 
-  /// Cập nhật main_language và reload news
-  Future<void> setUserMainLanguage(String mainLanguage) async {
-    if (_userMainLanguage != mainLanguage) {
-      _userMainLanguage = mainLanguage;
-      
-      // Lưu vào SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('mainLanguage', mainLanguage);
-      
-      // Reload news với language mới
-      await _loadNews();
-    }
-  }
-
-  /// Refresh news (reload từ API)
-  Future<void> refreshNews() async {
-    // Reload main_language trước khi load news
-    _userMainLanguage = await _getUserMainLanguage();
-    await _loadNews();
-  }
-
   void likeNews(String newsId) {
-    final newsIndex = _allNews.indexWhere((news) => news.id == newsId);
-    if (newsIndex != -1) {
-      _allNews[newsIndex] = NewsModel(
-        id: _allNews[newsIndex].id,
-        title: _allNews[newsIndex].title,
-        content: _allNews[newsIndex].content,
-        imageUrl: _allNews[newsIndex].imageUrl,
-        nationality: _allNews[newsIndex].nationality,
-        publishDate: _allNews[newsIndex].publishDate,
-        author: _allNews[newsIndex].author,
-        views: _allNews[newsIndex].views,
-        likes: _allNews[newsIndex].likes + 1,
-        comments: _allNews[newsIndex].comments,
-        tags: _allNews[newsIndex].tags,
-        isPinned: _allNews[newsIndex].isPinned,
-        category: _allNews[newsIndex].category,
-      );
-      notifyListeners();
-    }
+    // Tìm trong cả 3 lists để update
+    _updateNewsInList(_allNews, newsId, (news) => news.copyWith(likes: news.likes + 1));
+    _updateNewsInList(_internationalNews, newsId, (news) => news.copyWith(likes: news.likes + 1));
+    _updateNewsInList(_nationalNews, newsId, (news) => news.copyWith(likes: news.likes + 1));
+    notifyListeners();
   }
 
   void viewNews(String newsId) {
-    final newsIndex = _allNews.indexWhere((news) => news.id == newsId);
-    if (newsIndex != -1) {
-      _allNews[newsIndex] = NewsModel(
-        id: _allNews[newsIndex].id,
-        title: _allNews[newsIndex].title,
-        content: _allNews[newsIndex].content,
-        imageUrl: _allNews[newsIndex].imageUrl,
-        nationality: _allNews[newsIndex].nationality,
-        publishDate: _allNews[newsIndex].publishDate,
-        author: _allNews[newsIndex].author,
-        views: _allNews[newsIndex].views + 1,
-        likes: _allNews[newsIndex].likes,
-        comments: _allNews[newsIndex].comments,
-        tags: _allNews[newsIndex].tags,
-        isPinned: _allNews[newsIndex].isPinned,
-        category: _allNews[newsIndex].category,
-      );
-      notifyListeners();
+    // Tìm trong cả 3 lists để update
+    _updateNewsInList(_allNews, newsId, (news) => news.copyWith(views: news.views + 1));
+    _updateNewsInList(_internationalNews, newsId, (news) => news.copyWith(views: news.views + 1));
+    _updateNewsInList(_nationalNews, newsId, (news) => news.copyWith(views: news.views + 1));
+    notifyListeners();
+  }
+  
+  /// Helper method để update news trong list (tránh code duplicate)
+  void _updateNewsInList(List<NewsModel> list, String newsId, NewsModel Function(NewsModel) updater) {
+    final index = list.indexWhere((news) => news.id == newsId);
+    if (index != -1) {
+      list[index] = updater(list[index]);
     }
   }
 

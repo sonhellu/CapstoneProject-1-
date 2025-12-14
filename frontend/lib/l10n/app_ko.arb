@@ -142,6 +142,27 @@
       }
     }
   },
+  "today": "오늘",
+  "yesterday": "어제",
+  "minutesShort": "분",
+  "hoursShort": "시간",
+  "daysShort": "일",
+  "hoursAgo": "{count}시간 전",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count}일 전",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "startConversation": "대화를 시작하세요!",
   "translated": "번역됨",
   "validStudentEmail": "유효한 학생 이메일을 사용해주세요 (@stu)",
@@ -169,5 +190,28 @@
   "freeBoard": "자유게시판",
   "infoBoard": "정보게시판",
   "promoBoard": "홍보게시판",
-  "shareYourThoughts": "의견을 공유해주세요"
+  "shareYourThoughts": "의견을 공유해주세요",
+  "noNewsYet": "뉴스가 없습니다",
+  "errorChangingLanguage": "언어 변경 중 오류 발생",
+  "cannotOpenWebsite": "웹사이트를 열 수 없습니다",
+  "updating": "업데이트 중...",
+  "confirm": "확인",
+  "internationalNews": "국제 뉴스",
+  "domesticNews": "국내 뉴스",
+  "noNewsAvailable": "뉴스가 없습니다",
+  "noResultsFound": "결과를 찾을 수 없습니다",
+  "tryDifferentKeywords": "다른 키워드로 검색해보세요",
+  "failedToLoadNews": "뉴스를 불러올 수 없습니다",
+  "cannotConnectToServer": "서버에 연결할 수 없습니다",
+  "pleaseCheckNetworkConnection": "네트워크 연결을 확인해주세요",
+  "connectionTimeout": "연결 시간 초과",
+  "serverMayBeStarting": "서버가 시작 중일 수 있습니다",
+  "pleaseTryAgainInFewMinutes": "몇 분 후에 다시 시도해주세요",
+  "serverError": "서버 오류. 나중에 다시 시도해주세요",
+  "unknownError": "알 수 없는 오류",
+  "switchedToDarkMode": "다크 모드로 전환되었습니다",
+  "switchedToLightMode": "라이트 모드로 전환되었습니다",
+  "switchToDarkMode": "다크 모드로 전환",
+  "switchToLightMode": "라이트 모드로 전환",
+  "published": "게시됨"
 }

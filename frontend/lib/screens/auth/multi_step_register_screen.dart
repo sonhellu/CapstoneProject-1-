@@ -135,7 +135,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Warning: Could not load options. Please check your connection.'),
+            content: Text(AppLocalizations.of(context).couldNotLoadOptions),
             backgroundColor: Colors.orange,
             duration: const Duration(seconds: 3),
           ),
@@ -166,7 +166,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Could not load departments for selected school.'),
+            content: Text(AppLocalizations.of(context).couldNotLoadDepartments),
             backgroundColor: Colors.orange,
             duration: const Duration(seconds: 2),
           ),
@@ -214,8 +214,8 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
         // Validate that school and department are selected
         if (_registrationData.schoolId <= 0) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Please select a university'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context).pleaseSelectUniversity),
               backgroundColor: Colors.red,
             ),
           );
@@ -223,8 +223,8 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
         }
         if (_registrationData.departmentId <= 0) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Please select a department'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context).pleaseSelectDepartment),
               backgroundColor: Colors.red,
             ),
           );
@@ -399,27 +399,27 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
     }
     // Check for @stu domain
     if (!RegExp(r'^[\w-\.]+@stu\.[\w-]{2,4}$').hasMatch(value)) {
-      return 'Please use a valid student email (@stu)';
+      return AppLocalizations.of(context).validStudentEmail;
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return AppLocalizations.of(context).passwordRequired;
     }
     if (value.length < 6) {
-      return 'Password must be at least 6 characters';
+      return AppLocalizations.of(context).passwordTooShort;
     }
     return null;
   }
 
   String? _validateConfirmPassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please confirm your password';
+      return AppLocalizations.of(context).pleaseConfirmPassword;
     }
     if (value != _passwordController.text) {
-      return 'Passwords do not match';
+      return AppLocalizations.of(context).passwordMismatch;
     }
     return null;
   }
@@ -582,7 +582,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           
           // Title
           Text(
-            'Personal Information',
+            AppLocalizations.of(context).personalInformation,
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -592,7 +592,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            'Let\'s start with your basic information',
+            AppLocalizations.of(context).tellUsAboutAcademicBackground,
             style: TextStyle(
               fontSize: 16,
               color: isDark ? Colors.white70 : Colors.grey[600],
@@ -609,7 +609,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 _buildFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  labelText: 'Student Email (@stu)',
+                  labelText: AppLocalizations.of(context).studentEmail,
                   prefixIcon: Icons.email_outlined,
                   isDark: isDark,
                   validator: _validateEmail,
@@ -619,7 +619,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 _buildFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  labelText: 'Password',
+                  labelText: AppLocalizations.of(context).password,
                   prefixIcon: Icons.lock_outline,
                   isDark: isDark,
                   validator: _validatePassword,
@@ -629,7 +629,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 _buildFormField(
                   controller: _confirmPasswordController,
                   obscureText: true,
-                  labelText: 'Confirm Password',
+                  labelText: AppLocalizations.of(context).confirmPassword,
                   prefixIcon: Icons.lock_reset,
                   isDark: isDark,
                   validator: _validateConfirmPassword,
@@ -638,7 +638,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                 
                 _buildFormField(
                   controller: _realNameController,
-                  labelText: 'Real Name',
+                  labelText: AppLocalizations.of(context).fullName,
                   prefixIcon: Icons.badge_outlined,
                   isDark: isDark,
                   validator: _validateRequired,
@@ -731,10 +731,10 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                       : (_languages.any((l) => l['code'] == _registrationData.mainLanguage)
                           ? _registrationData.mainLanguage
                           : (_languages.isNotEmpty ? _languages.first['code'] as String : 'ko')),
-            labelText: 'Main Language',
+            labelText: AppLocalizations.of(context).targetLanguage,
             icon: Icons.translate,
                   items: _languages.isEmpty
-                      ? [DropdownMenuItem(value: 'ko', child: Text('Loading...'))]
+                      ? [DropdownMenuItem(value: 'ko', child: Text(AppLocalizations.of(context).loading))]
                       : _languages.map((lang) {
                           return DropdownMenuItem(
                             value: lang['code'] as String,
@@ -763,7 +763,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                   labelText: AppLocalizations.of(context).nationality,
             icon: Icons.public,
                   items: _countries.isEmpty
-                      ? [DropdownMenuItem(value: 'KR', child: Text('Loading...'))]
+                      ? [DropdownMenuItem(value: 'KR', child: Text(AppLocalizations.of(context).loading))]
                       : _countries.map((country) {
                           final iso2 = country['iso2'] as String;
                           final name = country['name'] as String;
@@ -877,7 +877,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
                   labelText: AppLocalizations.of(context).university,
             icon: Icons.school_outlined,
                   items: _schools.isEmpty
-                      ? [DropdownMenuItem(value: 0, child: Text('Loading...'))]
+                      ? [DropdownMenuItem(value: 0, child: Text(AppLocalizations.of(context).loading))]
                       : _schools.map((school) {
                           return DropdownMenuItem(
                             value: school['id'] as int,
@@ -906,7 +906,7 @@ class _MultiStepRegisterScreenState extends State<MultiStepRegisterScreen>
             labelText: AppLocalizations.of(context).department,
             icon: Icons.business_center,
             items: _departments.isEmpty
-                ? [DropdownMenuItem(value: 0, child: Text('Select a school first'))]
+                ? [DropdownMenuItem(value: 0, child: Text(AppLocalizations.of(context).selectSchoolFirst))]
                 : _departments.map((dept) {
                     return DropdownMenuItem(
                       value: dept['id'] as int,

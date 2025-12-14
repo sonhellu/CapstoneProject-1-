@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../services/profile_service.dart';
 import 'match_chat_screen.dart';
 
 class LanguageOrderScreen extends StatefulWidget {
@@ -28,80 +30,138 @@ class _LanguageOrderScreenState extends State<LanguageOrderScreen> {
   ];
 
   String? _selectedLangCode;
-  String _selectedGender = '상관없음';
-  String _selectedCollege = '상관없음';
+  String? _selectedGender;
+  String? _selectedCollege;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMainLanguage();
+  }
+
+  Future<void> _loadMainLanguage() async {
+    try {
+      // Try to load main_language from profile API
+      final profileData = await ProfileService.getMyProfile();
+      final mainLang = profileData['main_language']?.toString();
+      
+      if (mainLang != null && _languages.any((lang) => lang['code'] == mainLang)) {
+        if (mounted) {
+          setState(() {
+            _selectedLangCode = mainLang;
+            _isLoading = false;
+          });
+        }
+        return;
+      }
+    } catch (e) {
+      // Fallback to SharedPreferences
+    }
+    
+    // Fallback to SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final mainLang = prefs.getString('mainLanguage');
+    
+    if (mounted) {
+      if (mainLang != null && _languages.any((lang) => lang['code'] == mainLang)) {
+        setState(() {
+          _selectedLangCode = mainLang;
+        });
+      }
+      
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).languageOrder),
+        title: Text(l10n.languageOrder),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              Text(
-                '배우고 싶은 언어(국가), 성별, 단과대학을 선택하세요.',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 12),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(12),
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  children: [
+                    Text(
+                      l10n.selectLanguageGenderCollege,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 12),
 
-              // 언어(국가)
-              DropdownButtonFormField<String>(
-                value: _selectedLangCode,
-                decoration: const InputDecoration(
-                  labelText: '배우고 싶은 언어(국가) *',
-                  border: OutlineInputBorder(),
-                ),
-                items: _languages
-                    .map((e) => DropdownMenuItem<String>(
-                          value: e['code'],
-                          child: Text(e['label']!),
-                        ))
-                    .toList(),
-                validator: (v) => v == null ? '배우고 싶은 언어(국가)를 선택해주세요' : null,
-                onChanged: (v) => setState(() => _selectedLangCode = v),
-              ),
-              const SizedBox(height: 12),
+                    // 언어(국가)
+                    DropdownButtonFormField<String>(
+                      value: _selectedLangCode,
+                      decoration: InputDecoration(
+                        labelText: l10n.selectLanguageToLearn,
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: _languages
+                          .map((e) => DropdownMenuItem<String>(
+                                value: e['code'],
+                                child: Text(e['label']!),
+                              ))
+                          .toList(),
+                      validator: (v) => v == null ? l10n.selectLanguageToLearnRequired : null,
+                      onChanged: (v) => setState(() => _selectedLangCode = v),
+                    ),
+                    const SizedBox(height: 12),
 
-              // 성별
-              InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: '선호 성별',
-                  border: OutlineInputBorder(),
-                ),
-                child: Wrap(
-                  spacing: 8,
-                  children: ['여','남','상관없음'].map((opt) {
-                    final selected = _selectedGender == opt;
-                    return ChoiceChip(
-                      label: Text(opt),
-                      selected: selected,
-                      onSelected: (_) => setState(() => _selectedGender = opt),
-                    );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(height: 12),
+                    // 성별
+                    InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: l10n.preferredGender,
+                        border: const OutlineInputBorder(),
+                      ),
+                      child: Builder(
+                        builder: (context) {
+                          final genderOptions = [l10n.female, l10n.male, l10n.noPreference];
+                          // Initialize with noPreference if null
+                          final currentGender = _selectedGender ?? l10n.noPreference;
+                          return Wrap(
+                            spacing: 8,
+                            children: genderOptions.map((opt) {
+                              final selected = currentGender == opt;
+                              return ChoiceChip(
+                                label: Text(opt),
+                                selected: selected,
+                                onSelected: (_) => setState(() => _selectedGender = opt),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 12),
 
-              // 단과대학
-              DropdownButtonFormField<String>(
-                value: _selectedCollege,
-                decoration: const InputDecoration(
-                  labelText: '단과대학',
-                  border: OutlineInputBorder(),
-                ),
-                items: _colleges
-                    .map((c) => DropdownMenuItem<String>(
-                          value: c,
-                          child: Text(c),
-                        ))
-                    .toList(),
-                onChanged: (v) => setState(() => _selectedCollege = v ?? '상관없음'),
-              ),
+                    // 단과대학
+                    DropdownButtonFormField<String>(
+                      value: _selectedCollege ?? l10n.noPreference,
+                      decoration: InputDecoration(
+                        labelText: l10n.college,
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: l10n.noPreference,
+                          child: Text(l10n.noPreference),
+                        ),
+                        ..._colleges.map((c) => DropdownMenuItem<String>(
+                              value: c,
+                              child: Text(c),
+                            )),
+                      ],
+                      onChanged: (v) => setState(() => _selectedCollege = v ?? l10n.noPreference),
+                    ),
               const SizedBox(height: 16),
 
               // 찾기 버튼
@@ -117,8 +177,8 @@ class _LanguageOrderScreenState extends State<LanguageOrderScreen> {
                       MaterialPageRoute(
                         builder: (_) => MatchChatScreen(
                           targetLanguageCode: _selectedLangCode!,
-                          preferredGender: _selectedGender,
-                          preferredCollege: _selectedCollege,
+                          preferredGender: _selectedGender ?? l10n.noPreference,
+                          preferredCollege: _selectedCollege ?? l10n.noPreference,
                         ),
                       ),
                     );

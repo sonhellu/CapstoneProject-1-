@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
+import '../l10n/app_localizations.dart';
 import 'language_picker.dart';
 
 class AppBarActions extends StatelessWidget {
@@ -30,8 +31,8 @@ class AppBarActions extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           themeProvider.isDarkMode 
-                            ? 'Switched to Dark Mode' 
-                            : 'Switched to Light Mode',
+                            ? AppLocalizations.of(context).switchedToDarkMode 
+                            : AppLocalizations.of(context).switchedToLightMode,
                         ),
                       ],
                     ),
@@ -54,7 +55,9 @@ class AppBarActions extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-              tooltip: themeProvider.isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+              tooltip: themeProvider.isDarkMode 
+                  ? AppLocalizations.of(context).switchToLightMode 
+                  : AppLocalizations.of(context).switchToDarkMode,
             );
           },
         ),

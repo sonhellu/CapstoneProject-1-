@@ -143,6 +143,27 @@
       }
     }
   },
+  "today": "Hôm nay",
+  "yesterday": "Hôm qua",
+  "minutesShort": "p",
+  "hoursShort": "g",
+  "daysShort": "ng",
+  "hoursAgo": "{count} giờ trước",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} ngày trước",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "startConversation": "Bắt đầu cuộc trò chuyện!",
   "translated": "Đã dịch",
   "validStudentEmail": "Vui lòng sử dụng email sinh viên hợp lệ (@stu)",
@@ -170,5 +191,27 @@
   "freeBoard": "Bảng Tự Do",
   "infoBoard": "Bảng Thông Tin",
   "promoBoard": "Bảng Quảng Cáo",
-  "shareYourThoughts": "Chia sẻ ý kiến của bạn"
+  "shareYourThoughts": "Chia sẻ ý kiến của bạn",
+  "noNewsYet": "Chưa có tin tức nào",
+  "errorChangingLanguage": "Lỗi khi thay đổi ngôn ngữ",
+  "cannotOpenWebsite": "Không thể mở trang web",
+  "updating": "Đang cập nhật...",
+  "confirm": "Xác nhận",
+  "internationalNews": "Tin tức quốc tế",
+  "domesticNews": "Tin tức trong nước",
+  "noNewsAvailable": "Chưa có tin tức",
+  "noResultsFound": "Không tìm thấy kết quả",
+  "tryDifferentKeywords": "Thử tìm kiếm với từ khóa khác",
+  "failedToLoadNews": "Không thể tải tin tức",
+  "cannotConnectToServer": "Không thể kết nối đến máy chủ",
+  "pleaseCheckNetworkConnection": "Vui lòng kiểm tra kết nối mạng",
+  "connectionTimeout": "Kết nối hết thời gian chờ",
+  "serverMayBeStarting": "Máy chủ có thể đang khởi động",
+  "pleaseTryAgainInFewMinutes": "Vui lòng thử lại sau vài phút",
+  "serverError": "Lỗi máy chủ. Vui lòng thử lại sau",
+  "unknownError": "Lỗi không xác định",
+  "switchedToDarkMode": "Đã chuyển sang chế độ tối",
+  "switchedToLightMode": "Đã chuyển sang chế độ sáng",
+  "switchToDarkMode": "Chuyển sang chế độ tối",
+  "switchToLightMode": "Chuyển sang chế độ sáng"
 }

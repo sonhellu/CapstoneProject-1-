@@ -141,7 +141,7 @@ class RecentActivitySection extends StatelessWidget {
       builder: (context) {
         final l10n = AppLocalizations.of(context);
     return Text(
-          '2 ${l10n.hoursAgo}',
+          l10n.hoursAgo(2),
       style: TextStyle(
         fontSize: AppConstants.fontSizeS,
         color: isDark ? Colors.white54 : Colors.grey[500],

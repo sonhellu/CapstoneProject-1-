@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<Widget> get _screens => [
     const HomeTab(),
     const ChatScreen(),
-    ProfileScreen(key: ValueKey(_profileKey)),
+    ProfileScreen(key: ValueKey(_profileKey), onLanguageChanged: widget.onLanguageChanged),
   ];
   
   @override

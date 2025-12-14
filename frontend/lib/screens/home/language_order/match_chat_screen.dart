@@ -50,7 +50,7 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error: ${matchRequest['error']}'),
+              content: Text('${AppLocalizations.of(context).error}: ${matchRequest['error']}'),
               backgroundColor: Colors.red,
               duration: const Duration(seconds: 3),
             ),
@@ -63,10 +63,10 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
       if (requestId == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to create match request'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context).failedToCreateMatchRequest),
               backgroundColor: Colors.orange,
-              duration: Duration(seconds: 3),
+              duration: const Duration(seconds: 3),
             ),
           );
         }
@@ -129,7 +129,7 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error parsing helpers: ${e.toString()}\nData: ${helpers.toString()}'),
+              content: Text('${AppLocalizations.of(context).errorParsingHelpers}: ${e.toString()}\nData: ${helpers.toString()}'),
               backgroundColor: Colors.orange,
               duration: const Duration(seconds: 5),
             ),
@@ -142,7 +142,7 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error finding match: ${e.toString()}'),
+            content: Text('${AppLocalizations.of(context).errorFindingMatch}: ${e.toString()}'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 4),
           ),
@@ -281,8 +281,8 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
               if (item.requestId == null || item.helperId == null) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Error: Missing match information'),
+                    SnackBar(
+                      content: Text(AppLocalizations.of(context).missingMatchInformation),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -313,7 +313,7 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
                     Navigator.pop(context); // Close loading dialog
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Error offering match: ${offerResult['error']}'),
+                        content: Text('${AppLocalizations.of(context).errorOfferingMatch}: ${offerResult['error']}'),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -335,7 +335,7 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Error accepting match: ${acceptResult['error']}'),
+                        content: Text('${AppLocalizations.of(context).errorAcceptingMatch}: ${acceptResult['error']}'),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -347,8 +347,8 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
                 if (conversationId == null) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Error: Failed to create conversation'),
+                      SnackBar(
+                        content: Text(AppLocalizations.of(context).failedToCreateConversation),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -374,7 +374,7 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
                   Navigator.pop(context); // Close loading dialog if still open
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Error: ${e.toString()}'),
+                      content: Text('${AppLocalizations.of(context).error}: ${e.toString()}'),
                       backgroundColor: Colors.red,
                     ),
                   );

@@ -133,7 +133,7 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Không thể tải tin nhắn: ${e.toString()}'),
+            content: Text('${AppLocalizations.of(context).cannotLoadMessages}: ${e.toString()}'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -223,7 +223,7 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gửi tin nhắn thất bại: ${e.toString()}'),
+            content: Text('${AppLocalizations.of(context).sendMessageFailed}: ${e.toString()}'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -246,7 +246,7 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Không thể xóa tin nhắn: ${e.toString()}'),
+            content: Text('${AppLocalizations.of(context).cannotDeleteMessage}: ${e.toString()}'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -256,24 +256,21 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
   }
 
   String _formatTime(DateTime time) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final messageDate = DateTime(time.year, time.month, time.day);
+    final h = time.hour.toString().padLeft(2, '0');
+    final m = time.minute.toString().padLeft(2, '0');
     
     if (messageDate == today) {
       // Today: show time only
-      final h = time.hour.toString().padLeft(2, '0');
-      final m = time.minute.toString().padLeft(2, '0');
       return '$h:$m';
     } else if (messageDate == today.subtract(const Duration(days: 1))) {
       // Yesterday
-      final h = time.hour.toString().padLeft(2, '0');
-      final m = time.minute.toString().padLeft(2, '0');
-      return 'Hôm qua $h:$m';
+      return '${l10n.yesterday} $h:$m';
     } else {
       // Older: show date and time
-      final h = time.hour.toString().padLeft(2, '0');
-      final m = time.minute.toString().padLeft(2, '0');
       final d = time.day.toString().padLeft(2, '0');
       final month = time.month.toString().padLeft(2, '0');
       return '$d/$month $h:$m';
@@ -418,21 +415,24 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
         confirmDismiss: (direction) async {
           final confirmed = await showDialog<bool>(
             context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Xóa tin nhắn'),
-              content: const Text('Bạn có chắc chắn muốn xóa tin nhắn này?'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Hủy'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  style: TextButton.styleFrom(foregroundColor: Colors.red),
-                  child: const Text('Xóa'),
-                ),
-              ],
-            ),
+            builder: (context) {
+              final l10n = AppLocalizations.of(context);
+              return AlertDialog(
+                title: Text(l10n.deleteMessage),
+                content: Text(l10n.deleteMessageConfirm),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: Text(l10n.cancel),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    style: TextButton.styleFrom(foregroundColor: Colors.red),
+                    child: Text(l10n.deleteMessage.split(' ').first),
+                  ),
+                ],
+              );
+            },
           );
           return confirmed ?? false;
         },
@@ -594,7 +594,7 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Bắt đầu cuộc trò chuyện!',
+                              AppLocalizations.of(context).startConversation,
                               style: TextStyle(
                                 color: Colors.grey[500],
                                 fontSize: 14,

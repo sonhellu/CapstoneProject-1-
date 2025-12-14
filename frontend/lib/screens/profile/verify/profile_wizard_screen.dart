@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/profile_service.dart';
 import '../../../services/options_service.dart';
 import '../../../services/api_service.dart';
+import '../../../services/api_config.dart';
+import '../../../providers/news_provider.dart';
 
 class ProfileWizardScreen extends StatefulWidget {
   const ProfileWizardScreen({super.key});
@@ -23,6 +26,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   String _selectedMajor = '';
   String _selectedYear = '';
   String _selectedNationality = '';
+  String _selectedMainLanguage = '';
 
   // Step 2: Final Review
   bool _isLoading = false;
@@ -86,6 +90,15 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     '🇲🇲 Myanmar',
   ];
 
+  final List<Map<String, String>> _languages = const [
+    {'code': 'ko', 'label': '🇰🇷 한국어 (Korean)'},
+    {'code': 'en', 'label': '🇺🇸 English'},
+    {'code': 'vi', 'label': '🇻🇳 Tiếng Việt (Vietnamese)'},
+    {'code': 'zh', 'label': '🇨🇳 中文 (Chinese)'},
+    {'code': 'ja', 'label': '🇯🇵 日本語 (Japanese)'},
+    {'code': 'my', 'label': '🇲🇲 မြန်မာ (Myanmar)'},
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -93,16 +106,57 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   }
 
   Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      // Load from registration data
-      _nameController.text = prefs.getString('realName') ?? '';
-      _usernameController.text = prefs.getString('nickname') ?? '';
-      _selectedUniversity = _getSchoolName(prefs.getInt('schoolId') ?? 1);
-      _selectedMajor = _getDepartmentName(prefs.getInt('departmentId') ?? 1);
-      _selectedYear = _getYearStringFromEnrollmentYear(prefs.getInt('enrollmentYear'));
-      _selectedNationality = _getNationalityName(prefs.getString('nationalityIso2') ?? 'KR');
-    });
+    try {
+      // Try to load from API first
+      final profileData = await ProfileService.getMyProfile();
+      setState(() {
+        _nameController.text = profileData['realname']?.toString() ?? '';
+        _usernameController.text = profileData['nickname']?.toString() ?? '';
+        _selectedUniversity = _getSchoolNameFromProfile(profileData);
+        _selectedMajor = _getDepartmentNameFromProfile(profileData);
+        _selectedYear = _getYearStringFromEnrollmentYear(
+          profileData['enrollment_year'] is int 
+            ? profileData['enrollment_year'] 
+            : int.tryParse(profileData['enrollment_year']?.toString() ?? '')
+        );
+        _selectedNationality = _getNationalityName(profileData['nationality_iso2']?.toString() ?? 'KR');
+        _selectedMainLanguage = profileData['main_language']?.toString() ?? 'en';
+      });
+    } catch (e) {
+      // Fallback to SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        _nameController.text = prefs.getString('realName') ?? '';
+        _usernameController.text = prefs.getString('nickname') ?? '';
+        _selectedUniversity = _getSchoolName(prefs.getInt('schoolId') ?? 1);
+        _selectedMajor = _getDepartmentName(prefs.getInt('departmentId') ?? 1);
+        _selectedYear = _getYearStringFromEnrollmentYear(prefs.getInt('enrollmentYear'));
+        _selectedNationality = _getNationalityName(prefs.getString('nationalityIso2') ?? 'KR');
+        _selectedMainLanguage = prefs.getString('mainLanguage') ?? 'en';
+      });
+    }
+  }
+
+  String _getSchoolNameFromProfile(Map<String, dynamic> profileData) {
+    if (profileData['school'] != null && profileData['school'] is Map<String, dynamic>) {
+      return profileData['school']['school_name']?.toString() ?? '';
+    } else if (profileData['school_id'] != null) {
+      final schoolId = profileData['school_id'];
+      final sid = schoolId is int ? schoolId : int.tryParse(schoolId.toString()) ?? 1;
+      return _getSchoolName(sid);
+    }
+    return '';
+  }
+
+  String _getDepartmentNameFromProfile(Map<String, dynamic> profileData) {
+    if (profileData['department'] != null && profileData['department'] is Map<String, dynamic>) {
+      return profileData['department']['department_name']?.toString() ?? '';
+    } else if (profileData['department_id'] != null) {
+      final deptId = profileData['department_id'];
+      final did = deptId is int ? deptId : int.tryParse(deptId.toString()) ?? 1;
+      return _getDepartmentName(did);
+    }
+    return '';
   }
 
   String _getSchoolName(int id) {
@@ -237,13 +291,13 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
       // Convert university name back to ID
       int schoolId = _getSchoolIdFromName(_selectedUniversity);
       if (schoolId <= 0) {
-        throw ApiException('Please select a university');
+        throw ApiException(AppLocalizations.of(context).pleaseSelectUniversity);
       }
       
       // Convert major name back to ID
       int departmentId = _getDepartmentIdFromName(_selectedMajor);
       if (departmentId <= 0) {
-        throw ApiException('Please select a major');
+        throw ApiException(AppLocalizations.of(context).majorRequired);
       }
       
       // Convert year string to int
@@ -252,8 +306,13 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
       // Convert nationality name back to ISO2 code
       String nationalityIso2 = _getNationalityIso2FromName(_selectedNationality);
       if (nationalityIso2.isEmpty) {
-        throw ApiException('Please select a nationality');
+        throw ApiException(AppLocalizations.of(context).nationalityRequired);
       }
+
+      // Convert main language code
+      String mainLanguageCode = _selectedMainLanguage.isNotEmpty 
+          ? _selectedMainLanguage 
+          : 'en';
 
       // Call API to update profile and get updated data
       final updatedProfile = await ProfileService.updateMyProfile(
@@ -263,6 +322,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
         departmentId: departmentId,
         enrollmentYear: enrollmentYear,
         nationalityIso2: nationalityIso2,
+        mainLanguage: mainLanguageCode,
       );
 
       // Update local SharedPreferences with data from API response
@@ -288,6 +348,25 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
       if (updatedProfile['nationality_iso2'] != null) {
         await prefs.setString('nationalityIso2', updatedProfile['nationality_iso2'].toString());
       }
+      if (updatedProfile['main_language'] != null) {
+        final mainLang = updatedProfile['main_language'].toString();
+        await prefs.setString('mainLanguage', mainLang);
+        // Sync main_language với language (ngôn ngữ hiển thị của app)
+        await prefs.setString('language', mainLang);
+        
+        // Clear cache cho school translation để link trường được dịch theo ngôn ngữ mới
+        ApiService.clearCacheEntry(ApiConfig.schoolTranslationEndpoint);
+        
+        // Reload NewsProvider để cập nhật Domestic tab theo main_language mới
+        if (mounted) {
+          try {
+            final newsProvider = context.read<NewsProvider>();
+            await newsProvider.setUserMainLanguage(mainLang);
+          } catch (e) {
+            // Ignore if NewsProvider is not available
+          }
+        }
+      }
 
       if (mounted) {
         setState(() {
@@ -304,7 +383,12 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
         );
 
         // Return true with updated profile data to indicate successful update
-        Navigator.pop(context, {'success': true, 'profile': updatedProfile});
+        // Include main_language để trigger reload app language
+        Navigator.pop(context, {
+          'success': true, 
+          'profile': updatedProfile,
+          'main_language': updatedProfile['main_language'],
+        });
       }
     } on ApiException catch (e) {
       if (mounted) {
@@ -314,7 +398,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.message}'),
+            content: Text('${AppLocalizations.of(context).error}: ${e.message}'),
             backgroundColor: Colors.red[600],
             duration: const Duration(seconds: 3),
           ),
@@ -328,7 +412,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update profile: ${e.toString()}'),
+            content: Text('${AppLocalizations.of(context).failedToUpdateProfile}: ${e.toString()}'),
             backgroundColor: Colors.red[600],
             duration: const Duration(seconds: 3),
           ),
@@ -697,6 +781,36 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
               });
             },
           ),
+          const SizedBox(height: 16),
+
+          // Main Language dropdown
+          DropdownButtonFormField<String>(
+            value: _selectedMainLanguage.isNotEmpty && _languages.any((lang) => lang['code'] == _selectedMainLanguage)
+                ? _selectedMainLanguage
+                : null,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).mainLanguage,
+              prefixIcon: const Icon(Icons.language),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.red[600]!, width: 2),
+              ),
+            ),
+            items: _languages.map((Map<String, String> lang) {
+              return DropdownMenuItem<String>(
+                value: lang['code'],
+                child: Text(lang['label']!),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedMainLanguage = newValue ?? 'en';
+              });
+            },
+          ),
         ],
       ),
     );
@@ -735,6 +849,14 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           _buildReviewCard(AppLocalizations.of(context).year, _selectedYear),
           const SizedBox(height: 16),
           _buildReviewCard(AppLocalizations.of(context).nationality, _selectedNationality),
+          const SizedBox(height: 16),
+          _buildReviewCard(
+            AppLocalizations.of(context).mainLanguage,
+            _languages.firstWhere(
+              (lang) => lang['code'] == _selectedMainLanguage,
+              orElse: () => {'code': 'en', 'label': '🇺🇸 English'},
+            )['label']!,
+          ),
         ],
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../models/banner_model.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../utils/date_time_utils.dart';
 
 class BannerDetailScreen extends StatefulWidget {
   final BannerModel banner;
@@ -260,7 +261,7 @@ class _BannerDetailScreenState extends State<BannerDetailScreen>
                                   ),
                                 ),
                                 Text(
-                                  'Published ${_formatDate(widget.banner.publishDate)}',
+                                  '${AppLocalizations.of(context).published} ${_formatDate(widget.banner.publishDate)}',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: isDark ? Colors.white70 : Colors.grey[600],
@@ -383,17 +384,6 @@ class _BannerDetailScreenState extends State<BannerDetailScreen>
   }
 
   String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-    
-    if (difference.inDays == 0) {
-      return 'Today';
-    } else if (difference.inDays == 1) {
-      return 'Yesterday';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
-    }
+    return DateTimeUtils.formatDate(context, date);
   }
 }
