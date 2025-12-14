@@ -110,7 +110,8 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
 
       if (content.isEmpty) return;
 
-      DateTime? time;
+      // Parse time - ensure it's never null
+      DateTime time;
       if (createdAt != null) {
         try {
           time = DateTime.parse(createdAt).toLocal();
@@ -213,7 +214,8 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
             if (content.isEmpty) continue;
             
             final createdAt = msgData['created_at']?.toString();
-            DateTime? time;
+            // Parse time - ensure it's never null
+            DateTime time;
             if (createdAt != null) {
               try {
                 time = DateTime.parse(createdAt).toLocal();
