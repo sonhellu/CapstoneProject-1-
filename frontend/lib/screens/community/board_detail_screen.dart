@@ -42,12 +42,17 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
 
       if (mounted) {
         // Đảm bảo cả title và content đều được dịch
-        final translatedTitle = translationResult['title']?.toString().trim() ?? widget.post.title;
-        final translatedContent = translationResult['content']?.toString().trim() ?? widget.post.content;
+        final translatedTitle = translationResult['title']?.toString() ?? '';
+        final translatedContent = translationResult['content']?.toString() ?? '';
         
         setState(() {
-          _translatedTitle = translatedTitle.isNotEmpty ? translatedTitle : widget.post.title;
-          _translatedContent = translatedContent.isNotEmpty ? translatedContent : widget.post.content;
+          // Sử dụng translated text nếu có, nếu không thì dùng original
+          _translatedTitle = translatedTitle.isNotEmpty 
+              ? translatedTitle.trim() 
+              : widget.post.title;
+          _translatedContent = translatedContent.isNotEmpty 
+              ? translatedContent.trim() 
+              : widget.post.content;
           _isTranslated = true;
           _isTranslating = false;
           _errorMessage = null;

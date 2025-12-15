@@ -384,8 +384,13 @@ def translate_post(post_id):
         source_lang = post.original_lang or "ko"  # Default to Korean if not set
         target_lang = user.main_language or "en"  # Default to English if not set
         
+        current_app.logger.info(f"Translating post {post_id}: {source_lang} -> {target_lang}")
+        current_app.logger.info(f"Post title: {post.title[:50]}...")
+        current_app.logger.info(f"Post content length: {len(post.content) if post.content else 0}")
+        
         # 4. Nếu source và target giống nhau, không cần dịch
         if source_lang == target_lang:
+            current_app.logger.info(f"Source and target languages are the same ({source_lang}), returning original")
             return jsonify({
                 "title": post.title,
                 "content": post.content,
@@ -398,27 +403,39 @@ def translate_post(post_id):
         translation_results = []
         texts_to_translate = [post.title, post.content]
         
-        for text in texts_to_translate:
+        for idx, text in enumerate(texts_to_translate):
+            if not text or len(text.strip()) == 0:
+                current_app.logger.warning(f"Text {idx} (title=0, content=1) is empty, skipping translation")
+                translation_results.append(text)
+                continue
+                
             try:
                 # Gọi internal translate function
+                current_app.logger.info(f"Translating text {idx} (title=0, content=1), length: {len(text)}")
                 translation_result = _translate_text_internal(
                     text=text,
                     source_lang=source_lang,
                     target_lang=target_lang
                 )
-                translation_results.append(translation_result.get("translated_text", text))
+                translated_text = translation_result.get("translated_text", text)
+                current_app.logger.info(f"Translation {idx} result length: {len(translated_text) if translated_text else 0}")
+                translation_results.append(translated_text if translated_text else text)
             except Exception as e:
-                current_app.logger.error(f"Translation failed for text: {str(e)}")
+                current_app.logger.error(f"Translation failed for text {idx}: {str(e)}", exc_info=True)
                 translation_results.append(text)  # Fallback to original text
         
-        return jsonify({
-            "title": translation_results[0],
-            "content": translation_results[1],
+        response_data = {
+            "title": translation_results[0] if len(translation_results) > 0 else post.title,
+            "content": translation_results[1] if len(translation_results) > 1 else post.content,
             "original_lang": source_lang,
             "target_lang": target_lang,
             "original_title": post.title,
             "original_content": post.content
-        }), 200
+        }
+        
+        current_app.logger.info(f"Translation complete. Title length: {len(response_data['title'])}, Content length: {len(response_data['content'])}")
+        
+        return jsonify(response_data), 200
         
     except Exception as e:
         current_app.logger.error(f"Translate post error: {str(e)}", exc_info=True)
