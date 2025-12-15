@@ -385,17 +385,16 @@ def translate_post(post_id):
             return jsonify({"error": "User not found"}), 404
         
         # 3. Xác định source và target language
-        # Lưu original_lang từ post (có thể là None)
-        post_original_lang = post.original_lang
-        
-        # Xác định source_lang để dùng cho translation
-        # Ưu tiên dùng original_lang của post, nếu không có thì detect
-        if post_original_lang:
-            source_lang = post_original_lang
+        # Source language = original_lang của post, nếu không có thì detect
+        if post.original_lang:
+            source_lang = post.original_lang
         else:
-            # Detect language từ title và content
+            # Detect language từ title và content nếu post không có original_lang
             sample_text = (post.title or "") + " " + (post.content[:200] if post.content else "")
             source_lang = _detect_language(sample_text)
+        
+        # original_lang trong response = source_lang (luôn giống nhau)
+        original_lang = source_lang
         
         target_lang = db_user.main_language or "en"  # Lấy từ DB, fallback to English if not set
         
@@ -421,8 +420,7 @@ def translate_post(post_id):
             return jsonify({
                 "title": post.title,
                 "content": post.content,
-                "original_lang": post_original_lang or source_lang,
-                "source_language": source_lang,
+                "original_lang": original_lang,
                 "target_lang": target_lang,
                 "message": "Source and target languages are the same"
             }), 200
@@ -463,8 +461,7 @@ def translate_post(post_id):
         response_data = {
             "title": translated_title,
             "content": translated_content,
-            "original_lang": post_original_lang or source_lang,  # Trả về original_lang từ post, hoặc detected nếu không có
-            "source_language": source_lang,  # Source language thực tế được dùng để dịch (có thể detected)
+            "original_lang": original_lang,  # Source language (từ post.original_lang hoặc detected)
             "target_lang": target_lang,
             "original_title": post.title,
             "original_content": post.content
