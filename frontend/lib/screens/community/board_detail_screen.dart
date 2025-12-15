@@ -41,9 +41,13 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       final translationResult = await CommunityService.translatePost(postId: postId);
 
       if (mounted) {
+        // Đảm bảo cả title và content đều được dịch
+        final translatedTitle = translationResult['title']?.toString().trim() ?? widget.post.title;
+        final translatedContent = translationResult['content']?.toString().trim() ?? widget.post.content;
+        
         setState(() {
-          _translatedTitle = translationResult['title'] ?? widget.post.title;
-          _translatedContent = translationResult['content'] ?? widget.post.content;
+          _translatedTitle = translatedTitle.isNotEmpty ? translatedTitle : widget.post.title;
+          _translatedContent = translatedContent.isNotEmpty ? translatedContent : widget.post.content;
           _isTranslated = true;
           _isTranslating = false;
           _errorMessage = null;
