@@ -319,13 +319,29 @@ def create_app():
     # 1. 설정 로드
     app.config.from_object(Config)
     
-    # Initialize SocketIO
+    # Initialize SocketIO with proper async mode
+    # Try eventlet first (for production/Gunicorn), then gevent, then threading
+    async_mode = None
+    try:
+        import eventlet
+        async_mode = 'eventlet'
+    except ImportError:
+        try:
+            import gevent
+            async_mode = 'gevent'
+        except ImportError:
+            async_mode = 'threading'
+    
     socketio = SocketIO(
         app,
         cors_allowed_origins="*",
-        async_mode='threading',
-        logger=True,
-        engineio_logger=True
+        async_mode=async_mode,
+        logger=False,  # Disable verbose logging in production
+        engineio_logger=False,  # Disable engineio logging in production
+        allow_upgrades=True,
+        transports=['websocket', 'polling'],
+        ping_timeout=60,
+        ping_interval=25
     )
     
     # Store socketio instance in app for access in run.py

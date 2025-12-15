@@ -4,6 +4,10 @@ from app import create_app
 app = create_app()
 socketio = app.socketio
 
+# Export app and socketio for Gunicorn
+# Gunicorn will use: gunicorn --worker-class eventlet -w 1 run:app
+# Or just use: gunicorn run:app (without SocketIO support)
+
 if __name__ == "__main__":
     # Production: debug=False, Development: debug=True
     import os
