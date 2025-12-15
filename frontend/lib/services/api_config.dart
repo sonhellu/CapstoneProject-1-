@@ -31,6 +31,7 @@ class ApiConfig {
   static const String conversationsEndpoint = '/api/conversations';
   static String conversationEndpoint(int convId) => '/api/conversations/$convId';
   static String conversationMessagesEndpoint(int convId) => '/api/conversations/$convId/messages';
+  static String conversationMessagesPollEndpoint(int convId) => '/api/conversations/$convId/messages/poll';
   static String deleteMessageEndpoint(int convId, int messageId) => '/api/conversations/$convId/messages/$messageId';
   static String markConversationReadEndpoint(int convId) => '/api/conversations/$convId/read';
   

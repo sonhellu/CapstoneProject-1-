@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit, join_room, leave_room, disconnect
 from .config import Config
 from .database import db, ma
 import os
@@ -319,35 +318,6 @@ def create_app():
     # 1. 설정 로드
     app.config.from_object(Config)
     
-    # Initialize SocketIO with proper async mode
-    # Try eventlet first (for production/Gunicorn), then gevent, then threading
-    async_mode = None
-    try:
-        import eventlet
-        async_mode = 'eventlet'
-    except ImportError:
-        try:
-            import gevent
-            async_mode = 'gevent'
-        except ImportError:
-            async_mode = 'threading'
-    
-    socketio = SocketIO(
-        app,
-        cors_allowed_origins="*",
-        async_mode=async_mode,
-        logger=False,  # Disable verbose logging in production
-        engineio_logger=False,  # Disable engineio logging in production
-        allow_upgrades=False,  # Disable WebSocket upgrade on Render (use polling only)
-        transports=['polling'],  # Use polling only for better compatibility with Render
-        ping_timeout=120,  # Increased for Render
-        ping_interval=30,
-        max_http_buffer_size=1e8
-    )
-    
-    # Store socketio instance in app for access in run.py
-    app.socketio = socketio
-    
     # CORS 설정 - cho phép frontend gọi API với tất cả methods
     CORS(app, 
          resources={r"/api/*": {
@@ -415,10 +385,6 @@ def create_app():
     app.register_blueprint(matching_bp)
     app.register_blueprint(options_bp)
     app.register_blueprint(profile_bp)
-    
-    # Register socket events
-    from .routes.matching import register_socket_events
-    register_socket_events(socketio)
     
     # 6. (선택) 간단한 루트 엔드포인트
     @app.route("/")

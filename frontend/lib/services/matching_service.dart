@@ -92,6 +92,31 @@ class MatchingService {
     return response;
   }
   
+  /// Poll for new messages (Long Polling)
+  static Future<List<dynamic>> pollMessages({
+    required int conversationId,
+    int? lastMessageId,
+  }) async {
+    final headers = await AuthService.getAuthHeaders();
+    
+    String endpoint = ApiConfig.conversationMessagesPollEndpoint(conversationId);
+    if (lastMessageId != null) {
+      endpoint += '?last_message_id=$lastMessageId';
+    }
+    
+    final response = await ApiService.get(
+      endpoint,
+      headers: headers,
+      useCache: false, // Never cache polling results
+    );
+    
+    if (response is Map && response.containsKey('messages')) {
+      return response['messages'] as List<dynamic>? ?? [];
+    }
+    
+    return [];
+  }
+
   /// Gửi tin nhắn
   static Future<Map<String, dynamic>> sendMessage({
     required int conversationId,

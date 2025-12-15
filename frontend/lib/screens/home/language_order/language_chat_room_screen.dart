@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../services/matching_service.dart';
-import '../../../services/socket_service.dart';
 import '../../../services/profile_service.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../utils/date_time_utils.dart';
 
 /// 언어교류용 1:1 채팅방 (서버 API 연동) - Improved with avatars, better design, and performance
 class LanguageChatRoomScreen extends StatefulWidget {
@@ -32,13 +32,16 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
   bool _showAcceptedNotification = true;
   bool _isInitialLoad = true;
   int? _currentUserId; // Cache current user ID
+  bool _isPolling = false; // Track polling state
 
   @override
   void initState() {
     super.initState();
     _loadCurrentUserId();
-    _initializeSocket();
-    _loadMessages();
+    _loadMessages().then((_) {
+      // Start long polling after initial load
+      _startLongPolling();
+    });
   }
 
   /// Load current user ID from profile
@@ -71,176 +74,110 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
 
   @override
   void dispose() {
-    // Leave conversation room and cleanup
-    SocketService.leaveConversation(widget.conversationId);
-    SocketService.off('new_message');
-    SocketService.off('message_sent');
-    SocketService.off('error');
+    // Stop polling
+    _isPolling = false;
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-  /// Initialize WebSocket connection
-  Future<void> _initializeSocket() async {
-    try {
-      // Connect socket if not connected
-      if (!SocketService.isConnected) {
-        await SocketService.connect();
-      }
-
-      // Wait a bit to check if connection succeeds
-      await Future.delayed(const Duration(seconds: 2));
-      
-      // If still not connected after timeout, fallback to polling
-      if (!SocketService.isConnected) {
-        print('Socket connection failed, falling back to polling');
-        _startMessageRefresh();
-        return;
-      }
-
-      // Join conversation room
-      SocketService.joinConversation(widget.conversationId);
-
-      // Listen to new messages
-      SocketService.onNewMessage((data) {
-        if (mounted) {
-          _handleNewMessage(data);
-        }
-      });
-
-      // Listen to message sent confirmation
-      SocketService.onMessageSent((data) {
-        if (mounted) {
-          _handleMessageSent(data);
-        }
-      });
-
-      // Listen to errors
-      SocketService.onError((data) {
-        if (mounted) {
-          final errorMsg = data['message'] as String? ?? 'Unknown error';
-          print('Socket error: $errorMsg');
-          // Don't show error to user, just fallback to polling
-          _startMessageRefresh();
-        }
-      });
-    } catch (e) {
-      print('Socket initialization error: $e');
-      // Fallback to polling if socket fails
-      _startMessageRefresh();
-    }
+  /// Start Long Polling for new messages
+  void _startLongPolling() {
+    if (_isPolling) return;
+    _isPolling = true;
+    _pollForNewMessages();
   }
 
-  /// Handle new message from socket
-  void _handleNewMessage(Map<String, dynamic> data) async {
+  /// Poll for new messages using HTTP Long Polling
+  Future<void> _pollForNewMessages() async {
+    if (!_isPolling || !mounted) return;
+
     try {
-      final conversationId = data['conversation_id'] as int?;
-      if (conversationId != widget.conversationId) return;
+      // Get the last message ID (if any)
+      final lastMessageId = _messages.isNotEmpty 
+          ? _messages.last.messageId 
+          : null;
 
-      final messageId = data['id'] as int?;
-      final content = data['content']?.toString() ?? '';
-      final senderUserId = data['sender_user_id'] as int?;
-      final senderNickname = data['sender_nickname']?.toString();
-      final createdAt = data['created_at']?.toString();
-      
-      // Determine is_sent_by_me based on sender_user_id vs current user_id
-      bool isSentByMe = false;
-      final currentUserId = _currentUserId ?? await _getCurrentUserId();
-      if (senderUserId != null && currentUserId != null) {
-        isSentByMe = senderUserId == currentUserId;
-      } else {
-        // Fallback: check if message already loaded (from API) with same ID
-        // This handles case when we load messages after socket message
-        final existingMsg = _messages.firstWhere(
-          (msg) => msg.messageId == messageId,
-          orElse: () => _ChatMessage(
-            messageId: -1,
-            text: '',
-            isMine: false,
-            time: DateTime.now(),
-          ),
-        );
-        if (existingMsg.messageId != -1) {
-          isSentByMe = existingMsg.isMine;
-        }
-      }
+      // Poll for new messages (server will hold request for up to 30 seconds)
+      final newMessagesData = await MatchingService.pollMessages(
+        conversationId: widget.conversationId,
+        lastMessageId: lastMessageId,
+      );
 
-      if (content.isEmpty) return;
+      if (!mounted || !_isPolling) return;
 
-      // Parse time - ensure it's never null
-      DateTime time;
-      if (createdAt != null) {
-        try {
-          time = DateTime.parse(createdAt).toLocal();
-        } catch (e) {
-          time = DateTime.now();
-        }
-      } else {
-        time = DateTime.now();
-      }
+      if (newMessagesData.isNotEmpty) {
+        // Process new messages
+        final List<_ChatMessage> newMessages = [];
+        for (var msgData in newMessagesData) {
+          if (msgData is Map<String, dynamic>) {
+            final messageId = msgData['id'] as int?;
+            final content = msgData['content']?.toString() ?? '';
+            final isSentByMe = msgData['is_sent_by_me'] as bool? ?? false;
+            final createdAt = msgData['created_at']?.toString();
 
-      // Check if message already exists (avoid duplicates)
-      final exists = _messages.any((msg) => msg.messageId == messageId);
-      if (exists) return;
+            if (content.isEmpty || messageId == null) continue;
 
-      setState(() {
-        _messages.add(
-          _ChatMessage(
-            messageId: messageId,
-            text: content,
-            isMine: isSentByMe,
-            time: time,
-            senderName: senderNickname,
-          ),
-        );
-      });
+            // Check if message already exists (avoid duplicates)
+            final exists = _messages.any((msg) => msg.messageId == messageId);
+            if (exists) continue;
 
-      // Scroll to bottom
-      if (_scrollController.hasClients) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_scrollController.hasClients) {
-            _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
+            // Parse time
+            DateTime time;
+            if (createdAt != null) {
+              try {
+                time = DateTime.parse(createdAt).toLocal();
+              } catch (e) {
+                time = DateTime.now();
+              }
+            } else {
+              time = DateTime.now();
+            }
+
+            newMessages.add(
+              _ChatMessage(
+                messageId: messageId,
+                text: content,
+                isMine: isSentByMe,
+                time: time,
+                senderName: msgData['sender_nickname'] as String?,
+              ),
             );
+          }
+        }
+
+        if (newMessages.isNotEmpty && mounted) {
+          setState(() {
+            _messages.addAll(newMessages);
+          });
+
+          // Scroll to bottom
+          if (_scrollController.hasClients) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (_scrollController.hasClients) {
+                _scrollController.animateTo(
+                  _scrollController.position.maxScrollExtent,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut,
+                );
+              }
+            });
+          }
+        }
+      }
+
+      // Immediately poll again for new messages
+      _pollForNewMessages();
+    } catch (e) {
+      print('Long polling error: $e');
+      // Wait a bit before retrying on error
+      if (_isPolling && mounted) {
+        Future.delayed(const Duration(seconds: 2), () {
+          if (_isPolling && mounted) {
+            _pollForNewMessages();
           }
         });
       }
-    } catch (e) {
-      print('Error handling new message: $e');
-    }
-  }
-
-  /// Handle message sent confirmation
-  void _handleMessageSent(Map<String, dynamic> data) {
-    try {
-      final messageId = data['message_id'] as int?;
-      if (messageId == null) return;
-
-      // Find temp message and update with real message ID
-      final tempIndex = _messages.indexWhere(
-        (msg) => msg.messageId == null && msg.isMine,
-      );
-
-      if (tempIndex != -1) {
-        setState(() {
-          _messages[tempIndex] = _ChatMessage(
-            messageId: messageId,
-            text: _messages[tempIndex].text,
-            isMine: true,
-            time: _messages[tempIndex].time,
-            senderName: _messages[tempIndex].senderName,
-          );
-          _isSending = false;
-        });
-      }
-    } catch (e) {
-      print('Error handling message sent: $e');
-      setState(() {
-        _isSending = false;
-      });
     }
   }
 
@@ -343,17 +280,7 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
     }
   }
 
-  /// Start auto-refresh messages (fallback if socket fails)
-  void _startMessageRefresh() {
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted && !_isSending && !_isLoading) {
-        _loadMessages();
-        _startMessageRefresh();
-      }
-    });
-  }
-
-  /// Send message via WebSocket (fallback to API if socket not connected)
+  /// Send message via HTTP API
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty || _isSending) return;
@@ -387,38 +314,36 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
     }
 
     try {
-      // Try WebSocket first
-      if (SocketService.isConnected) {
-        SocketService.sendMessage(
-          conversationId: widget.conversationId,
-          content: text,
-        );
-        // Message will be confirmed via socket event
-        // _isSending will be set to false in _handleMessageSent
-      } else {
-        // Fallback to REST API
-        await MatchingService.sendMessage(
-          conversationId: widget.conversationId,
-          content: text,
-        );
+      // Send message via HTTP API
+      await MatchingService.sendMessage(
+        conversationId: widget.conversationId,
+        content: text,
+      );
 
-        await _loadMessages();
-        
-        setState(() {
-          _isSending = false;
-        });
-        
-        if (_scrollController.hasClients) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_scrollController.hasClients) {
-              _scrollController.animateTo(
-                _scrollController.position.maxScrollExtent,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut,
-              );
-            }
-          });
+      // Remove temp message and reload to get real message with ID
+      // Long polling will pick up the new message automatically
+      setState(() {
+        if (tempMessageIndex < _messages.length) {
+          _messages.removeAt(tempMessageIndex);
         }
+        _isSending = false;
+      });
+      
+      // Long polling will automatically add the new message
+      // But we can also reload once to ensure it's there
+      await Future.delayed(const Duration(milliseconds: 500));
+      await _loadMessages();
+        
+      if (_scrollController.hasClients) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+        });
       }
     } catch (e) {
       setState(() {
@@ -468,25 +393,7 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
   }
 
   String _formatTime(DateTime time) {
-    final l10n = AppLocalizations.of(context);
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final messageDate = DateTime(time.year, time.month, time.day);
-    final h = time.hour.toString().padLeft(2, '0');
-    final m = time.minute.toString().padLeft(2, '0');
-    
-    if (messageDate == today) {
-      // Today: show time only
-      return '$h:$m';
-    } else if (messageDate == today.subtract(const Duration(days: 1))) {
-      // Yesterday
-      return '${l10n.yesterday} $h:$m';
-    } else {
-      // Older: show date and time
-      final d = time.day.toString().padLeft(2, '0');
-      final month = time.month.toString().padLeft(2, '0');
-      return '$d/$month $h:$m';
-    }
+    return DateTimeUtils.formatChatTime(context, time);
   }
 
   /// Get avatar color based on name (consistent color for same name)
