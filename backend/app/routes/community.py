@@ -386,13 +386,16 @@ def translate_post(post_id):
         
         # 3. Xác định source và target language
         # Source language = ngôn ngữ người dùng chọn khi đăng bài (original_lang của post)
-        # Nếu post không có original_lang, detect từ nội dung
-        if post.original_lang:
+        # Nếu post không có original_lang hoặc original_lang không hợp lệ, detect từ nội dung
+        if post.original_lang and post.original_lang in ['en', 'ko', 'vi', 'zh', 'ja', 'my']:
             source_lang = post.original_lang  # Ngôn ngữ người dùng chọn khi đăng bài
         else:
-            # Detect language từ title và content nếu post không có original_lang
-            sample_text = (post.title or "") + " " + (post.content[:200] if post.content else "")
-            source_lang = _detect_language(sample_text)
+            # Detect language từ title và content nếu post không có original_lang hoặc không hợp lệ
+            # Ưu tiên dùng full content để detect chính xác hơn
+            sample_text = (post.title or "") + " " + (post.content[:500] if post.content else "")
+            detected_lang = _detect_language(sample_text)
+            source_lang = detected_lang
+            current_app.logger.info(f"Post {post_id} has no valid original_lang, detected language: {detected_lang} from sample: {sample_text[:100]}...")
         
         # original_lang trong response = source_lang (luôn giống nhau)
         original_lang = source_lang
@@ -515,16 +518,21 @@ def _detect_language(text):
         vietnamese_ratio = vietnamese_count / text_length
         
         # Determine language based on highest ratio
-        if korean_ratio > 0.1:
+        # Use lower threshold for Korean since text may contain URLs, numbers, etc.
+        if korean_count > 0 and korean_ratio > 0.05:  # Lower threshold for Korean (5% instead of 10%)
             return "ko"
-        elif chinese_ratio > 0.1:
+        elif chinese_count > 0 and chinese_ratio > 0.1:
             return "zh"
-        elif japanese_ratio > 0.1:
+        elif japanese_count > 0 and japanese_ratio > 0.1:
             return "ja"
-        elif myanmar_ratio > 0.1:
+        elif myanmar_count > 0 and myanmar_ratio > 0.1:
             return "my"
-        elif vietnamese_ratio > 0.05:  # Lower threshold for Vietnamese
+        elif vietnamese_count > 0 and vietnamese_ratio > 0.05:  # Lower threshold for Vietnamese
             return "vi"
+        
+        # If we have any Korean characters at all (even if ratio is low), prioritize Korean
+        if korean_count > 5:  # If there are at least 5 Korean characters
+            return "ko"
     
     # Default to English if no clear indicators
     return "en"
