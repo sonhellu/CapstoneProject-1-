@@ -158,6 +158,24 @@ class _BoardScreenState extends State<BoardScreen> {
     await _loadPosts();
   }
 
+  /// Handle post tap - navigate to detail and reload if deleted
+  Future<void> _handlePostTap(BoardPost post) async {
+    final deleted = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BoardDetailScreen(post: post),
+      ),
+    );
+    
+    // Reload posts if post was deleted
+    if (deleted == true && mounted) {
+      // Clear cache và reload posts after deletion
+      _postsCache.remove(_selected);
+      _errorCache.remove(_selected);
+      await _loadPosts(forceRefresh: true);
+    }
+  }
+
   /// Handle delete post
   Future<void> _handleDeletePost(BoardPost post) async {
     try {
@@ -441,6 +459,7 @@ class _BoardScreenState extends State<BoardScreen> {
             post: posts[i],
             boardCategory: _selected,
             onDelete: () => _handleDeletePost(posts[i]),
+            onTap: () => _handlePostTap(posts[i]),
           ),
         ),
       ),
@@ -453,10 +472,12 @@ class _BoardCard extends StatelessWidget {
   final BoardPost post;
   final BoardCategory boardCategory;
   final VoidCallback? onDelete;
+  final VoidCallback? onTap;
   const _BoardCard({
     required this.post,
     required this.boardCategory,
     this.onDelete,
+    this.onTap,
   });
 
   @override
@@ -530,14 +551,7 @@ class _BoardCard extends StatelessWidget {
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BoardDetailScreen(post: post),
-              ),
-            );
-          },
+          onTap: onTap,
           child: Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

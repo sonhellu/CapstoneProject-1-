@@ -385,9 +385,10 @@ def translate_post(post_id):
             return jsonify({"error": "User not found"}), 404
         
         # 3. Xác định source và target language
-        # Source language = original_lang của post, nếu không có thì detect
+        # Source language = ngôn ngữ người dùng chọn khi đăng bài (original_lang của post)
+        # Nếu post không có original_lang, detect từ nội dung
         if post.original_lang:
-            source_lang = post.original_lang
+            source_lang = post.original_lang  # Ngôn ngữ người dùng chọn khi đăng bài
         else:
             # Detect language từ title và content nếu post không có original_lang
             sample_text = (post.title or "") + " " + (post.content[:200] if post.content else "")
@@ -396,7 +397,8 @@ def translate_post(post_id):
         # original_lang trong response = source_lang (luôn giống nhau)
         original_lang = source_lang
         
-        target_lang = db_user.main_language or "en"  # Lấy từ DB, fallback to English if not set
+        # Target language = ngôn ngữ app được chọn (main_language của user)
+        target_lang = db_user.main_language or "en"  # Ngôn ngữ app được chọn, fallback to English if not set
         
         # Đảm bảo target_lang là lowercase và hợp lệ
         if target_lang:
