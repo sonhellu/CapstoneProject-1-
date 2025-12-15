@@ -1,9 +1,11 @@
 // lib/screens/community/board_write_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../services/community_service.dart';
 import '../../services/api_service.dart';
 import '../../l10n/app_localizations.dart';
 import '../../constants/app_constants.dart';
+import '../../providers/news_provider.dart';
 import 'board_screen.dart'; // BoardCategory 쓰려고 import
 
 // Map BoardCategory to board_id
@@ -145,6 +147,15 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
             margin: const EdgeInsets.all(16),
           ),
         );
+        
+        // Reload News section để hiển thị bài viết mới
+        try {
+          final newsProvider = context.read<NewsProvider>();
+          await newsProvider.refreshNews();
+        } catch (e) {
+          // Ignore error if NewsProvider is not available
+          print('Could not refresh news: $e');
+        }
         
         // Return the category so board screen knows which category to reload
         Navigator.pop(context, _selectedCategory);
