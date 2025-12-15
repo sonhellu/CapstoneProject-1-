@@ -308,14 +308,24 @@ def get_messages(conv_id):
         if not conv:
             return jsonify({"error": "Conversation not found"}), 404
 
-        msgs = Messages.query.filter_by(conversation_id=conv_id)\
-                             .order_by(Messages.created_at.asc())\
-                             .all()
+        # Optimize: Use join to load all messages with senders in one query (avoid N+1)
+        from sqlalchemy.orm import joinedload
+        msgs = Messages.query.options(
+            joinedload(Messages.sender)  # Eager load sender if relationship exists, otherwise use join
+        ).filter_by(conversation_id=conv_id)\
+         .order_by(Messages.created_at.asc())\
+         .all()
+        
+        # Get all unique sender IDs to fetch in batch
+        sender_ids = list(set(m.sender_user_id for m in msgs))
+        
+        # Fetch all senders in one query (batch loading)
+        senders = {u.id: u for u in Users.query.filter(Users.id.in_(sender_ids)).all()} if sender_ids else {}
         
         # Include sender information with avatar
         out = []
         for m in msgs:
-            sender = Users.query.get(m.sender_user_id)
+            sender = senders.get(m.sender_user_id)
             # Generate avatar URL (using pravatar or initials)
             avatar_url = f"https://i.pravatar.cc/150?img={m.sender_user_id}" if sender else None
             out.append({

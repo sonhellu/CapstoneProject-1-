@@ -38,7 +38,8 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
   void initState() {
     super.initState();
     _loadCurrentUserId();
-    _loadMessages().then((_) {
+    // Load messages với cache để nhanh hơn
+    _loadMessages(useCache: true).then((_) {
       // Start long polling after initial load
       _startLongPolling();
     });
@@ -182,17 +183,20 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
   }
 
   /// Load messages from API
-  Future<void> _loadMessages() async {
+  Future<void> _loadMessages({bool useCache = true}) async {
     if (_isSending) return; // Don't reload while sending
     
-    setState(() {
-      _isLoading = true;
-    });
+    // Chỉ hiển thị loading nếu chưa có messages (lần đầu load)
+    if (_messages.isEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     try {
       final response = await MatchingService.getMessages(
         conversationId: widget.conversationId,
-        useCache: false,
+        useCache: useCache,
       );
 
       if (mounted) {

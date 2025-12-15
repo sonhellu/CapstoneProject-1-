@@ -163,7 +163,7 @@ class MatchingService {
   /// Lấy danh sách tin nhắn (trả về Map với messages và match_status)
   static Future<Map<String, dynamic>> getMessages({
     required int conversationId,
-    bool useCache = false, // Default no cache to get latest messages
+    bool useCache = true, // Use cache for faster loading (30 seconds cache)
   }) async {
     final headers = await AuthService.getAuthHeaders();
     
