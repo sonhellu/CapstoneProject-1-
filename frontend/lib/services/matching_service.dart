@@ -1,6 +1,9 @@
 import 'api_service.dart';
 import 'api_config.dart';
 import 'auth_service.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 /// Matching Service - Xử lý kết nối mentor-mentee và chat
 class MatchingService {
