@@ -7,6 +7,7 @@ import '../screens/home/news/news_detail_screen.dart';
 import '../screens/home/news/news_list_screen.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/date_time_utils.dart';
+import '../screens/community/board_screen.dart';
 
 class NewsSection extends StatefulWidget {
   final bool isDark;
@@ -284,6 +285,25 @@ class _NewsSectionState extends State<NewsSection>
     return error;
   }
 
+  /// Map board_name (Korean) to localized board name
+  String _getLocalizedBoardName(BuildContext context, String boardName) {
+    // Map Korean board names to BoardCategory
+    final boardNameMap = {
+      '공지게시판': BoardCategory.notice,
+      '자유게시판': BoardCategory.free,
+      '정보게시판': BoardCategory.info,
+      '홍보게시판': BoardCategory.promo,
+    };
+    
+    final category = boardNameMap[boardName];
+    if (category != null) {
+      return _getCategoryLabel(context, category);
+    }
+    
+    // If not found, return original (for other category names)
+    return boardName;
+  }
+
   Widget _buildViewAllButton(String type) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -516,7 +536,7 @@ class _NewsItemWidgetState extends State<_NewsItemWidget>
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  widget.news.category,
+                                  _getLocalizedBoardName(context, widget.news.category),
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600,

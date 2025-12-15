@@ -5,6 +5,7 @@ import '../../../providers/news_provider.dart';
 import '../../../constants/app_constants.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../utils/date_time_utils.dart';
+import '../../community/board_screen.dart';
 import 'news_detail_screen.dart';
 
 class NewsListScreen extends StatefulWidget {
@@ -351,6 +352,25 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
     );
   }
 
+  /// Map board_name (Korean) to localized board name
+  String _getLocalizedBoardName(BuildContext context, String boardName) {
+    // Map Korean board names to BoardCategory
+    final boardNameMap = {
+      '공지게시판': BoardCategory.notice,
+      '자유게시판': BoardCategory.free,
+      '정보게시판': BoardCategory.info,
+      '홍보게시판': BoardCategory.promo,
+    };
+    
+    final category = boardNameMap[boardName];
+    if (category != null) {
+      return _getCategoryLabel(context, category);
+    }
+    
+    // If not found, return original (for other category names)
+    return boardName;
+  }
+
   Widget _buildNewsHeader(NewsModel news) {
     return Row(
       children: [
@@ -365,7 +385,7 @@ class _NewsListScreenState extends State<NewsListScreen> with TickerProviderStat
             borderRadius: BorderRadius.circular(AppConstants.radiusS),
           ),
           child: Text(
-            news.category,
+            _getLocalizedBoardName(context, news.category),
             style: TextStyle(
               fontSize: AppConstants.fontSizeS,
               fontWeight: AppConstants.fontWeightMedium,

@@ -395,9 +395,19 @@ def translate_post(post_id):
         
         target_lang = db_user.main_language or "en"  # Lấy từ DB, fallback to English if not set
         
-        current_app.logger.info(f"Translating post {post_id}: {source_lang} -> {target_lang} (user_id: {user_id}, main_language: {db_user.main_language})")
+        # Đảm bảo target_lang là lowercase và hợp lệ
+        if target_lang:
+            target_lang = target_lang.lower().strip()
+        else:
+            target_lang = "en"
         
-        current_app.logger.info(f"Translating post {post_id}: {source_lang} -> {target_lang} (user main_language: {target_lang})")
+        # Validate target language
+        valid_target_languages = ['en', 'ko', 'vi', 'zh', 'ja', 'my']
+        if target_lang not in valid_target_languages:
+            current_app.logger.warning(f"Invalid target_lang '{target_lang}' from user {user_id}, defaulting to 'en'")
+            target_lang = "en"
+        
+        current_app.logger.info(f"Translating post {post_id}: {source_lang} -> {target_lang} (user_id: {user_id}, main_language from DB: '{db_user.main_language}')")
         current_app.logger.info(f"Post title: {post.title[:50]}...")
         current_app.logger.info(f"Post content length: {len(post.content) if post.content else 0}")
         

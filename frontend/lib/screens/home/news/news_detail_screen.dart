@@ -6,6 +6,7 @@ import '../../../constants/app_constants.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../utils/date_time_utils.dart';
 import '../../../services/translation_service.dart';
+import '../../community/board_screen.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final NewsModel news;
@@ -344,7 +345,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
             borderRadius: BorderRadius.circular(AppConstants.radiusS),
           ),
           child: Text(
-            widget.news.category,
+            _getLocalizedBoardName(context, widget.news.category),
             style: TextStyle(
               fontSize: AppConstants.fontSizeS,
               color: AppConstants.primaryColor,
@@ -393,6 +394,25 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
         height: 1.6,
       ),
     );
+  }
+
+  /// Map board_name (Korean) to localized board name
+  String _getLocalizedBoardName(BuildContext context, String boardName) {
+    // Map Korean board names to BoardCategory
+    final boardNameMap = {
+      '공지게시판': BoardCategory.notice,
+      '자유게시판': BoardCategory.free,
+      '정보게시판': BoardCategory.info,
+      '홍보게시판': BoardCategory.promo,
+    };
+    
+    final category = boardNameMap[boardName];
+    if (category != null) {
+      return _getCategoryLabel(context, category);
+    }
+    
+    // If not found, return original (for other category names)
+    return boardName;
   }
 
   Widget _buildTags(bool isDark) {
