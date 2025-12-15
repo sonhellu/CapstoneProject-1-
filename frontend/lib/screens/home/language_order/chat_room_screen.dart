@@ -28,15 +28,14 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     super.initState();
 
     // 채팅방에 들어오는 순간, 히스토리 목록에 방을 등록 (또는 갱신)
-    LanguageChatHistory.addOrUpdateRoom(
-      LanguageChatRoom(
-        roomId: widget.roomId,
-        partnerName: widget.partnerName,
-        targetLanguageLabel: widget.targetLanguageLabel,
-        updatedAt: DateTime.now(),
-        lastMessage: '',
-      ),
-    );
+    // 채팅방에 들어오는 순간, 히스토리 목록에 방을 등록 (또는 갱신)
+LanguageChatHistory.updateLastMessage(
+  widget.roomId,
+  '',
+  DateTime.now(),
+  increaseUnread: false,
+);
+
   }
 
   @override

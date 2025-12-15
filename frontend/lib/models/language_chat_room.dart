@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 
 /// 언어 교류 채팅방(한 사람과의 대화 1줄)을 나타내는 모델
+@immutable
 class LanguageChatRoom {
   /// 방을 구분하는 ID
   /// 예: 'room_Alice_1733812345678'
@@ -29,7 +30,41 @@ class LanguageChatRoom {
     required this.updatedAt,
     required this.lastMessage,
     this.unreadCount = 0,
-  });
+  }) : assert(unreadCount >= 0);
+
+  /// JSON(Map) -> Model
+  /// (나중에 백엔드/로컬DB 연결 시 편하게 쓰기 위한 헬퍼)
+  factory LanguageChatRoom.fromJson(Map<String, dynamic> json) {
+    final updatedAtRaw = json['updatedAt'];
+    DateTime parsedUpdatedAt;
+
+    if (updatedAtRaw is DateTime) {
+      parsedUpdatedAt = updatedAtRaw;
+    } else if (updatedAtRaw is String && updatedAtRaw.isNotEmpty) {
+      parsedUpdatedAt = DateTime.tryParse(updatedAtRaw) ?? DateTime.now();
+    } else {
+      parsedUpdatedAt = DateTime.now();
+    }
+
+    return LanguageChatRoom(
+      roomId: (json['roomId'] as String?) ?? '',
+      partnerName: (json['partnerName'] as String?) ?? 'Unknown',
+      targetLanguageLabel: (json['targetLanguageLabel'] as String?) ?? '',
+      updatedAt: parsedUpdatedAt,
+      lastMessage: (json['lastMessage'] as String?) ?? '',
+      unreadCount: (json['unreadCount'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  /// Model -> JSON(Map)
+  Map<String, dynamic> toJson() => {
+        'roomId': roomId,
+        'partnerName': partnerName,
+        'targetLanguageLabel': targetLanguageLabel,
+        'updatedAt': updatedAt.toIso8601String(),
+        'lastMessage': lastMessage,
+        'unreadCount': unreadCount,
+      };
 
   LanguageChatRoom copyWith({
     String? roomId,
@@ -42,8 +77,7 @@ class LanguageChatRoom {
     return LanguageChatRoom(
       roomId: roomId ?? this.roomId,
       partnerName: partnerName ?? this.partnerName,
-      targetLanguageLabel:
-          targetLanguageLabel ?? this.targetLanguageLabel,
+      targetLanguageLabel: targetLanguageLabel ?? this.targetLanguageLabel,
       updatedAt: updatedAt ?? this.updatedAt,
       lastMessage: lastMessage ?? this.lastMessage,
       unreadCount: unreadCount ?? this.unreadCount,
