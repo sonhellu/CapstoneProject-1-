@@ -461,6 +461,7 @@ def translate_post(post_id):
 def _translate_text_internal(text, source_lang, target_lang):
     """
     Helper function để dịch text (tái sử dụng logic từ translate_text route)
+    Có auto-detect language: nếu translation từ source_lang fail, thử các source languages khác
     """
     # Map language codes to MyMemory format
     lang_map = {
@@ -489,63 +490,80 @@ def _translate_text_internal(text, source_lang, target_lang):
             "target_language": target_lang_code,
         }
     
-    # MyMemory Translation API
-    api_url = "https://api.mymemory.translated.net/get"
-    params = {
-        'q': text,
-        'langpair': f'{source_lang_code}|{target_lang_code}'
-    }
+    # List of source languages to try (start with provided source_lang, then try others)
+    # Common languages for this app: ko (Korean), en (English), vi (Vietnamese), zh (Chinese), ja (Japanese)
+    source_langs_to_try = [source_lang_code]
+    # Add other common source languages to try if initial translation fails
+    for lang in ['ko', 'en', 'vi', 'zh', 'ja', 'my']:
+        if lang != source_lang_code and lang != target_lang_code:
+            source_langs_to_try.append(lang)
     
-    try:
-        current_app.logger.info(f"Translating: {source_lang_code} -> {target_lang_code}")
-        response = requests.get(api_url, params=params, timeout=10)
-        response.raise_for_status()
+    # Try each source language until we get a good translation
+    api_url = "https://api.mymemory.translated.net/get"
+    
+    for try_source in source_langs_to_try:
+        if try_source == target_lang_code:
+            continue  # Skip if same as target
         
-        result = response.json()
-        response_status = result.get('responseStatus', 0)
-        
-        if response_status == 200:
-            translated_text = result.get('responseData', {}).get('translatedText', '').strip()
-            
-            if translated_text and translated_text != text:
-                return {
-                    "translated_text": translated_text,
-                    "source_language": source_lang_code,
-                    "target_language": target_lang_code,
-                }
-        
-        # Try LibreTranslate as fallback
-        current_app.logger.warning("MyMemory failed, trying LibreTranslate...")
-        libre_url = "https://libretranslate.de/translate"
-        libre_params = {
+        params = {
             'q': text,
-            'source': source_lang_code,
-            'target': target_lang_code,
-            'format': 'text'
+            'langpair': f'{try_source}|{target_lang_code}'
         }
         
-        libre_response = requests.post(libre_url, data=libre_params, timeout=10)
-        if libre_response.status_code == 200:
-            libre_result = libre_response.json()
-            libre_translated = libre_result.get('translatedText', '').strip()
-            if libre_translated and libre_translated != text:
-                return {
-                    "translated_text": libre_translated,
-                    "source_language": source_lang_code,
-                    "target_language": target_lang_code,
-                }
-        
-        # Final fallback: return original text
-        return {
-            "translated_text": text,
-            "source_language": source_lang_code,
-            "target_language": target_lang_code,
-            "warning": "Translation service unavailable"
-        }
-        
-    except requests.exceptions.RequestException as e:
-        current_app.logger.error(f"Translation API request error: {str(e)}")
-        raise
+        try:
+            current_app.logger.info(f"Trying translation: {try_source} -> {target_lang_code}")
+            response = requests.get(api_url, params=params, timeout=10)
+            response.raise_for_status()
+            
+            result = response.json()
+            response_status = result.get('responseStatus', 0)
+            
+            if response_status == 200:
+                translated_text = result.get('responseData', {}).get('translatedText', '').strip()
+                
+                # Check if translation is actually different from original and not empty
+                if translated_text and translated_text != text and len(translated_text) > 0:
+                    current_app.logger.info(f"Translation successful with source: {try_source}")
+                    return {
+                        "translated_text": translated_text,
+                        "source_language": try_source,  # Return detected source language
+                        "target_language": target_lang_code,
+                    }
+            
+            # Try LibreTranslate as fallback for this source language
+            current_app.logger.info(f"MyMemory failed for {try_source}, trying LibreTranslate...")
+            libre_url = "https://libretranslate.de/translate"
+            libre_params = {
+                'q': text,
+                'source': try_source,
+                'target': target_lang_code,
+                'format': 'text'
+            }
+            
+            libre_response = requests.post(libre_url, data=libre_params, timeout=10)
+            if libre_response.status_code == 200:
+                libre_result = libre_response.json()
+                libre_translated = libre_result.get('translatedText', '').strip()
+                if libre_translated and libre_translated != text and len(libre_translated) > 0:
+                    current_app.logger.info(f"LibreTranslate successful with source: {try_source}")
+                    return {
+                        "translated_text": libre_translated,
+                        "source_language": try_source,
+                        "target_language": target_lang_code,
+                    }
+                    
+        except requests.exceptions.RequestException as e:
+            current_app.logger.warning(f"Translation API request error for {try_source}: {str(e)}")
+            continue  # Try next source language
+    
+    # All translation attempts failed
+    current_app.logger.error(f"All translation attempts failed for text (length: {len(text)})")
+    return {
+        "translated_text": text,
+        "source_language": source_lang_code,
+        "target_language": target_lang_code,
+        "warning": "Could not translate - all translation services unavailable or text may already be in target language"
+    }
 
 
 @community_bp.route("/translate", methods=["POST", "OPTIONS"])
