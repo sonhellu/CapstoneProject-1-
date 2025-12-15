@@ -213,13 +213,14 @@ class MatchingService {
   }
   
   /// Lấy danh sách tất cả conversations của user
-  static Future<List<dynamic>> getConversations() async {
+  /// [forceRefresh] = true: Bỏ qua cache và force reload
+  static Future<List<dynamic>> getConversations({bool forceRefresh = false}) async {
     final headers = await AuthService.getAuthHeaders();
     
     final response = await ApiService.get(
       ApiConfig.conversationsEndpoint,
       headers: headers,
-      useCache: false, // Don't cache to get latest conversations
+      useCache: !forceRefresh, // Cache for 30 seconds (default in ApiService)
     );
     
     if (response is List) {

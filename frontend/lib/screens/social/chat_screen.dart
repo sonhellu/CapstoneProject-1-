@@ -30,7 +30,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       parent: _listAnimationController,
       curve: Curves.easeIn,
     );
-    _loadConversations();
+    // Load lần đầu, có thể dùng cache nếu có
+    _loadConversations(forceRefresh: false);
   }
 
   @override
@@ -40,13 +41,24 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   /// Load conversations from API
-  Future<void> _loadConversations() async {
-    setState(() {
-      _isLoading = true;
-    });
+  /// [forceRefresh] = true: Force reload từ API, không dùng cache
+  Future<void> _loadConversations({bool forceRefresh = false}) async {
+    // Nếu không force refresh và đã có data, hiển thị cached data trước
+    if (!forceRefresh && _conversations.isNotEmpty) {
+      setState(() {
+        _isLoading = false; // Hiển thị cached data ngay
+      });
+    } else {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     try {
-      final conversationsData = await MatchingService.getConversations();
+      // Load với cache (trừ khi force refresh)
+      final conversationsData = await MatchingService.getConversations(
+        forceRefresh: forceRefresh,
+      );
       
       // Filter to remove duplicates and conversations without messages
       final seenIds = <int>{};
@@ -110,6 +122,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           ),
         );
       }
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload conversations khi tab được chọn lại (nếu chưa có data)
+    // Nhưng không force refresh để tránh lag
+    if (_conversations.isEmpty && !_isLoading) {
+      _loadConversations(forceRefresh: false);
     }
   }
 
@@ -349,7 +371,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 },
               ),
             ).then((_) {
-              _loadConversations();
+              // Reload conversations sau khi quay lại từ chat room
+              // Force refresh để đảm bảo có unread count mới nhất
+              _loadConversations(forceRefresh: true);
             });
           },
           borderRadius: BorderRadius.circular(16),
