@@ -30,7 +30,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       parent: _listAnimationController,
       curve: Curves.easeIn,
     );
-    // Load lần đầu, có thể dùng cache nếu có
+    // Không set _isLoading = true ngay, load ở background
     _loadConversations(forceRefresh: false);
   }
 
@@ -43,12 +43,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   /// Load conversations from API
   /// [forceRefresh] = true: Force reload từ API, không dùng cache
   Future<void> _loadConversations({bool forceRefresh = false}) async {
-    // Nếu không force refresh và đã có data, hiển thị cached data trước
-    if (!forceRefresh && _conversations.isNotEmpty) {
+    // Luôn hiển thị cached data trước (không set _isLoading = true nếu đã có data)
+    if (_conversations.isNotEmpty) {
+      // Đã có data, không hiển thị loading - refresh ở background
       setState(() {
-        _isLoading = false; // Hiển thị cached data ngay
+        _isLoading = false;
       });
     } else {
+      // Chỉ hiển thị loading nếu chưa có data
       setState(() {
         _isLoading = true;
       });
