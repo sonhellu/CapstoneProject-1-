@@ -49,7 +49,7 @@ class SocketService {
       _socket = IO.io(
         socketUrl,
         IO.OptionBuilder()
-            .setTransports(['polling', 'websocket']) // Try polling first (more reliable on Render)
+            .setTransports(['polling']) // Use polling only for Render compatibility
             .enableAutoConnect()
             .enableReconnection()
             .setReconnectionAttempts(3) // Reduce attempts for faster fallback
