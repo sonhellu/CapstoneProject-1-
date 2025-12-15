@@ -104,17 +104,42 @@ class MatchingService {
       endpoint += '?last_message_id=$lastMessageId';
     }
     
-    final response = await ApiService.get(
-      endpoint,
-      headers: headers,
-      useCache: false, // Never cache polling results
-    );
-    
-    if (response is Map && response.containsKey('messages')) {
-      return response['messages'] as List<dynamic>? ?? [];
+    // Use direct HTTP call with extended timeout for long polling (15 seconds)
+    try {
+      final uri = Uri.parse('${ApiConfig.baseUrl}$endpoint');
+      final response = await http.get(
+        uri,
+        headers: headers,
+      ).timeout(
+        const Duration(seconds: 15), // Extended timeout for long polling
+        onTimeout: () {
+          throw TimeoutException('Poll request timeout');
+        },
+      );
+      
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        // Parse response body
+        dynamic responseBody;
+        try {
+          if (response.body.isNotEmpty) {
+            responseBody = jsonDecode(response.body);
+          } else {
+            responseBody = {'messages': []};
+          }
+        } catch (e) {
+          responseBody = {'messages': []};
+        }
+        
+        if (responseBody is Map && responseBody.containsKey('messages')) {
+          return responseBody['messages'] as List<dynamic>? ?? [];
+        }
+      }
+      
+      return [];
+    } catch (e) {
+      print('Poll messages error: $e');
+      return [];
     }
-    
-    return [];
   }
 
   /// Gửi tin nhắn

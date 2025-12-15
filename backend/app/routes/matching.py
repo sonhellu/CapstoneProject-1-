@@ -398,9 +398,13 @@ def poll_messages(conv_id):
             
             if new_messages:
                 # Found new messages, return them immediately
+                # Optimize: Batch load all senders instead of querying one by one (avoid N+1)
+                sender_ids = list(set(m.sender_user_id for m in new_messages))
+                senders = {u.id: u for u in Users.query.filter(Users.id.in_(sender_ids)).all()} if sender_ids else {}
+                
                 out = []
                 for m in new_messages:
-                    sender = Users.query.get(m.sender_user_id)
+                    sender = senders.get(m.sender_user_id)
                     avatar_url = f"https://i.pravatar.cc/150?img={m.sender_user_id}" if sender else None
                     out.append({
                         "id": m.id,
