@@ -586,7 +586,8 @@ def _split_text_into_chunks(text, max_size):
 
 def _translate_text_chunk(chunk, source_lang_code, target_lang_code, original_source_lang):
     """
-    Translate a single chunk of text using MyMemory or LibreTranslate
+    Translate a single chunk of text using LibreTranslate (preferred) or MyMemory
+    LibreTranslate handles longer text better than MyMemory
     """
     # List of source languages to try (start with provided source_lang, then try others)
     source_langs_to_try = [source_lang_code]
@@ -595,20 +596,52 @@ def _translate_text_chunk(chunk, source_lang_code, target_lang_code, original_so
         if lang != source_lang_code and lang != target_lang_code:
             source_langs_to_try.append(lang)
     
-    # Try each source language until we get a good translation
-    api_url = "https://api.mymemory.translated.net/get"
+    # Try LibreTranslate first (handles longer text better)
+    libre_url = "https://libretranslate.de/translate"
     
     for try_source in source_langs_to_try:
         if try_source == target_lang_code:
             continue  # Skip if same as target
         
-        params = {
-            'q': chunk,
-            'langpair': f'{try_source}|{target_lang_code}'
-        }
-        
         try:
-            current_app.logger.info(f"Trying translation chunk: {try_source} -> {target_lang_code} (length: {len(chunk)})")
+            current_app.logger.info(f"Trying LibreTranslate chunk: {try_source} -> {target_lang_code} (length: {len(chunk)})")
+            libre_params = {
+                'q': chunk,
+                'source': try_source,
+                'target': target_lang_code,
+                'format': 'text'
+            }
+            
+            libre_response = requests.post(libre_url, data=libre_params, timeout=20)
+            if libre_response.status_code == 200:
+                libre_result = libre_response.json()
+                libre_translated = libre_result.get('translatedText', '').strip()
+                current_app.logger.info(f"LibreTranslate response for {try_source}: translated length={len(libre_translated) if libre_translated else 0}, original length={len(chunk)}")
+                
+                if libre_translated and libre_translated != chunk and len(libre_translated) > 0:
+                    current_app.logger.info(f"LibreTranslate successful with source: {try_source}")
+                    return {
+                        "translated_text": libre_translated,
+                        "source_language": try_source,
+                        "target_language": target_lang_code,
+                    }
+                else:
+                    current_app.logger.warning(f"LibreTranslate returned same text or empty for {try_source}")
+            else:
+                current_app.logger.warning(f"LibreTranslate returned status {libre_response.status_code} for {try_source}")
+        except requests.exceptions.RequestException as e:
+            current_app.logger.warning(f"LibreTranslate request error for {try_source}: {str(e)}")
+            # Continue to try MyMemory
+            
+        # Try MyMemory as fallback
+        try:
+            current_app.logger.info(f"Trying MyMemory for {try_source} -> {target_lang_code}")
+            api_url = "https://api.mymemory.translated.net/get"
+            params = {
+                'q': chunk,
+                'langpair': f'{try_source}|{target_lang_code}'
+            }
+            
             response = requests.get(api_url, params=params, timeout=15)
             response.raise_for_status()
             
@@ -617,49 +650,27 @@ def _translate_text_chunk(chunk, source_lang_code, target_lang_code, original_so
             
             if response_status == 200:
                 translated_text = result.get('responseData', {}).get('translatedText', '').strip()
+                current_app.logger.info(f"MyMemory response for {try_source}: translated length={len(translated_text) if translated_text else 0}")
                 
-                # Check if translation is actually different from original and not empty
                 if translated_text and translated_text != chunk and len(translated_text) > 0:
-                    current_app.logger.info(f"Translation successful with source: {try_source}")
+                    current_app.logger.info(f"MyMemory successful with source: {try_source}")
                     return {
                         "translated_text": translated_text,
                         "source_language": try_source,
                         "target_language": target_lang_code,
                     }
-            
-            # Try LibreTranslate as fallback for this source language
-            current_app.logger.info(f"MyMemory failed for {try_source}, trying LibreTranslate...")
-            libre_url = "https://libretranslate.de/translate"
-            libre_params = {
-                'q': chunk,
-                'source': try_source,
-                'target': target_lang_code,
-                'format': 'text'
-            }
-            
-            libre_response = requests.post(libre_url, data=libre_params, timeout=15)
-            if libre_response.status_code == 200:
-                libre_result = libre_response.json()
-                libre_translated = libre_result.get('translatedText', '').strip()
-                if libre_translated and libre_translated != chunk and len(libre_translated) > 0:
-                    current_app.logger.info(f"LibreTranslate successful with source: {try_source}")
-                    return {
-                        "translated_text": libre_translated,
-                        "source_language": try_source,
-                        "target_language": target_lang_code,
-                    }
-                    
         except requests.exceptions.RequestException as e:
-            current_app.logger.warning(f"Translation API request error for {try_source}: {str(e)}")
+            current_app.logger.warning(f"MyMemory request error for {try_source}: {str(e)}")
             continue  # Try next source language
     
     # All translation attempts failed for this chunk
-    current_app.logger.warning(f"All translation attempts failed for chunk (length: {len(chunk)})")
+    current_app.logger.error(f"All translation attempts failed for chunk (length: {len(chunk)}, source: {source_lang_code}, target: {target_lang_code})")
+    current_app.logger.error(f"Chunk preview: {chunk[:100]}...")
     return {
         "translated_text": chunk,
         "source_language": source_lang_code,
         "target_language": target_lang_code,
-        "warning": "Could not translate chunk"
+        "warning": "Could not translate chunk - all translation services failed"
     }
 
 
