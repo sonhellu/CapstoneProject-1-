@@ -376,9 +376,9 @@ def poll_messages(conv_id):
         # Get last_message_id from query param (client sends ID of last message they have)
         last_message_id = request.args.get('last_message_id', type=int)
         
-        # Poll for up to 10 seconds, check every 0.1 seconds (100ms) for faster response
-        timeout = 10
-        check_interval = 0.1  # 100ms - much faster than 0.5s
+        # Poll for up to 5 seconds, check every 0.05 seconds (50ms) for faster response
+        timeout = 5
+        check_interval = 0.05  # 50ms - very fast check interval
         elapsed = 0
         
         while elapsed < timeout:

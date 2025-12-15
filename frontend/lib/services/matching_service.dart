@@ -111,7 +111,7 @@ class MatchingService {
         uri,
         headers: headers,
       ).timeout(
-        const Duration(seconds: 15), // Extended timeout for long polling
+        const Duration(seconds: 6), // Slightly longer than backend 5s timeout
         onTimeout: () {
           throw TimeoutException('Poll request timeout');
         },

@@ -167,13 +167,14 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
         }
       }
 
-      // Immediately poll again for new messages
+      // Immediately poll again for new messages (no delay for faster real-time)
       _pollForNewMessages();
     } catch (e) {
       print('Long polling error: $e');
-      // Wait a bit before retrying on error
+      // On timeout or error, retry immediately (backend timeout is short enough)
       if (_isPolling && mounted) {
-        Future.delayed(const Duration(seconds: 2), () {
+        // Very short delay (100ms) to avoid tight loop on connection errors
+        Future.delayed(const Duration(milliseconds: 100), () {
           if (_isPolling && mounted) {
             _pollForNewMessages();
           }
