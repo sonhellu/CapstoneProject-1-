@@ -344,7 +344,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
             borderRadius: BorderRadius.circular(AppConstants.radiusS),
           ),
           child: Text(
-            widget.news.category,
+            _getLocalizedBoardName(context, widget.news.category),
             style: TextStyle(
               fontSize: AppConstants.fontSizeS,
               color: AppConstants.primaryColor,
@@ -393,6 +393,22 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
         height: 1.6,
       ),
     );
+  }
+
+  /// Map board_name (Korean) to localized board name
+  String _getLocalizedBoardName(BuildContext context, String boardName) {
+    final l10n = AppLocalizations.of(context);
+    
+    // Map Korean board names to localized strings
+    final boardNameMap = {
+      '공지게시판': l10n.noticeBoard,
+      '자유게시판': l10n.freeBoard,
+      '정보게시판': l10n.infoBoard,
+      '홍보게시판': l10n.promoBoard,
+    };
+    
+    // Return localized name if found, otherwise return original
+    return boardNameMap[boardName] ?? boardName;
   }
 
   Widget _buildTags(bool isDark) {
