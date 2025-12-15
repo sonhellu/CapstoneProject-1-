@@ -294,13 +294,15 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
     
     final tempMessageIndex = _messages.length;
     
+    // Hiển thị tin nhắn ngay lập tức (optimistic update)
     setState(() {
-      _isSending = true;
+      _isSending = false; // Set false ngay để user có thể gửi tin nhắn tiếp
       _messages.add(tempMessage);
     });
 
     _controller.clear();
     
+    // Scroll to bottom ngay lập tức
     if (_scrollController.hasClients) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
@@ -313,18 +315,18 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
       });
     }
 
-    try {
-      // Send message via HTTP API
-      final response = await MatchingService.sendMessage(
-        conversationId: widget.conversationId,
-        content: text,
-      );
-
+    // Gửi message ở background, không block UI
+    MatchingService.sendMessage(
+      conversationId: widget.conversationId,
+      content: text,
+    ).then((response) {
       // Update temp message with real message data from response
+      if (!mounted) return;
+      
       final messageId = response['id'] as int? ?? response['message_id'] as int?;
       final createdAt = response['created_at']?.toString();
       
-      if (messageId != null && tempMessageIndex < _messages.length) {
+      if (messageId != null && tempMessageIndex < _messages.length && mounted) {
         DateTime time;
         if (createdAt != null) {
           try {
@@ -345,43 +347,21 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
             time: time,
             senderName: response['sender_nickname'] as String?,
           );
-          _isSending = false;
         });
-      } else {
-        // Fallback: remove temp message, Long Polling will add it back
+      } else if (tempMessageIndex < _messages.length && mounted) {
+        // Fallback: Long Polling sẽ nhận message và cập nhật
+        // Không cần xóa temp message, để Long Polling tự handle
+      }
+    }).catchError((e) {
+      // Xử lý lỗi: xóa temp message nếu gửi thất bại
+      if (mounted && tempMessageIndex < _messages.length) {
         setState(() {
-          if (tempMessageIndex < _messages.length) {
-            _messages.removeAt(tempMessageIndex);
-          }
-          _isSending = false;
-        });
-      }
-        
-      // Scroll to bottom
-      if (_scrollController.hasClients) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_scrollController.hasClients) {
-            _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
-          }
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _isSending = false;
-        if (tempMessageIndex < _messages.length && 
-            _messages[tempMessageIndex].text == text &&
-            _messages[tempMessageIndex].isMine) {
           _messages.removeAt(tempMessageIndex);
-        }
-      });
-      
-      _controller.text = text;
-      
-      if (mounted) {
+        });
+        
+        // Restore text to input field
+        _controller.text = text;
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${AppLocalizations.of(context).sendMessageFailed}: ${e.toString()}'),
@@ -390,7 +370,7 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
           ),
         );
       }
-    }
+    });
   }
 
   /// Delete message
