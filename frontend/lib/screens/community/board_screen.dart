@@ -439,6 +439,7 @@ class _BoardScreenState extends State<BoardScreen> {
           itemCount: posts.length,
           itemBuilder: (_, i) => _BoardCard(
             post: posts[i],
+            boardCategory: _selected,
             onDelete: () => _handleDeletePost(posts[i]),
           ),
         ),
@@ -450,8 +451,13 @@ class _BoardScreenState extends State<BoardScreen> {
 // 카드 UI
 class _BoardCard extends StatelessWidget {
   final BoardPost post;
+  final BoardCategory boardCategory;
   final VoidCallback? onDelete;
-  const _BoardCard({required this.post, this.onDelete});
+  const _BoardCard({
+    required this.post,
+    required this.boardCategory,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -581,7 +587,7 @@ class _BoardCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text(
-                            l10n.postLabel,
+                            _getCategoryLabel(context, boardCategory),
                             style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
