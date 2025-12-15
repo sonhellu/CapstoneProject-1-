@@ -7,7 +7,22 @@ import '../screens/home/news/news_detail_screen.dart';
 import '../screens/home/news/news_list_screen.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/date_time_utils.dart';
-import '../screens/community/board_screen.dart';
+
+/// Helper function to map Korean board names to localized strings
+String _getLocalizedBoardNameForNews(BuildContext context, String boardName) {
+  final l10n = AppLocalizations.of(context);
+  
+  // Map Korean board names to localized strings
+  final boardNameMap = {
+    '공지게시판': l10n.noticeBoard,
+    '자유게시판': l10n.freeBoard,
+    '정보게시판': l10n.infoBoard,
+    '홍보게시판': l10n.promoBoard,
+  };
+  
+  // Return localized name if found, otherwise return original
+  return boardNameMap[boardName] ?? boardName;
+}
 
 class NewsSection extends StatefulWidget {
   final bool isDark;
@@ -287,21 +302,18 @@ class _NewsSectionState extends State<NewsSection>
 
   /// Map board_name (Korean) to localized board name
   String _getLocalizedBoardName(BuildContext context, String boardName) {
-    // Map Korean board names to BoardCategory
+    final l10n = AppLocalizations.of(context);
+    
+    // Map Korean board names to localized strings
     final boardNameMap = {
-      '공지게시판': BoardCategory.notice,
-      '자유게시판': BoardCategory.free,
-      '정보게시판': BoardCategory.info,
-      '홍보게시판': BoardCategory.promo,
+      '공지게시판': l10n.noticeBoard,
+      '자유게시판': l10n.freeBoard,
+      '정보게시판': l10n.infoBoard,
+      '홍보게시판': l10n.promoBoard,
     };
     
-    final category = boardNameMap[boardName];
-    if (category != null) {
-      return _getCategoryLabel(context, category);
-    }
-    
-    // If not found, return original (for other category names)
-    return boardName;
+    // Return localized name if found, otherwise return original
+    return boardNameMap[boardName] ?? boardName;
   }
 
   Widget _buildViewAllButton(String type) {
@@ -536,7 +548,7 @@ class _NewsItemWidgetState extends State<_NewsItemWidget>
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  _getLocalizedBoardName(context, widget.news.category),
+                                  _getLocalizedBoardNameForNews(context, widget.news.category),
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600,

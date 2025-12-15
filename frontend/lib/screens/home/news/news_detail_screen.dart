@@ -6,7 +6,6 @@ import '../../../constants/app_constants.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../utils/date_time_utils.dart';
 import '../../../services/translation_service.dart';
-import '../../community/board_screen.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final NewsModel news;
@@ -398,21 +397,18 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
 
   /// Map board_name (Korean) to localized board name
   String _getLocalizedBoardName(BuildContext context, String boardName) {
-    // Map Korean board names to BoardCategory
+    final l10n = AppLocalizations.of(context);
+    
+    // Map Korean board names to localized strings
     final boardNameMap = {
-      '공지게시판': BoardCategory.notice,
-      '자유게시판': BoardCategory.free,
-      '정보게시판': BoardCategory.info,
-      '홍보게시판': BoardCategory.promo,
+      '공지게시판': l10n.noticeBoard,
+      '자유게시판': l10n.freeBoard,
+      '정보게시판': l10n.infoBoard,
+      '홍보게시판': l10n.promoBoard,
     };
     
-    final category = boardNameMap[boardName];
-    if (category != null) {
-      return _getCategoryLabel(context, category);
-    }
-    
-    // If not found, return original (for other category names)
-    return boardName;
+    // Return localized name if found, otherwise return original
+    return boardNameMap[boardName] ?? boardName;
   }
 
   Widget _buildTags(bool isDark) {

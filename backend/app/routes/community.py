@@ -475,6 +475,7 @@ def translate_post(post_id):
         return jsonify({"error": f"Failed to translate post: {str(e)}"}), 500
 
 
+R
 def _detect_language(text):
     """
     Simple language detection based on character patterns
