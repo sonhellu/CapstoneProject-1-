@@ -268,7 +268,18 @@ def send_message(conv_id):
         db.session.add(msg)
         db.session.commit()
         
-        return jsonify({"message_id": msg.id, "created_at": msg.created_at.isoformat()}), 201
+        # Return full message data for immediate UI update
+        avatar_url = f"https://i.pravatar.cc/150?img={user.id}"
+        return jsonify({
+            "id": msg.id,
+            "message_id": msg.id,  # Keep for backward compatibility
+            "sender_user_id": user.id,
+            "sender_nickname": user.nickname,
+            "sender_avatar_url": avatar_url,
+            "content": content,
+            "created_at": msg.created_at.isoformat(),
+            "is_sent_by_me": True
+        }), 201
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"Send message error: {str(e)}", exc_info=True)

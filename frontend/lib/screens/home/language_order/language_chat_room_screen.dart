@@ -315,25 +315,49 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
 
     try {
       // Send message via HTTP API
-      await MatchingService.sendMessage(
+      final response = await MatchingService.sendMessage(
         conversationId: widget.conversationId,
         content: text,
       );
 
-      // Remove temp message and reload to get real message with ID
-      // Long polling will pick up the new message automatically
-      setState(() {
-        if (tempMessageIndex < _messages.length) {
-          _messages.removeAt(tempMessageIndex);
-        }
-        _isSending = false;
-      });
+      // Update temp message with real message data from response
+      final messageId = response['id'] as int? ?? response['message_id'] as int?;
+      final createdAt = response['created_at']?.toString();
       
-      // Long polling will automatically add the new message
-      // But we can also reload once to ensure it's there
-      await Future.delayed(const Duration(milliseconds: 500));
-      await _loadMessages();
+      if (messageId != null && tempMessageIndex < _messages.length) {
+        DateTime time;
+        if (createdAt != null) {
+          try {
+            time = DateTime.parse(createdAt).toLocal();
+          } catch (e) {
+            time = DateTime.now();
+          }
+        } else {
+          time = DateTime.now();
+        }
         
+        setState(() {
+          // Update temp message with real ID and time
+          _messages[tempMessageIndex] = _ChatMessage(
+            messageId: messageId,
+            text: text,
+            isMine: true,
+            time: time,
+            senderName: response['sender_nickname'] as String?,
+          );
+          _isSending = false;
+        });
+      } else {
+        // Fallback: remove temp message, Long Polling will add it back
+        setState(() {
+          if (tempMessageIndex < _messages.length) {
+            _messages.removeAt(tempMessageIndex);
+          }
+          _isSending = false;
+        });
+      }
+        
+      // Scroll to bottom
       if (_scrollController.hasClients) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_scrollController.hasClients) {
