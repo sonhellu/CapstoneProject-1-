@@ -377,14 +377,20 @@ def translate_post(post_id):
         if not post:
             return jsonify({"error": "Post not found"}), 404
         
-        # 2. Lấy thông tin user
-        user = request.user
+        # 2. Lấy thông tin user - Query lại từ DB để đảm bảo có main_language mới nhất
+        user_id = request.user.id
+        from ..models import Users
+        db_user = Users.query.get(user_id)
+        if not db_user:
+            return jsonify({"error": "User not found"}), 404
         
         # 3. Xác định source và target language
         source_lang = post.original_lang or "ko"  # Default to Korean if not set
-        target_lang = user.main_language or "en"  # Default to English if not set
+        target_lang = db_user.main_language or "en"  # Lấy từ DB, fallback to English if not set
         
-        current_app.logger.info(f"Translating post {post_id}: {source_lang} -> {target_lang}")
+        current_app.logger.info(f"Translating post {post_id}: {source_lang} -> {target_lang} (user_id: {user_id}, main_language: {db_user.main_language})")
+        
+        current_app.logger.info(f"Translating post {post_id}: {source_lang} -> {target_lang} (user main_language: {target_lang})")
         current_app.logger.info(f"Post title: {post.title[:50]}...")
         current_app.logger.info(f"Post content length: {len(post.content) if post.content else 0}")
         
