@@ -50,7 +50,10 @@ class CommunityService {
     );
     
     // Clear cache sau khi tạo post mới
+    // Clear cache cho board cụ thể
     ApiService.clearCacheEntry(ApiConfig.boardPostsEndpoint(boardId));
+    // Clear cache cho all posts (News section cũng cần reload)
+    ApiService.clearCacheEntry(ApiConfig.allPostsEndpoint);
     
     return response;
   }
