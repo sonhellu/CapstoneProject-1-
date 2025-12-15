@@ -366,19 +366,25 @@ def poll_messages(conv_id):
         # Get last_message_id from query param (client sends ID of last message they have)
         last_message_id = request.args.get('last_message_id', type=int)
         
-        # Poll for up to 30 seconds, check every 0.5 seconds
-        timeout = 30
-        check_interval = 0.5
+        # Poll for up to 10 seconds, check every 0.1 seconds (100ms) for faster response
+        timeout = 10
+        check_interval = 0.1  # 100ms - much faster than 0.5s
         elapsed = 0
         
         while elapsed < timeout:
-            # Check for new messages
-            query = Messages.query.filter_by(conversation_id=conv_id)
+            # Check for new messages - direct query is faster than count + query
             if last_message_id:
-                query = query.filter(Messages.id > last_message_id)
-            query = query.order_by(Messages.created_at.asc())
-            
-            new_messages = query.all()
+                # Query for messages after last_message_id
+                query = Messages.query.filter(
+                    Messages.conversation_id == conv_id,
+                    Messages.id > last_message_id
+                ).order_by(Messages.created_at.asc())
+                new_messages = query.all()
+            else:
+                # No last_message_id, get all messages
+                new_messages = Messages.query.filter_by(
+                    conversation_id=conv_id
+                ).order_by(Messages.created_at.asc()).all()
             
             if new_messages:
                 # Found new messages, return them immediately
