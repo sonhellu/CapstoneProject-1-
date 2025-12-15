@@ -338,10 +338,11 @@ def create_app():
         async_mode=async_mode,
         logger=False,  # Disable verbose logging in production
         engineio_logger=False,  # Disable engineio logging in production
-        allow_upgrades=True,
-        transports=['websocket', 'polling'],
-        ping_timeout=60,
-        ping_interval=25
+        allow_upgrades=False,  # Disable WebSocket upgrade on Render (use polling only)
+        transports=['polling'],  # Use polling only for better compatibility with Render
+        ping_timeout=120,  # Increased for Render
+        ping_interval=30,
+        max_http_buffer_size=1e8
     )
     
     # Store socketio instance in app for access in run.py

@@ -49,13 +49,13 @@ class SocketService {
       _socket = IO.io(
         socketUrl,
         IO.OptionBuilder()
-            .setTransports(['websocket', 'polling'])
+            .setTransports(['polling', 'websocket']) // Try polling first (more reliable on Render)
             .enableAutoConnect()
             .enableReconnection()
-            .setReconnectionAttempts(5)
-            .setReconnectionDelay(1000)
+            .setReconnectionAttempts(3) // Reduce attempts for faster fallback
+            .setReconnectionDelay(2000)
             .setReconnectionDelayMax(5000)
-            .setTimeout(20000)
+            .setTimeout(30000) // Increased timeout for Render
             .setAuth({'token': token}) // Send token in auth parameter
             .build(),
       );
@@ -66,9 +66,26 @@ class SocketService {
       // Connect with auth
       _socket!.connect();
 
-      // Wait for connection
-      await Future.delayed(const Duration(milliseconds: 500));
+      // Wait for connection with timeout
+      int attempts = 0;
+      while (attempts < 10 && !_isConnected) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        attempts++;
+        if (_socket?.connected == true) {
+          _isConnected = true;
+          break;
+        }
+      }
+      
       _isConnecting = false;
+      
+      if (!_isConnected) {
+        print('SocketService: Failed to connect after timeout');
+        // Cleanup failed connection
+        _socket?.disconnect();
+        _socket?.dispose();
+        _socket = null;
+      }
     } catch (e) {
       print('SocketService: Connection error: $e');
       _isConnecting = false;
@@ -93,10 +110,18 @@ class SocketService {
     _socket!.onConnectError((error) {
       print('SocketService: Connection error: $error');
       _isConnected = false;
+      // Don't throw - let the app fallback to REST API
     });
 
     _socket!.onError((error) {
       print('SocketService: Error: $error');
+      _isConnected = false;
+      // Don't throw - let the app fallback to REST API
+    });
+
+    _socket!.onDisconnect((reason) {
+      print('SocketService: Disconnected: $reason');
+      _isConnected = false;
     });
 
     // Handle connected event from server

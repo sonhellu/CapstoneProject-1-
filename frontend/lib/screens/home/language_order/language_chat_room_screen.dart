@@ -89,6 +89,16 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
         await SocketService.connect();
       }
 
+      // Wait a bit to check if connection succeeds
+      await Future.delayed(const Duration(seconds: 2));
+      
+      // If still not connected after timeout, fallback to polling
+      if (!SocketService.isConnected) {
+        print('Socket connection failed, falling back to polling');
+        _startMessageRefresh();
+        return;
+      }
+
       // Join conversation room
       SocketService.joinConversation(widget.conversationId);
 
@@ -110,13 +120,9 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
       SocketService.onError((data) {
         if (mounted) {
           final errorMsg = data['message'] as String? ?? 'Unknown error';
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Socket error: $errorMsg'),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 3),
-            ),
-          );
+          print('Socket error: $errorMsg');
+          // Don't show error to user, just fallback to polling
+          _startMessageRefresh();
         }
       });
     } catch (e) {
