@@ -462,6 +462,7 @@ def _translate_text_internal(text, source_lang, target_lang):
     """
     Helper function để dịch text (tái sử dụng logic từ translate_text route)
     Có auto-detect language: nếu translation từ source_lang fail, thử các source languages khác
+    Hỗ trợ text dài bằng cách chia thành chunks và dịch từng chunk
     """
     # Map language codes to MyMemory format
     lang_map = {
@@ -490,8 +491,104 @@ def _translate_text_internal(text, source_lang, target_lang):
             "target_language": target_lang_code,
         }
     
+    # MyMemory API limit: ~500 characters per request (free tier)
+    # Split long text into chunks and translate separately
+    MAX_CHUNK_SIZE = 400  # Safe limit to avoid API errors
+    text_length = len(text)
+    
+    if text_length <= MAX_CHUNK_SIZE:
+        # Short text: translate directly
+        return _translate_text_chunk(text, source_lang_code, target_lang_code, source_lang)
+    else:
+        # Long text: split into chunks and translate each
+        current_app.logger.info(f"Text is long ({text_length} chars), splitting into chunks...")
+        chunks = _split_text_into_chunks(text, MAX_CHUNK_SIZE)
+        current_app.logger.info(f"Split into {len(chunks)} chunks")
+        
+        translated_chunks = []
+        detected_source = source_lang_code
+        
+        for i, chunk in enumerate(chunks):
+            current_app.logger.info(f"Translating chunk {i+1}/{len(chunks)} (length: {len(chunk)})")
+            chunk_result = _translate_text_chunk(chunk, source_lang_code, target_lang_code, source_lang)
+            translated_chunks.append(chunk_result.get("translated_text", chunk))
+            # Use detected source from first successful chunk
+            if i == 0 and "source_language" in chunk_result:
+                detected_source = chunk_result["source_language"]
+        
+        # Join all translated chunks
+        translated_text = "".join(translated_chunks)
+        
+        return {
+            "translated_text": translated_text,
+            "source_language": detected_source,
+            "target_language": target_lang_code,
+        }
+
+
+def _split_text_into_chunks(text, max_size):
+    """
+    Split text into chunks, trying to break at sentence boundaries when possible
+    """
+    if len(text) <= max_size:
+        return [text]
+    
+    chunks = []
+    current_chunk = ""
+    
+    # Try to split by newlines first (preserve paragraph structure)
+    paragraphs = text.split('\n')
+    
+    for para in paragraphs:
+        # If adding this paragraph would exceed limit, save current chunk and start new one
+        if len(current_chunk) + len(para) + 1 > max_size and current_chunk:
+            chunks.append(current_chunk)
+            current_chunk = ""
+        
+        # If single paragraph is too long, split it by sentences
+        if len(para) > max_size:
+            # Split by sentence endings (Korean: . ! ? | Vietnamese: . ! ?)
+            sentences = []
+            current_sentence = ""
+            
+            for char in para:
+                current_sentence += char
+                if char in ['.', '!', '?', '。', '！', '？']:
+                    if len(current_sentence) > max_size:
+                        # Even sentence is too long, split by character
+                        while len(current_sentence) > max_size:
+                            chunks.append(current_sentence[:max_size])
+                            current_sentence = current_sentence[max_size:]
+                    sentences.append(current_sentence)
+                    current_sentence = ""
+            
+            if current_sentence:
+                sentences.append(current_sentence)
+            
+            # Add sentences to chunks
+            for sentence in sentences:
+                if len(current_chunk) + len(sentence) > max_size and current_chunk:
+                    chunks.append(current_chunk)
+                    current_chunk = ""
+                current_chunk += sentence
+        else:
+            current_chunk += para
+        
+        # Add newline if not last paragraph
+        if para != paragraphs[-1]:
+            current_chunk += '\n'
+    
+    if current_chunk:
+        chunks.append(current_chunk)
+    
+    return chunks
+
+
+def _translate_text_chunk(chunk, source_lang_code, target_lang_code, original_source_lang):
+    """
+    Translate a single chunk of text using MyMemory or LibreTranslate
+    """
     # List of source languages to try (start with provided source_lang, then try others)
-    # Common languages for this app: ko (Korean), en (English), vi (Vietnamese), zh (Chinese), ja (Japanese)
     source_langs_to_try = [source_lang_code]
     # Add other common source languages to try if initial translation fails
     for lang in ['ko', 'en', 'vi', 'zh', 'ja', 'my']:
@@ -506,13 +603,13 @@ def _translate_text_internal(text, source_lang, target_lang):
             continue  # Skip if same as target
         
         params = {
-            'q': text,
+            'q': chunk,
             'langpair': f'{try_source}|{target_lang_code}'
         }
         
         try:
-            current_app.logger.info(f"Trying translation: {try_source} -> {target_lang_code}")
-            response = requests.get(api_url, params=params, timeout=10)
+            current_app.logger.info(f"Trying translation chunk: {try_source} -> {target_lang_code} (length: {len(chunk)})")
+            response = requests.get(api_url, params=params, timeout=15)
             response.raise_for_status()
             
             result = response.json()
@@ -522,11 +619,11 @@ def _translate_text_internal(text, source_lang, target_lang):
                 translated_text = result.get('responseData', {}).get('translatedText', '').strip()
                 
                 # Check if translation is actually different from original and not empty
-                if translated_text and translated_text != text and len(translated_text) > 0:
+                if translated_text and translated_text != chunk and len(translated_text) > 0:
                     current_app.logger.info(f"Translation successful with source: {try_source}")
                     return {
                         "translated_text": translated_text,
-                        "source_language": try_source,  # Return detected source language
+                        "source_language": try_source,
                         "target_language": target_lang_code,
                     }
             
@@ -534,17 +631,17 @@ def _translate_text_internal(text, source_lang, target_lang):
             current_app.logger.info(f"MyMemory failed for {try_source}, trying LibreTranslate...")
             libre_url = "https://libretranslate.de/translate"
             libre_params = {
-                'q': text,
+                'q': chunk,
                 'source': try_source,
                 'target': target_lang_code,
                 'format': 'text'
             }
             
-            libre_response = requests.post(libre_url, data=libre_params, timeout=10)
+            libre_response = requests.post(libre_url, data=libre_params, timeout=15)
             if libre_response.status_code == 200:
                 libre_result = libre_response.json()
                 libre_translated = libre_result.get('translatedText', '').strip()
-                if libre_translated and libre_translated != text and len(libre_translated) > 0:
+                if libre_translated and libre_translated != chunk and len(libre_translated) > 0:
                     current_app.logger.info(f"LibreTranslate successful with source: {try_source}")
                     return {
                         "translated_text": libre_translated,
@@ -556,13 +653,13 @@ def _translate_text_internal(text, source_lang, target_lang):
             current_app.logger.warning(f"Translation API request error for {try_source}: {str(e)}")
             continue  # Try next source language
     
-    # All translation attempts failed
-    current_app.logger.error(f"All translation attempts failed for text (length: {len(text)})")
+    # All translation attempts failed for this chunk
+    current_app.logger.warning(f"All translation attempts failed for chunk (length: {len(chunk)})")
     return {
-        "translated_text": text,
+        "translated_text": chunk,
         "source_language": source_lang_code,
         "target_language": target_lang_code,
-        "warning": "Could not translate - all translation services unavailable or text may already be in target language"
+        "warning": "Could not translate chunk"
     }
 
 
