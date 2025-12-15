@@ -386,16 +386,17 @@ def translate_post(post_id):
         
         # 3. Xác định source và target language
         # Source language = ngôn ngữ người dùng chọn khi đăng bài (original_lang của post)
-        # Nếu post không có original_lang hoặc original_lang không hợp lệ, detect từ nội dung
-        if post.original_lang and post.original_lang in ['en', 'ko', 'vi', 'zh', 'ja', 'my']:
-            source_lang = post.original_lang  # Ngôn ngữ người dùng chọn khi đăng bài
+        # Chỉ detect nếu original_lang thực sự không có (None hoặc empty)
+        if post.original_lang and post.original_lang.strip():
+            # Dùng original_lang từ post (ngôn ngữ người dùng chọn khi đăng bài)
+            source_lang = post.original_lang.strip().lower()
+            current_app.logger.info(f"Post {post_id} using original_lang from post: '{source_lang}'")
         else:
-            # Detect language từ title và content nếu post không có original_lang hoặc không hợp lệ
-            # Ưu tiên dùng full content để detect chính xác hơn
+            # Chỉ detect khi post không có original_lang
             sample_text = (post.title or "") + " " + (post.content[:500] if post.content else "")
             detected_lang = _detect_language(sample_text)
             source_lang = detected_lang
-            current_app.logger.info(f"Post {post_id} has no valid original_lang, detected language: {detected_lang} from sample: {sample_text[:100]}...")
+            current_app.logger.warning(f"Post {post_id} has no original_lang, detected language: {detected_lang} from sample: {sample_text[:100]}...")
         
         # original_lang trong response = source_lang (luôn giống nhau)
         original_lang = source_lang
