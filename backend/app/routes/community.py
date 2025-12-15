@@ -385,7 +385,14 @@ def translate_post(post_id):
             return jsonify({"error": "User not found"}), 404
         
         # 3. Xác định source và target language
-        source_lang = post.original_lang or "ko"  # Default to Korean if not set
+        # Thử detect language từ text nếu original_lang không có hoặc không chính xác
+        if post.original_lang:
+            source_lang = post.original_lang
+        else:
+            # Detect language từ title và content
+            sample_text = (post.title or "") + " " + (post.content[:200] if post.content else "")
+            source_lang = _detect_language(sample_text)
+        
         target_lang = db_user.main_language or "en"  # Lấy từ DB, fallback to English if not set
         
         current_app.logger.info(f"Translating post {post_id}: {source_lang} -> {target_lang} (user_id: {user_id}, main_language: {db_user.main_language})")
@@ -458,6 +465,56 @@ def translate_post(post_id):
         return jsonify({"error": f"Failed to translate post: {str(e)}"}), 500
 
 
+def _detect_language(text):
+    """
+    Simple language detection based on character patterns
+    Returns language code: 'ko', 'zh', 'ja', 'vi', 'en', 'my'
+    """
+    if not text or len(text.strip()) == 0:
+        return "en"
+    
+    # Korean characters: Hangul syllable range (AC00-D7AF)
+    korean_count = sum(1 for c in text if '\uAC00' <= c <= '\uD7AF')
+    
+    # Chinese characters: CJK Unified Ideographs (4E00-9FFF)
+    chinese_count = sum(1 for c in text if '\u4E00' <= c <= '\u9FFF')
+    
+    # Japanese Hiragana (3040-309F) and Katakana (30A0-30FF)
+    japanese_count = sum(1 for c in text if '\u3040' <= c <= '\u309F' or '\u30A0' <= c <= '\u30FF')
+    
+    # Myanmar characters (1000-109F)
+    myanmar_count = sum(1 for c in text if '\u1000' <= c <= '\u109F')
+    
+    # Vietnamese: diacritics (Latin Extended Additional 1E00-1EFF)
+    vietnamese_indicators = ['ă', 'â', 'ê', 'ô', 'ơ', 'ư', 'đ', 'à', 'á', 'ả', 'ã', 'ạ', 'è', 'é', 'ẻ', 'ẽ', 'ẹ']
+    vietnamese_count = sum(1 for c in text.lower() if c in vietnamese_indicators)
+    
+    text_length = len(text)
+    
+    # Calculate ratios
+    if text_length > 0:
+        korean_ratio = korean_count / text_length
+        chinese_ratio = chinese_count / text_length
+        japanese_ratio = japanese_count / text_length
+        myanmar_ratio = myanmar_count / text_length
+        vietnamese_ratio = vietnamese_count / text_length
+        
+        # Determine language based on highest ratio
+        if korean_ratio > 0.1:
+            return "ko"
+        elif chinese_ratio > 0.1:
+            return "zh"
+        elif japanese_ratio > 0.1:
+            return "ja"
+        elif myanmar_ratio > 0.1:
+            return "my"
+        elif vietnamese_ratio > 0.05:  # Lower threshold for Vietnamese
+            return "vi"
+    
+    # Default to English if no clear indicators
+    return "en"
+
+
 def _translate_text_internal(text, source_lang, target_lang):
     """
     Helper function để dịch text (tái sử dụng logic từ translate_text route)
@@ -491,9 +548,9 @@ def _translate_text_internal(text, source_lang, target_lang):
             "target_language": target_lang_code,
         }
     
-    # MyMemory API limit: ~500 characters per request (free tier)
     # Split long text into chunks and translate separately
-    MAX_CHUNK_SIZE = 400  # Safe limit to avoid API errors
+    # LibreTranslate can handle longer chunks, but we split for reliability
+    MAX_CHUNK_SIZE = 1000  # Increased for LibreTranslate (can handle up to ~2000 chars)
     text_length = len(text)
     
     if text_length <= MAX_CHUNK_SIZE:
@@ -510,7 +567,14 @@ def _translate_text_internal(text, source_lang, target_lang):
         
         for i, chunk in enumerate(chunks):
             current_app.logger.info(f"Translating chunk {i+1}/{len(chunks)} (length: {len(chunk)})")
-            chunk_result = _translate_text_chunk(chunk, source_lang_code, target_lang_code, source_lang)
+            # Detect source language for this chunk if original is unclear
+            chunk_source = source_lang_code
+            if source_lang_code == "en" or not source_lang_code:  # If source is unclear, detect from chunk
+                detected_lang = _detect_language(chunk)
+                chunk_source = detected_lang
+                current_app.logger.info(f"Detected language for chunk {i+1}: {detected_lang}")
+            
+            chunk_result = _translate_text_chunk(chunk, chunk_source, target_lang_code, source_lang)
             translated_chunks.append(chunk_result.get("translated_text", chunk))
             # Use detected source from first successful chunk
             if i == 0 and "source_language" in chunk_result:
