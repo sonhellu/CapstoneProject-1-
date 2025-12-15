@@ -430,16 +430,26 @@ def translate_post(post_id):
                 current_app.logger.error(f"Translation failed for text {idx}: {str(e)}", exc_info=True)
                 translation_results.append(text)  # Fallback to original text
         
+        # Đảm bảo có đủ 2 kết quả (title và content)
+        translated_title = translation_results[0] if len(translation_results) > 0 else post.title
+        translated_content = translation_results[1] if len(translation_results) > 1 else post.content
+        
+        # Đảm bảo content không bao giờ là None
+        if translated_content is None:
+            translated_content = post.content or ""
+        
         response_data = {
-            "title": translation_results[0] if len(translation_results) > 0 else post.title,
-            "content": translation_results[1] if len(translation_results) > 1 else post.content,
+            "title": translated_title,
+            "content": translated_content,
             "original_lang": source_lang,
             "target_lang": target_lang,
             "original_title": post.title,
             "original_content": post.content
         }
         
-        current_app.logger.info(f"Translation complete. Title length: {len(response_data['title'])}, Content length: {len(response_data['content'])}")
+        current_app.logger.info(f"Translation complete. Title length: {len(str(response_data['title']))}, Content length: {len(str(response_data['content']))}")
+        current_app.logger.info(f"Translated title preview: {str(translated_title)[:100]}...")
+        current_app.logger.info(f"Translated content preview: {str(translated_content)[:100]}...")
         
         return jsonify(response_data), 200
         
