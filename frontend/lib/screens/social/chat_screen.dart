@@ -372,8 +372,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               ),
             ).then((_) {
               // Reload conversations sau khi quay lại từ chat room
-              // Force refresh để đảm bảo có unread count mới nhất
-              _loadConversations(forceRefresh: true);
+              // Hiển thị cached data trước, sau đó refresh ở background
+              _loadConversations(forceRefresh: false);
+              // Refresh ở background để cập nhật unread count
+              Future.delayed(const Duration(milliseconds: 300), () {
+                if (mounted) {
+                  _loadConversations(forceRefresh: true);
+                }
+              });
             });
           },
           borderRadius: BorderRadius.circular(16),
