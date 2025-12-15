@@ -57,88 +57,85 @@ class _LanguagePickerState extends State<LanguagePicker> {
   Future<void> _changeLanguage(String languageCode) async {
     if (_isUpdating) return;
     
-    setState(() {
-      _isUpdating = true;
-    });
-
+    // Optimistic update: Update UI ngay lập tức
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('language', languageCode);
+    await prefs.setString('mainLanguage', languageCode);
+    
+    // Update local state ngay
+    if (mounted) {
+      setState(() {
+        _currentLanguage = languageCode;
+        _isUpdating = true; // Show loading indicator
+      });
+    }
+    
+    // Call the callback to change language immediately (refresh trang ngay)
+    if (widget.onLanguageChanged != null) {
+      widget.onLanguageChanged!(languageCode);
+    }
+    
+    // Show success message ngay
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text('${AppLocalizations.of(context).languageChangedTo} ${_getLanguageName(languageCode)}'),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.green[600],
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
+    }
+    
+    // Chạy API calls ở background (không blocking UI)
     try {
-      final prefs = await SharedPreferences.getInstance();
-      
-      // Update both language preferences
-      await prefs.setString('language', languageCode);
-      await prefs.setString('mainLanguage', languageCode);
-      
-      // Try to update profile if user is logged in (silently fail if not authenticated)
-      try {
-        await ProfileService.updateMyProfile(mainLanguage: languageCode);
-      } catch (e) {
-        // Ignore if update fails (user might not be logged in or not authenticated)
-        // This is fine - local preference is already updated
-      }
-      
-      // Clear cache cho school translation để đảm bảo link trường được dịch theo ngôn ngữ mới
+      // Clear cache cho school translation
       ApiService.clearCacheEntry(ApiConfig.schoolTranslationEndpoint);
       
-      // Reload NewsProvider để cập nhật Domestic tab theo main_language mới
-      // Lưu context trước khi async để tránh lỗi
+      // Update profile API ở background (silently fail if not authenticated)
+      ProfileService.updateMyProfile(mainLanguage: languageCode).catchError((e) {
+        // Ignore if update fails - local preference is already updated
+        print('Failed to update profile main_language: $e');
+      });
+      
+      // Reload NewsProvider ở background (không blocking)
       if (mounted) {
         try {
           final newsProvider = context.read<NewsProvider>();
-          await newsProvider.setUserMainLanguage(languageCode);
+          // Chạy ở background, không await để không block UI
+          newsProvider.setUserMainLanguage(languageCode, forceReload: true).catchError((e) {
+            print('Failed to reload news: $e');
+          });
         } catch (e) {
-          // Ignore if NewsProvider is not available (user might not be on home screen)
-          // This is fine - news will reload when user navigates to home screen
+          // Ignore if NewsProvider is not available
         }
       }
       
-      // Update local state
+      // Hide loading indicator sau khi hoàn thành (không cần chờ API)
       if (mounted) {
         setState(() {
-          _currentLanguage = languageCode;
           _isUpdating = false;
         });
-      }
-      
-      // Call the callback to change language immediately
-      if (widget.onLanguageChanged != null) {
-        widget.onLanguageChanged!(languageCode);
-      }
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text('${AppLocalizations.of(context).languageChangedTo} ${_getLanguageName(languageCode)}'),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.green[600],
-            duration: const Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
       }
     } catch (e) {
+      // Nếu có lỗi, vẫn ẩn loading indicator (UI đã được update rồi)
       if (mounted) {
         setState(() {
           _isUpdating = false;
         });
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${AppLocalizations.of(context).errorChangingLanguage}: ${e.toString()}'),
-            backgroundColor: Colors.red[600],
-            duration: const Duration(seconds: 2),
-          ),
-        );
       }
+      // Không hiển thị error vì UI đã được update thành công
     }
   }
 
