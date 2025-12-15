@@ -1,11 +1,13 @@
 // lib/screens/community/board_detail_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/board_post.dart';
 import '../../services/translation_service.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/api_service.dart';
 import '../../services/community_service.dart';
 import '../../constants/app_constants.dart';
+import '../../providers/news_provider.dart';
 
 class BoardDetailScreen extends StatefulWidget {
   final BoardPost post;
@@ -175,6 +177,15 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
             duration: const Duration(seconds: 2),
           ),
         );
+        
+        // Reload News section để cập nhật danh sách
+        try {
+          final newsProvider = context.read<NewsProvider>();
+          await newsProvider.refreshNews();
+        } catch (e) {
+          // Ignore error if NewsProvider is not available
+          print('Could not refresh news: $e');
+        }
         
         // Quay lại màn hình trước
         Navigator.pop(context, true); // Return true để board_screen biết cần reload

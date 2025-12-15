@@ -111,8 +111,9 @@ class CommunityService {
     );
     
     // Clear cache sau khi xóa post
-    // Cần biết boardId để clear cache, nhưng có thể clear tất cả board caches
+    // Clear tất cả board caches và allPosts cache (News section cũng cần reload)
     ApiService.clearCache();
+    ApiService.clearCacheEntry(ApiConfig.allPostsEndpoint);
     
     return response;
   }
