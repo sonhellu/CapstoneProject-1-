@@ -89,7 +89,6 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
       
       // 3. Convert API response thành _MatchResult
       if (!mounted) return [];
-      final context = this.context;
       final now = DateTime.now().millisecondsSinceEpoch;
       try {
         return helpers.asMap().entries.map((entry) {
