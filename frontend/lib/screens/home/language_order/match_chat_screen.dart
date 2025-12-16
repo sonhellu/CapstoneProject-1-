@@ -183,12 +183,37 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
   /// Get college ID from college name (if needed)
   Future<int?> _getCollegeId(String collegeName, BuildContext context) async {
     final l10n = AppLocalizations.of(context);
-    if (collegeName == l10n.noPreference) {
+    if (_isNoPreference(collegeName, context)) {
       return null;
     }
     // TODO: Map college name to ID if needed
     // For now, return null to search all colleges
     return null;
+  }
+  
+  /// Check if college name is "noPreference" in any language
+  bool _isNoPreference(String collegeName, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    // List of all possible "noPreference" texts in different languages
+    const noPreferenceTexts = [
+      'No Preference',
+      '상관없음',
+      'Không quan trọng',
+      '无偏好',
+      '指定なし',
+      'အကြိုက်မရွေး',
+    ];
+    // Check if it matches current language's noPreference or any other language's
+    return collegeName == l10n.noPreference || noPreferenceTexts.contains(collegeName);
+  }
+  
+  /// Get localized college text (if it's noPreference, return current language's noPreference)
+  String _getLocalizedCollegeText(String collegeName, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    if (_isNoPreference(collegeName, context)) {
+      return l10n.noPreference;
+    }
+    return collegeName;
   }
 
   String _langLabel(String code) {
@@ -595,7 +620,7 @@ class _MatchListView extends StatelessWidget {
                                         const SizedBox(width: 4),
                                         Expanded(
                                           child: Text(
-                                            user.college,
+                                            _getLocalizedCollegeText(user.college, context),
                                             style: theme.textTheme.bodySmall?.copyWith(
                                               color: isDark ? Colors.white60 : Colors.grey[600],
                                             ),
