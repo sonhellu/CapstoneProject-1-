@@ -3,11 +3,23 @@ from ..models import (db, Users, Departments,
                        MatchRequests, Matches, Conversations, ConversationParticipants, Messages)
 from ..auth_utils import require_auth
 from sqlalchemy.orm import joinedload
-from datetime import datetime
+from datetime import datetime, timezone
 import time
 import threading
 
 matching_bp = Blueprint('matching_bp', __name__, url_prefix='/api')
+
+def _format_datetime_utc(dt):
+    """Format datetime to ISO format with UTC timezone indicator"""
+    if dt is None:
+        return None
+    # If datetime is naive (no timezone), assume it's UTC
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    # Convert to UTC if it has timezone
+    dt_utc = dt.astimezone(timezone.utc)
+    # Return ISO format with 'Z' suffix to indicate UTC
+    return dt_utc.isoformat().replace('+00:00', 'Z')
 
 # 1) 매칭 요청 생성 (모든 사용자 가능)
 @matching_bp.route("/match_requests", methods=["POST"])
@@ -277,7 +289,7 @@ def send_message(conv_id):
             "sender_nickname": user.nickname,
             "sender_avatar_url": avatar_url,
             "content": content,
-            "created_at": msg.created_at.isoformat(),
+            "created_at": _format_datetime_utc(msg.created_at),
             "is_sent_by_me": True
         }), 201
     except Exception as e:
@@ -331,7 +343,7 @@ def get_messages(conv_id):
                 "sender_nickname": sender.nickname if sender else "Unknown",
                 "sender_avatar_url": avatar_url,
                 "content": m.content,
-                "created_at": m.created_at.isoformat(),
+                "created_at": _format_datetime_utc(m.created_at),
                 "is_sent_by_me": m.sender_user_id == user.id
             })
         
@@ -409,7 +421,7 @@ def poll_messages(conv_id):
                         "sender_nickname": sender.nickname if sender else "Unknown",
                         "sender_avatar_url": avatar_url,
                         "content": m.content,
-                        "created_at": m.created_at.isoformat(),
+                        "created_at": _format_datetime_utc(m.created_at),
                         "is_sent_by_me": m.sender_user_id == user.id
                     })
                 
@@ -507,10 +519,10 @@ def get_conversations():
                     "id": last_message.id,
                     "content": last_message.content,
                     "sender_user_id": last_message.sender_user_id,
-                    "created_at": last_message.created_at.isoformat()
+                    "created_at": _format_datetime_utc(last_message.created_at)
                 },
                 "unread_count": unread_count,
-                "created_at": conv.created_at.isoformat()
+                "created_at": _format_datetime_utc(conv.created_at)
             })
         
         # Sort by last message time (most recent first)

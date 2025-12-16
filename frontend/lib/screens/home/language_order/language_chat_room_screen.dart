@@ -123,12 +123,14 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
             final exists = _messages.any((msg) => msg.messageId == messageId);
             if (exists) continue;
 
-            // Parse time
+            // Parse time từ server (UTC) và convert sang local time
             DateTime time;
-            if (createdAt != null) {
+            if (createdAt != null && createdAt.isNotEmpty) {
               try {
+                // Parse ISO string, giả định UTC nếu không có timezone indicator
                 time = DateTime.parse(createdAt).toLocal();
               } catch (e) {
+                print('Error parsing created_at: $createdAt, error: $e');
                 time = DateTime.now();
               }
             } else {
