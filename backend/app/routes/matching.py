@@ -16,10 +16,15 @@ def _format_datetime_utc(dt):
     # If datetime is naive (no timezone), assume it's UTC
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
-    # Convert to UTC if it has timezone
-    dt_utc = dt.astimezone(timezone.utc)
+    else:
+        # Convert to UTC if it has timezone
+        dt = dt.astimezone(timezone.utc)
     # Return ISO format with 'Z' suffix to indicate UTC
-    return dt_utc.isoformat().replace('+00:00', 'Z')
+    iso_str = dt.isoformat()
+    # Replace '+00:00' with 'Z' for UTC timezone
+    if iso_str.endswith('+00:00'):
+        return iso_str[:-6] + 'Z'
+    return iso_str
 
 # 1) 매칭 요청 생성 (모든 사용자 가능)
 @matching_bp.route("/match_requests", methods=["POST"])
