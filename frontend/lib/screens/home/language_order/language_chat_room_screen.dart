@@ -404,7 +404,10 @@ class _LanguageChatRoomScreenState extends State<LanguageChatRoomScreen> {
   }
 
   String _formatTime(DateTime time) {
-    return DateTimeUtils.formatChatTime(context, time);
+    // Hiển thị thời gian thực tế lúc gửi tin nhắn (HH:mm)
+    final h = time.hour.toString().padLeft(2, '0');
+    final m = time.minute.toString().padLeft(2, '0');
+    return '$h:$m';
   }
 
   /// Get avatar color based on name (consistent color for same name)
