@@ -26,7 +26,7 @@ class _LanguageOrderScreenState extends State<LanguageOrderScreen> {
   final List<String> _colleges = const [
     '인문국제학대학','사범대학','경영대학','사회과학대학','자연과학대학','공과대학',
     '음악공연예술대학','미술대학','체육대학','Keimyung Adams College','의과대학',
-    '간호대학','Tabula Rasa College','약학대학','이부대학','상관없음',
+    '간호대학','Tabula Rasa College','약학대학','이부대학',
   ];
 
   String? _selectedLangCode;
