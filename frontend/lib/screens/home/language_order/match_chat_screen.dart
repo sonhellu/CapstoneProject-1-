@@ -35,12 +35,14 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
 
   /// Tìm người phù hợp từ API thực tế
   Future<List<_MatchResult>> _simulateMatch() async {
+    if (!mounted) return [];
+    final context = this.context;
     try {
       // 1. Tạo match request với target_language
-      final collegeId = await _getCollegeId(widget.preferredCollege);
+      final collegeId = await _getCollegeId(widget.preferredCollege, context);
       final matchRequest = await MatchingService.createMatchRequest(
         targetLanguage: widget.targetLanguageCode, // Required: Ngôn ngữ muốn học
-        preferredGender: _mapGenderToApi(widget.preferredGender),
+        preferredGender: _mapGenderToApi(widget.preferredGender, context),
         preferredCollegeId: collegeId,
         notes: 'Language exchange: Learning ${widget.targetLanguageCode}',
       );
@@ -86,6 +88,8 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
       }
       
       // 3. Convert API response thành _MatchResult
+      if (!mounted) return [];
+      final context = this.context;
       final now = DateTime.now().millisecondsSinceEpoch;
       try {
         return helpers.asMap().entries.map((entry) {
@@ -115,7 +119,7 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
           return _MatchResult(
             user: _User(
               nickname,
-              _mapGenderFromApi(gender),
+              _mapGenderFromApi(gender, context),
               widget.preferredCollege, // Use selected college for display
               [helper['main_language']?.toString() ?? widget.targetLanguageCode], // Languages they can help with
             ),
@@ -152,34 +156,35 @@ class _MatchChatScreenState extends State<MatchChatScreen> {
     }
   }
   
-  /// Map gender from UI to API format
-  String _mapGenderToApi(String uiGender) {
-    switch (uiGender) {
-      case '여':
-        return 'female';
-      case '남':
-        return 'male';
-      case '상관없음':
-      default:
-        return 'any';
+  /// Map gender from UI to API format (so sánh với localized text)
+  String _mapGenderToApi(String uiGender, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    if (uiGender == l10n.female) {
+      return 'female';
+    } else if (uiGender == l10n.male) {
+      return 'male';
+    } else {
+      return 'any';
     }
   }
   
-  /// Map gender from API to UI format
-  String _mapGenderFromApi(String apiGender) {
+  /// Map gender from API to UI format (trả về localized text)
+  String _mapGenderFromApi(String apiGender, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     switch (apiGender.toLowerCase()) {
       case 'female':
-        return '여';
+        return l10n.female;
       case 'male':
-        return '남';
+        return l10n.male;
       default:
-        return '상관없음';
+        return l10n.noPreference;
     }
   }
   
   /// Get college ID from college name (if needed)
-  Future<int?> _getCollegeId(String collegeName) async {
-    if (collegeName == '상관없음') {
+  Future<int?> _getCollegeId(String collegeName, BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    if (collegeName == l10n.noPreference) {
       return null;
     }
     // TODO: Map college name to ID if needed
